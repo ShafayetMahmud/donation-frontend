@@ -1,0 +1,33 @@
+name: Production Deployment
+
+on:
+  push:
+    branches:
+      - main   # Runs only when code is pushed/merged into main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout code
+      - uses: actions/checkout@v3
+
+      # Step 2: Setup Node.js v22
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22'
+
+      # Step 3: Install dependencies
+      - name: Install dependencies
+        run: npm install
+
+      # Step 4: Build project
+      - name: Build
+        run: npm run build
+
+      # Step 5: Deploy to Production server
+      - name: Deploy to Production
+        run: echo "Deploying to Production environment..." 
+        # TODO: replace this with your actual deploy command/script
