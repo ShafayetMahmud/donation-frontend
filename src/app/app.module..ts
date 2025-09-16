@@ -12,6 +12,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Home } from './home/home';
+import { MatToolbarModule } from '@angular/material/toolbar';
 
 const routes: Routes = [
   { path: '', component: DonateComponent }, // root route -> donate
@@ -21,6 +22,8 @@ const routes: Routes = [
 @NgModule({
   declarations: [],
   imports: [
+    MatToolbarModule,   // ✅ needed for <mat-toolbar>
+    MatButtonModule,
     BrowserModule,
     FormsModule,
     HttpClientModule,
@@ -32,6 +35,11 @@ const routes: Routes = [
     MatButtonModule,
     DonateComponent,
     Home,
+    MatToolbarModule,
+    MatButtonModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
     RouterModule.forRoot(routes)
   ],
   // bootstrap: [AppComponent]
