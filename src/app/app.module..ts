@@ -11,7 +11,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { HomeComponent } from './home/home.component';
+import { Home } from './home/home';
 
 const routes: Routes = [
   { path: '', component: DonateComponent }, // root route -> donate
@@ -31,7 +31,7 @@ const routes: Routes = [
     MatInputModule,
     MatButtonModule,
     DonateComponent,
-    HomeComponent,
+    Home,
     RouterModule.forRoot(routes)
   ],
   // bootstrap: [AppComponent]
