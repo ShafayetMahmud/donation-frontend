@@ -1,0 +1,198 @@
+/* src/app/donate/donate.component.scss */
+
+/* Variables (adjust if your Figma has different values) */
+$bkash: #F33A6A;
+$bkash-600: #F33A6A;
+$surface: #ffffff;
+$page-bg: #faf7f6;
+$text: #222;
+$muted: #6b6b6b;
+$radius: 12px;
+$card-shadow: 0 10px 22px rgba(12, 12, 12, 0.08);
+
+:host {
+  display: block;
+  font-family: 'Roboto', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+/* page shell */
+.donation-shell {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 36px 16px;
+  background: linear-gradient(180deg, #fff 0%, #fbf9f8 40%), $page-bg;
+}
+
+/* card */
+.donation-card {
+  width: 100%;
+  max-width: 420px;
+  background: $surface;
+  border-radius: $radius;
+  padding: 26px;
+  box-shadow: $card-shadow;
+  box-sizing: border-box;
+  border: 1px solid rgba(0,0,0,0.02);
+}
+
+/* header row */
+.card-header {
+  display:flex;
+  justify-content:flex-end;
+  margin-bottom: 8px;
+
+  .logo { opacity: 0.98; }
+}
+
+/* views */
+.view {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+/* Form view */
+.title {
+  text-align: left;
+  color: $bkash;
+  font-size: 20px;
+  font-weight: 700;
+  margin: 6px 0 6px 0;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: $muted;
+  margin-bottom: 16px;
+}
+
+.donation-form {
+  display:flex;
+  flex-direction: column;
+}
+
+.field-label {
+  font-size: 13px;
+  font-weight: 500;
+  margin-top: 10px;
+  margin-bottom: 6px;
+  color: $text;
+}
+
+.input-wrap {
+  display: block;
+}
+.input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 14px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(0,0,0,0.06);
+  background: #fff;
+  font-size: 15px;
+  outline: none;
+  transition: box-shadow .12s ease, border-color .12s ease;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.input:focus {
+  box-shadow: 0 6px 16px rgba($bkash, 0.06);
+  border-color: $bkash;
+}
+
+/* small note */
+.note {
+  font-size: 12px;
+  color: $muted;
+  margin-top: 10px;
+}
+
+/* CTA */
+.cta {
+  margin-top: 20px;
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: linear-gradient(180deg, $bkash, $bkash-600);
+  border: none;
+  color: white;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(241,90,41,0.18);
+  transition: transform .08s ease, box-shadow .12s ease, opacity .12s ease;
+}
+.cta:active { transform: translateY(1px); }
+.cta[disabled] { opacity: 0.6; cursor: default; box-shadow: none; }
+
+/* small helper */
+.cta-loading { font-weight: 600; font-size: 14px; }
+
+/* form footer small link */
+.form-footer {
+  display:flex;
+  justify-content:center;
+  margin-top: 8px;
+}
+.link-btn {
+  background: none;
+  border: none;
+  color: $bkash;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px;
+}
+
+/* Error text */
+.error {
+  color: #c2312b;
+  font-size: 12px;
+  margin-top: 6px;
+}
+
+/* Confirmation view */
+.view-confirm {
+  display:flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 18px 8px;
+}
+.confirm-illustration { margin: 8px 0 6px; }
+.confirm-title {
+  color: $text;
+  font-weight: 800;
+  font-size: 20px;
+  margin: 6px 0;
+}
+.confirm-text {
+  color: $muted;
+  font-size: 14px;
+  margin: 6px 0;
+}
+.confirm-actions {
+  display:flex;
+  gap: 10px;
+  margin-top: 16px;
+  width: 100%;
+  justify-content: center;
+}
+.cta-secondary {
+  background: $bkash;
+  color: #fff;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(241,90,41,0.14);
+}
+.cta-ghost {
+  background: transparent;
+  border-radius: 10px;
+  padding: 12px 14px;
+  border: 1px solid rgba(0,0,0,0.06);
+  cursor: pointer;
+}
