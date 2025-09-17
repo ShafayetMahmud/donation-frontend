@@ -1,37 +1,80 @@
-// src/app/donate/donate.component.ts
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { HttpClientModule, HttpClient } from '@angular/common/http';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
+import { CommonModule } from '@angular/common';
+import { trigger, style, transition, animate } from '@angular/animations';
+import { DonateService, DonationPayload } from './donate.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-donate',
-  templateUrl: './donate.component.html',
-  styleUrls: ['./donate.component.css'],
   standalone: true,
-  imports: [FormsModule, HttpClientModule, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule]
+  imports: [CommonModule, FormsModule],
+  templateUrl: './donate.component.html',
+  styleUrls: ['./donate.component.scss'],
+  animations: [
+    trigger('fadeInOut', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(6px)' }),
+        animate('180ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+      ]),
+      transition(':leave', [
+        animate('160ms ease-in', style({ opacity: 0, transform: 'translateY(-6px)' }))
+      ])
+    ])
+  ]
 })
 export class DonateComponent {
-  walletType = 'bkash';
-  amount: number = 0;
-  senderPhone: string = '';
 
-  constructor(private http: HttpClient) {}
+  amount = 0;
+  senderPhone = '';
+  showConfirmation = false;
+  loading = false;
 
-  donate() {
-    const payload = {
-      walletType: this.walletType,
-      amount: this.amount,
+  constructor(private donateService: DonateService, private router: Router) {}
+
+  onSubmit() {
+    if (!this.amount || !this.senderPhone) return;
+
+    this.loading = true;
+
+    const payload: DonationPayload = {
+      walletType: 'bkash',
+      amount: Number(this.amount),
       senderPhone: this.senderPhone
     };
 
-    this.http.post('http://localhost:5126/api/donate/wallet', payload)
-      .subscribe({
-        next: res => console.log('Payment response:', res),
-        error: err => console.error(err)
-      });
+    this.donateService.createDonation(payload).subscribe({
+      next: (res) => {
+        console.log('Payment create response:', res);
+        setTimeout(() => {
+          this.loading = false;
+          this.showConfirmation = true;
+        }, 600);
+      },
+      error: (err) => {
+        console.error('Payment error', err);
+        this.loading = false;
+        alert('Payment failed. Try again.');
+      }
+    });
+  }
+
+  reset() {
+    this.amount = 0;
+    this.senderPhone = '';
+    this.showConfirmation = false;
+  }
+
+  goToHomePage() {
+    this.router.navigate(['/']);
+  }
+
+  close() {
+    this.goToHomePage();
+  }
+
+  fillSample() {
+    this.amount = 500;
+    this.senderPhone = '01712345678';
   }
 }

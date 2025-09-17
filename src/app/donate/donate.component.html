@@ -1,97 +1,67 @@
-<!-- <h2>Donate via bKash</h2>
-<form (ngSubmit)="donate()">
-  <label>Amount:</label>
-  <input type="number" [(ngModel)]="amount" name="amount" required>
-  <br>
-  <label>Phone:</label>
-  <input type="text" [(ngModel)]="senderPhone" name="senderPhone" required>
-  <br>
-  <button type="submit">Donate</button>
-</form> -->
-
-<!-- <div class="max-w-md mx-auto bg-white shadow-lg rounded-lg p-8 mt-10">
-  <h2 class="text-2xl font-bold text-green-800 mb-6 text-center">Donate via bKash</h2>
-  
-  <form (ngSubmit)="donate()" class="space-y-4">
-    <div>
-      <label class="block text-gray-700 font-semibold">Amount</label>
-      <input type="number" [(ngModel)]="amount" name="amount" required
-             class="w-full border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600">
+<div class="donation-shell">
+  <div class="donation-card" role="region" aria-labelledby="donationHeading">
+    <div class="card-header">
+      <div class="logo">
+        <img src="assets/images/bkash-logo.svg" alt="bKash logo" width="78" height="48">
+      </div>
     </div>
-    
-    <div>
-      <label class="block text-gray-700 font-semibold">Phone</label>
-      <input type="text" [(ngModel)]="senderPhone" name="senderPhone" required
-             class="w-full border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600">
-    </div>
-    
-    <button type="submit"
-            class="w-full bg-green-800 text-white font-semibold py-3 rounded-lg hover:bg-green-700">
-      Donate Now
-    </button>
-  </form>
-</div> -->
 
+    <!-- STEP 1: Donation Form -->
+    <section *ngIf="!showConfirmation" class="view view-form" [@fadeInOut]>
+      <h1 id="donationHeading" class="title">Donate via bKash</h1>
+      <p class="subtitle">Support our cause — fast, secure & easy.</p>
 
-<!-- Make sure you have Angular Material installed and imported -->
-<!-- app.module.ts should include MatInputModule, MatButtonModule, MatFormFieldModule -->
+      <form (ngSubmit)="onSubmit()" #donationForm="ngForm" class="donation-form" autocomplete="off" novalidate>
 
-<!-- <div class="donation-container" style="max-width: 400px; margin: 50px auto; padding: 20px; background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border-radius: 12px;">
-  <h2 style="text-align: center; color: #2e7d32; margin-bottom: 20px;">Donate via bKash</h2>
+        <label class="field-label">Amount (BDT)</label>
+        <div class="input-wrap">
+          <input type="number" name="amount" required min="1" [(ngModel)]="amount" #a="ngModel" class="input"
+            placeholder="৳ 500" aria-label="Donation amount in Bangladeshi taka" />
+        </div>
+        <div class="error" *ngIf="a.invalid && a.touched">Enter a valid amount</div>
 
-  <form (ngSubmit)="donate()" #donationForm="ngForm">
-    
-    <mat-form-field appearance="outline" style="width: 100%; margin-bottom: 16px;">
-      <mat-label>Amount</mat-label>
-      <input matInput type="number" [(ngModel)]="amount" name="amount" required>
-    </mat-form-field>
+        <label class="field-label">Phone Number</label>
+        <div class="input-wrap">
+          <input type="tel" name="senderPhone" required pattern="^01[3-9]\d{8}$" [(ngModel)]="senderPhone" #p="ngModel"
+            class="input" placeholder="01XXXXXXXXX" aria-label="Sender phone number" />
+        </div>
+        <div class="error" *ngIf="p.invalid && p.touched">Enter a valid Bangladeshi phone</div>
 
-    <mat-form-field appearance="outline" style="width: 100%; margin-bottom: 24px;">
-      <mat-label>Phone</mat-label>
-      <input matInput type="text" [(ngModel)]="senderPhone" name="senderPhone" required>
-    </mat-form-field>
+        <div class="note">You will be redirected to bKash to complete payment.</div>
 
-    <button mat-raised-button color="primary" style="width: 100%; background-color: #2e7d32;">
-      Donate Now
-    </button>
+        <button type="submit" class="cta" [disabled]="loading || donationForm.invalid" aria-busy="{{loading}}">
 
-  </form>
-</div> -->
-
-
-
-<!-- donation.component.html -->
-
-<div style="display: flex; justify-content: center; padding: 40px 20px;">
-  <mat-card style="width: 100%; max-width: 400px; padding: 24px; border-radius: 12px;">
-    
-    <mat-card-title style="text-align: center; color: #2e7d32; font-size: 24px; font-weight: bold;">
-      Donation Application
-    </mat-card-title>
-    
-    <mat-card-content>
-      <form (ngSubmit)="donate()" #donationForm="ngForm">
-
-        <mat-form-field appearance="outline" style="width: 100%; margin-top: 16px;">
-          <mat-label>Amount</mat-label>
-          <input matInput type="number" [(ngModel)]="amount" name="amount" required>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" style="width: 100%; margin-top: 16px;">
-          <mat-label>Phone</mat-label>
-          <input matInput type="text" [(ngModel)]="senderPhone" name="senderPhone" required>
-        </mat-form-field>
-
-        <button mat-raised-button 
-                color="primary" 
-                style="width: 100%; margin-top: 24px; background-color: #2e7d32; font-weight: 600;">
-          Donate Now
+          <span *ngIf="!loading">Donate Now</span>
+          <span *ngIf="loading" class="cta-loading">Processing...</span>
         </button>
 
+        <div class="form-footer">
+          <button type="button" class="link-btn" (click)="fillSample()" *ngIf="!loading">Fill sample</button>
+        </div>
       </form>
-    </mat-card-content>
+    </section>
 
-  </mat-card>
+    <!-- STEP 2: Confirmation / Success -->
+    <section *ngIf="showConfirmation" class="view view-confirm" [@fadeInOut]>
+      <div class="confirm-illustration" aria-hidden="true">
+        <!-- simple check-circle -->
+        <svg width="84" height="84" viewBox="0 0 84 84" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="42" cy="42" r="40" fill="#F33A6A" />
+          <path d="M28 42l8 8 20-20" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"
+            fill="none" />
+        </svg>
+      </div>
+
+      <h2 class="confirm-title">Donation Received</h2>
+      <p class="confirm-text">
+        Thank you! We received <strong>{{ amount | number }} BDT</strong>.
+      </p>
+      <p class="confirm-text">We will contact you at <strong>{{ senderPhone }}</strong>.</p>
+
+      <div class="confirm-actions">
+        <button class="cta-secondary" (click)="reset()" type="button">Donate Again</button>
+        <button class="cta-ghost" (click)="close()" type="button">Close</button>
+      </div>
+    </section>
+  </div>
 </div>
-<div></div>
-
