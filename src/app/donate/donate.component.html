@@ -1,57 +1,122 @@
 <div class="donation-shell">
   <div class="donation-card" role="region" aria-labelledby="donationHeading">
-    <div class="card-header">
-      <div class="logo">
-        <img src="assets/images/bkash-logo.svg" alt="bKash logo" width="78" height="48">
-      </div>
-    </div>
 
-    <!-- STEP 1: Donation Form -->
-    <section *ngIf="!showConfirmation" class="view view-form" [@fadeInOut]>
-      <h1 id="donationHeading" class="title">Donate via bKash</h1>
+    <!-- STEP 1: Select Payment Method -->
+    <section *ngIf="!showForm && !showConfirmation" class="view view-form" [@fadeInOut]>
+      <h1 id="donationHeading" class="title">Payment Method</h1>
+      <p class="subtitle">Please select a payment method</p>
+
+      <form>
+        <!-- Cash on Delivery -->
+        <div class="method-block">
+          <div class="method-info">
+            <h3 class="method-title">Cash on Delivery</h3>
+            <p class="method-subtitle">Pay with cash when your order is delivered</p>
+          </div>
+          <label class="method-option">
+            <input type="radio" name="method" value="cod" [(ngModel)]="selectedMethod">
+            <span class="method-label">
+              <img src="assets/images/cash.png" alt="COD" />
+              Cash on Delivery
+            </span>
+          </label>
+        </div>
+
+        <!-- Standalone Wallet Options (Side by Side) -->
+        <!-- Standalone Wallet Options (Side by Side) -->
+        <div class="method-block">
+          <div class="method-info">
+            <h3 class="method-title">Mobile Wallets</h3>
+            <p class="method-subtitle">Select your preferred mobile wallet</p>
+          </div>
+          <div class="wallet-row">
+            <label class="method-option">
+              <input type="radio" name="method" value="bkash" [(ngModel)]="selectedMethod">
+              <span class="method-label">
+                <img src="assets/images/bkash-logo.png" alt="bKash" />
+                <!-- bKash -->
+              </span>
+            </label>
+            <label class="method-option">
+              <input type="radio" name="method" value="nagad" [(ngModel)]="selectedMethod">
+              <span class="method-label">
+                <img src="assets/images/nagad-logo.png" alt="Nagad" />
+                <!-- Nagad -->
+              </span>
+            </label>
+            <label class="method-option">
+              <input type="radio" name="method" value="rocket" [(ngModel)]="selectedMethod">
+              <span class="method-label">
+                <img src="assets/images/rocket-logo.png" alt="Rocket" />
+                <!-- Rocket -->
+              </span>
+            </label>
+          </div>
+        </div>
+
+
+
+        <!-- Debit / Credit Card -->
+        <div class="method-block">
+          <div class="method-info">
+            <h3 class="method-title">Debit / Credit Card</h3>
+            <p class="method-subtitle">Pay securely with Visa or Mastercard</p>
+          </div>
+          <label class="method-option">
+            <input type="radio" name="method" value="card" [(ngModel)]="selectedMethod">
+            <span class="method-label">
+              <!-- Debit / Credit Card -->
+              <img src="assets/images/card.png" alt="Card" />
+            </span>
+          </label>
+        </div>
+      </form>
+
+      <button class="cta" (click)="proceed()" [disabled]="!selectedMethod">
+        Continue
+      </button>
+    </section>
+
+
+    <!-- STEP 2: bKash donation form (existing flow) -->
+    <section *ngIf="showForm && selectedMethod === 'bkash'" class="view view-form" [@fadeInOut]>
+      <h1 class="title">Donate via bKash</h1>
       <p class="subtitle">Support our cause — fast, secure & easy.</p>
 
       <form (ngSubmit)="onSubmit()" #donationForm="ngForm" class="donation-form" autocomplete="off" novalidate>
-
         <label class="field-label">Amount (BDT)</label>
         <div class="input-wrap">
           <input type="number" name="amount" required min="1" [(ngModel)]="amount" #a="ngModel" class="input"
-            placeholder="৳ 500" aria-label="Donation amount in Bangladeshi taka" />
+            placeholder="৳ 500" />
         </div>
         <div class="error" *ngIf="a.invalid && a.touched">Enter a valid amount</div>
 
         <label class="field-label">Phone Number</label>
         <div class="input-wrap">
           <input type="tel" name="senderPhone" required pattern="^01[3-9]\d{8}$" [(ngModel)]="senderPhone" #p="ngModel"
-            class="input" placeholder="01XXXXXXXXX" aria-label="Sender phone number" />
+            class="input" placeholder="01XXXXXXXXX" />
         </div>
         <div class="error" *ngIf="p.invalid && p.touched">Enter a valid Bangladeshi phone</div>
 
         <div class="note">You will be redirected to bKash to complete payment.</div>
+        <div class="donation-form-actions">
+          <button type="button" class="cta" (click)="goBack()">
+            ← Back
+          </button>
 
-        <button type="submit" class="cta" [disabled]="loading || donationForm.invalid" aria-busy="{{loading}}">
-
-          <span *ngIf="!loading">Donate Now</span>
-          <span *ngIf="loading" class="cta-loading">Processing...</span>
-        </button>
-
-        <div class="form-footer">
-          <button type="button" class="link-btn" (click)="fillSample()" *ngIf="!loading">Fill sample</button>
+          <button type="submit" class="cta" [disabled]="loading || donationForm.invalid">
+            <span *ngIf="!loading">Donate Now</span>
+            <span *ngIf="loading" class="cta-loading">Processing...</span>
+          </button>
         </div>
       </form>
     </section>
 
-    <!-- STEP 2: Confirmation / Success -->
+    <!-- STEP 3: Confirmation -->
     <section *ngIf="showConfirmation" class="view view-confirm" [@fadeInOut]>
-      <div class="confirm-illustration" aria-hidden="true">
-        <!-- simple check-circle -->
-        <svg width="84" height="84" viewBox="0 0 84 84" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="42" cy="42" r="40" fill="#F33A6A" />
-          <path d="M28 42l8 8 20-20" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"
-            fill="none" />
-        </svg>
+      <div class="confirm-illustration">
+        ✅
       </div>
-
       <h2 class="confirm-title">Donation Received</h2>
       <p class="confirm-text">
         Thank you! We received <strong>{{ amount | number }} BDT</strong>.
@@ -59,8 +124,8 @@
       <p class="confirm-text">We will contact you at <strong>{{ senderPhone }}</strong>.</p>
 
       <div class="confirm-actions">
-        <button class="cta-secondary" (click)="reset()" type="button">Donate Again</button>
-        <button class="cta-ghost" (click)="close()" type="button">Close</button>
+        <button class="cta-secondary" (click)="reset()">Donate Again</button>
+        <button class="cta-ghost" (click)="close()">Close</button>
       </div>
     </section>
   </div>
