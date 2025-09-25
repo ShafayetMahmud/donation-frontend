@@ -1,0 +1,61 @@
+.contact-container {
+  min-height: 100vh;
+  padding: 2rem;
+  background-color: rgba(179, 224, 153, 1);
+}
+
+.team-section {
+  text-align: center;
+}
+
+.team-title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 2rem;
+  text-align: center;
+  color: rgba(8, 66, 4, 1);
+}
+
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  justify-items: center;
+}
+
+.team-member {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  max-width: 300px;
+  text-align: center;
+}
+
+.member-image img {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-bottom: 1rem;
+  border: 4px solid rgba(8, 66, 4, 0.75);
+}
+
+.team-member h3 {
+  margin-bottom: 0.5rem;
+  font-size: 24px;
+  color: rgba(8, 66, 4, 1);
+}
+
+.info {
+  font-size: 18px;
+  color: rgba(8, 66, 4, 0.8);
+  margin-bottom: 15px;
+}
+
+.contact-info {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: rgba(8, 66, 4, 0.7);
+  line-height: 1.5;
+}
