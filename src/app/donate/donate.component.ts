@@ -24,35 +24,54 @@ import { Router } from '@angular/router';
   ]
 })
 export class DonateComponent {
-
   amount = 0;
   senderPhone = '';
+  selectedMethod: string | null = null;
+  selectedWallet: string | null = null;
+  showForm = false;
   showConfirmation = false;
   loading = false;
 
-  constructor(private donateService: DonateService, private router: Router) {}
+  constructor(private donateService: DonateService, private router: Router) { }
+
+  proceed() {
+    // Show Step 2 if a wallet is selected
+    if (['bkash', 'nagad', 'rocket'].includes(this.selectedMethod!)) {
+      this.showForm = true;
+    } else if (this.selectedMethod === 'cod') {
+      alert('Cash on Delivery selected. Implement flow later.');
+    } else if (this.selectedMethod === 'card') {
+      alert('Card payment selected. Implement flow later.');
+    }
+  }
+
+  goBack() {
+    this.showForm = false;
+    this.selectedWallet = null; // optional: reset wallet selection
+  }
+
+
+
 
   onSubmit() {
     if (!this.amount || !this.senderPhone) return;
-
     this.loading = true;
 
     const payload: DonationPayload = {
-      walletType: 'bkash',
+      walletType: this.selectedWallet || '',
       amount: Number(this.amount),
       senderPhone: this.senderPhone
     };
 
     this.donateService.createDonation(payload).subscribe({
-      next: (res) => {
-        console.log('Payment create response:', res);
+      next: () => {
         setTimeout(() => {
           this.loading = false;
           this.showConfirmation = true;
+          this.showForm = false;
         }, 600);
       },
-      error: (err) => {
-        console.error('Payment error', err);
+      error: () => {
         this.loading = false;
         alert('Payment failed. Try again.');
       }
@@ -62,19 +81,14 @@ export class DonateComponent {
   reset() {
     this.amount = 0;
     this.senderPhone = '';
+    this.selectedMethod = null;
+    this.selectedWallet = null;
+    this.showForm = false;
     this.showConfirmation = false;
   }
 
-  goToHomePage() {
+  close() {
     this.router.navigate(['/']);
   }
-
-  close() {
-    this.goToHomePage();
-  }
-
-  fillSample() {
-    this.amount = 500;
-    this.senderPhone = '01712345678';
-  }
 }
+

@@ -1,19 +1,16 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-
-// Angular Material modules
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
 
 @Component({
-  selector: 'app-home',
+  selector: 'app-mission',
   standalone: true,
-  imports: [MatToolbarModule, MatButtonModule, MatCardModule], // 👈 important
-  templateUrl: './home.html',
-  styleUrls: ['./home.css']
+  imports: [MatToolbarModule, MatButtonModule],
+  templateUrl: './mission.component.html',
+  styleUrls: ['./mission.component.css']
 })
-export class Home {
+export class MissionComponent {
   constructor(private router: Router) {}
 
   onDonateClick() {

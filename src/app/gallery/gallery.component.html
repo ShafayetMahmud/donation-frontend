@@ -1,0 +1,11 @@
+<div class="gallery-container mat-typography">
+  <div class="gallery-carousel mat-elevation-z2">
+    <button class="arrow left" (click)="prevImage()">&#10094;</button>
+    <img
+      class="gallery-image"
+      [src]="images[currentIndex]"
+      alt="Gallery Image"
+    />
+    <button class="arrow right" (click)="nextImage()">&#10095;</button>
+  </div>
+</div>
