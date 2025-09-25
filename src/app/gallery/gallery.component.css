@@ -38,8 +38,9 @@
   border: none;
   padding: 0.5rem 1rem;
   cursor: pointer;
-  border-radius: 4px; /* make it slightly rounded instead of full circle */
+  border-radius: 4px;
   opacity: 0.8;
+  transform: translateY(-50%);
 }
 
 .arrow:hover {
@@ -54,3 +55,38 @@
   right: 10px;
 }
 
+/* Responsive: Tablets */
+@media (max-width: 900px) {
+  .gallery-carousel {
+    max-width: 100%;
+  }
+
+  .gallery-image {
+    height: 400px;
+  }
+
+  .arrow {
+    padding: 0.4rem 0.8rem;
+  }
+
+  .gallery-title {
+    font-size: 1.75rem;
+    margin-bottom: 1.5rem;
+  }
+}
+
+/* Responsive: Phones */
+@media (max-width: 500px) {
+  .gallery-image {
+    height: 250px;
+  }
+
+  .arrow {
+    padding: 0.3rem 0.6rem;
+  }
+
+  .gallery-title {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+}

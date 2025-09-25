@@ -1,3 +1,6 @@
+mission-container{
+  background-color: rgba(8, 66, 4, 0.85);
+}
 /* Navbar */
 .mission-navbar {
   display: flex;
@@ -118,5 +121,46 @@
 
   .hero-left, .hero-right, .mission-content-full {
     margin-top: 32px;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .hero-title {
+    font-size: 36px;
+  }
+
+  .hero-text {
+    font-size: 1.1rem;
+  }
+
+  .hero-quote {
+    font-size: 30px;
+  }
+
+  .hero-list {
+    padding-left: 0.5rem;
+  }
+}
+
+/* Extra small screens (phones) */
+@media (max-width: 500px) {
+  .hero-title {
+    font-size: 28px;
+  }
+
+  .hero-text {
+    font-size: 1rem;
+  }
+
+  .hero-quote {
+    font-size: 24px;
+  }
+
+  .mission-content-full {
+    padding: 20px 10px;
+  }
+
+  .hero-list li {
+    font-size: 0.95rem;
   }
 }
