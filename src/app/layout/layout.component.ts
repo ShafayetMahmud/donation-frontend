@@ -7,7 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
   selector: 'app-layout',
   standalone: true,
   imports: [RouterModule, MatToolbarModule, MatButtonModule],
-  templateUrl: './Layout.component.html',
+  templateUrl: './layout.component.html',
   styleUrls: ['./layout.component.css']
 })
 export class LayoutComponent {}
