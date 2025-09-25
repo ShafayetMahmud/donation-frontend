@@ -22,17 +22,17 @@
 .navbar-right {
   display: flex;
   align-items: center;
-  gap: 20px;          /* spacing between links and donate button */
-  margin-left: auto;   /* push everything to the right */
+  gap: 20px; 
+  margin-left: auto; 
 }
 
 .navbar-links {
   display: flex;
-  gap: 15px;          /* spacing between individual links */
+  gap: 15px; 
 }
 
 .donate-button {
-  margin-left: 20px;  /* optional extra spacing from links */
+  margin-left: 20px; 
 }
 
 .navbar-logo {
@@ -122,11 +122,11 @@
   font-size: 0.95rem;
 }
 
-/* Responsive */
+/* Responsive for tablets */
 @media (max-width: 900px) {
   .homepage-hero {
     grid-template-columns: 1fr;
-    padding: 150px 5%;
+    padding: 120px 5%;
   }
 
   .hero-right {
@@ -136,5 +136,56 @@
   .mission-button, .donate-button {
     width: 100%;
     max-width: 300px;
+  }
+
+  .hero-title {
+    font-size: 50px;
+  }
+
+  .hero-goals,
+  .hero-meaning,
+  .hero-education {
+    font-size: 1.1rem;
+  }
+
+  .hero-quote {
+    font-size: 36px;
+  }
+}
+
+/* Responsive for small phones */
+@media (max-width: 500px) {
+  .homepage-navbar {
+    flex-direction: column;
+    height: auto;
+    padding: 10px 5%;
+  }
+
+  .navbar-links {
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .hero-title {
+    font-size: 36px;
+  }
+
+  .hero-goals,
+  .hero-meaning,
+  .hero-education {
+    font-size: 1rem;
+  }
+
+  .hero-quote {
+    font-size: 28px;
+  }
+
+  .mission-button, .donate-button {
+    max-width: 100%;
+  }
+
+  .homepage-hero {
+    padding: 80px 5% 50px 5%;
   }
 }
