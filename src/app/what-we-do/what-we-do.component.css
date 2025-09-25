@@ -34,10 +34,29 @@
   color: black;
 }
 
-/* Responsive */
+/* Responsive for tablets and small screens */
 @media (max-width: 900px) {
   .homepage-hero {
     grid-template-columns: 1fr;
-    padding: 150px 5%;
+    padding: 100px 5%;
+    gap: 24px;
+  }
+
+  .hero-title {
+    font-size: 50px;
+    line-height: 1.2;
+  }
+}
+
+/* Extra small screens (phones) */
+@media (max-width: 500px) {
+  .homepage-hero {
+    padding: 60px 3%;
+    gap: 16px;
+  }
+
+  .hero-title {
+    font-size: 36px;
+    line-height: 1.2;
   }
 }

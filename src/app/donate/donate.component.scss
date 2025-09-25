@@ -284,3 +284,97 @@
   gap: 12px;
   margin-top: 20px;
 }
+
+/* Responsive for tablets and smaller screens */
+@media (max-width: 900px) {
+  .donation-shell {
+    flex-direction: column;
+    align-items: center;
+    padding: 30px 12px;
+  }
+
+  .donation-card {
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+  }
+
+  .wallet-row {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .wallet-row .method-option {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .donation-form-actions {
+    flex-direction: column;
+    gap: 12px;
+    justify-content: center;
+  }
+}
+
+/* Extra small screens (phones) */
+@media (max-width: 500px) {
+  .donation-shell {
+    padding: 20px 8px;
+  }
+
+  .donation-card {
+    padding: 16px;
+  }
+
+  .title {
+    font-size: 20px;
+  }
+
+  .subtitle {
+    font-size: 13px;
+  }
+
+  .method-info .method-title {
+    font-size: 15px;
+  }
+
+  .method-info .method-subtitle {
+    font-size: 12px;
+  }
+
+  .method-option, .wallet-row .method-option {
+    padding: 10px 12px;
+    gap: 8px;
+  }
+
+  .method-label img {
+    height: 28px;
+  }
+
+  .donation-form .field-label {
+    font-size: 13px;
+  }
+
+  .donation-form .input {
+    font-size: 13px;
+    padding: 10px 12px;
+  }
+
+  .cta {
+    font-size: 15px;
+    padding: 12px;
+  }
+
+  .cta-secondary, .cta-ghost {
+    font-size: 14px;
+    padding: 10px 16px;
+  }
+
+  .confirm-illustration {
+    font-size: 36px;
+  }
+
+  .confirm-title {
+    font-size: 18px;
+  }
+}
