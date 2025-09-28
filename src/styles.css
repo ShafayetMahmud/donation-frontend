@@ -23,6 +23,31 @@ a {
   box-sizing: border-box;
 }
 
+/* Active route link styles */
+.navbar-links a.mat-mdc-button {
+  position: relative;
+  transition: opacity 0.3s ease;
+  opacity: 0.85;
+}
+
+.navbar-links a.mat-mdc-button:hover {
+  opacity: 1;
+}
+
+.navbar-links a.mat-mdc-button.active-link {
+  opacity: 1;
+}
+
+.navbar-links a.mat-mdc-button.active-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: white;
+}
+
 /* Tablet styles */
 @media (max-width: 768px) {
   .homepage-navbar {
@@ -64,14 +89,29 @@ a {
     flex: 0 0 auto;
     text-align: center;
     white-space: nowrap;
-    padding: 4px 12px !important;
+    padding: 4px 20px !important;
     margin: 0 8px !important;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
+    font-weight: 600 !important;
     box-sizing: border-box;
     min-width: 0 !important;
     width: auto !important;
     line-height: 28px !important;
     height: 36px !important;
+    border-radius: 20px !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+    background: linear-gradient(45deg, #FFD700, #FFA500) !important;
+    border: none !important;
+    color: #1a472a !important;
+    letter-spacing: 0.5px !important;
+    text-shadow: 0 1px 1px rgba(255,255,255,0.2) !important;
+  }
+
+  .donate-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2) !important;
+    background: linear-gradient(45deg, #FFA500, #FFD700) !important;
   }
 }
 
@@ -116,13 +156,28 @@ a {
     flex: 0 0 auto;
     text-align: center;
     white-space: nowrap;
-    padding: 4px 10px !important;
+    padding: 4px 16px !important;
     margin: 0 6px !important;
     font-size: 0.85rem;
+    font-weight: 600 !important;
     box-sizing: border-box;
     min-width: 0 !important;
     width: auto !important;
     line-height: 26px !important;
     height: 34px !important;
+    border-radius: 17px !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+    background: linear-gradient(45deg, #FFD700, #FFA500) !important;
+    border: none !important;
+    color: #1a472a !important;
+    letter-spacing: 0.5px !important;
+    text-shadow: 0 1px 1px rgba(255,255,255,0.2) !important;
+  }
+
+  .donate-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2) !important;
+    background: linear-gradient(45deg, #FFA500, #FFD700) !important;
   }
 }
