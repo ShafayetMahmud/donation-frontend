@@ -1,4 +1,6 @@
+import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-gallery',
@@ -38,6 +40,29 @@ export class GalleryComponent {
 
   currentIndex: number = 0;
 
+  constructor(private http: HttpClient) {}
+
+  ngOnInit() {
+    // Load initial images from backend (list blobs)
+    // this.http.get<string[]>('https://yourapi.com/api/gallery/list-blobs')
+    //   .subscribe((urls) => {
+    //     this.images = urls;
+    //   });
+   this.http.get<string[]>(`${environment.apiBaseUrl}/gallery/list-blobs`)
+  .subscribe(
+    (urls) => {
+      // success
+      this.images = [
+        ...this.images, // existing assets
+        ...urls         // blobs
+      ];
+    },
+    (error) => {
+      console.error('Failed to fetch blobs', error);
+    }
+  );
+  }
+
   nextImage() {
     this.currentIndex = (this.currentIndex + 1) % this.images.length;
   }
@@ -46,4 +71,37 @@ export class GalleryComponent {
     this.currentIndex =
       (this.currentIndex - 1 + this.images.length) % this.images.length;
   }
+
+  async onFileSelected(event: any) {
+    const file: File = event.target.files[0];
+    if (file) {
+      // const blobName = Date.now() + '-' + file.name;
+      const blobName = Date.now() + '-' + file.name.replace(/\s+/g, '-');
+
+
+      // Ask .NET backend for a SAS URL
+      // this.http.get<{ url: string }>(`https://yourapi.com/api/gallery/get-sas?blobName=${blobName}`)
+//       this.http.get<{ url: string }>(
+//   `https://localhost:5001/api/gallery/get-sas?blobName=${blobName}`
+// )
+
+this.http.get<{ url: string }>(`${environment.apiBaseUrl}/gallery/get-sas?blobName=${blobName}`)
+
+
+        .subscribe(async (res) => {
+          // Upload directly to Azure Blob Storage
+          await fetch(res.url, {
+            method: 'PUT',
+            headers: { 'x-ms-blob-type': 'BlockBlob' },
+            body: file
+          });
+
+          // Get public URL (strip SAS token)
+          const publicUrl = res.url.split('?')[0];
+          this.images.push(publicUrl);
+          this.currentIndex = this.images.length - 1;
+        });
+    }
+  }
+
 }

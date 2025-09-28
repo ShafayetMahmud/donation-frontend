@@ -8,4 +8,16 @@
     />
     <button class="arrow right" (click)="nextImage()">&#10095;</button>
   </div>
+
+  <!-- Add image button -->
+  <div class="upload-section">
+    <button class="add-btn" (click)="fileInput.click()">+ Add Image</button>
+    <input
+      #fileInput
+      type="file"
+      accept="image/*"
+      (change)="onFileSelected($event)"
+      hidden
+    />
+  </div>
 </div>
