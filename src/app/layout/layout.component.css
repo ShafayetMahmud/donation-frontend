@@ -26,6 +26,35 @@
   margin-left: auto;
 }
 
+.donate-button {
+  flex: 0 0 auto;
+  text-align: center;
+  white-space: nowrap;
+  padding: 4px 20px !important;
+  margin: 0 8px !important;
+  font-size: 0.95rem;
+  font-weight: 600 !important;
+  box-sizing: border-box;
+  min-width: 0 !important;
+  width: auto !important;
+  line-height: 28px !important;
+  height: 36px !important;
+  border-radius: 20px !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+  background: linear-gradient(45deg, #FFD700, #FFA500) !important;
+  border: none !important;
+  color: #1a472a !important;
+  letter-spacing: 0.5px !important;
+  text-shadow: 0 1px 1px rgba(255,255,255,0.2) !important;
+}
+
+.donate-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2) !important;
+  background: linear-gradient(45deg, #FFA500, #FFD700) !important;
+}
+
 .navbar-links {
   display: flex;
   gap: 15px;
