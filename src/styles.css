@@ -22,3 +22,107 @@ a {
 *, *::before, *::after {
   box-sizing: border-box;
 }
+
+/* Tablet styles */
+@media (max-width: 768px) {
+  .homepage-navbar {
+    padding: 0 !important;
+    height: auto !important;
+    overflow-y: hidden;
+  }
+  .navbar-right {
+    display: flex;
+    flex-direction: row !important;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+  }
+  .navbar-right::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
+  .navbar-links {
+    display: flex;
+    flex-direction: row !important;
+    flex-wrap: nowrap;
+    padding: 0 8px;
+  }
+  .navbar-links > a {
+    flex: 0 0 auto;
+    text-align: center;
+    font-size: 0.9rem;
+    padding: 8px 12px;
+    margin: 0 2px;
+    white-space: nowrap;
+    box-sizing: border-box;
+  }
+  .donate-button {
+    flex: 0 0 auto;
+    text-align: center;
+    white-space: nowrap;
+    padding: 4px 12px !important;
+    margin: 0 8px !important;
+    font-size: 0.9rem;
+    box-sizing: border-box;
+    min-width: 0 !important;
+    width: auto !important;
+    line-height: 28px !important;
+    height: 36px !important;
+  }
+}
+
+/* Mobile styles */
+@media (max-width: 600px) {
+  .homepage-navbar {
+    padding: 0 !important;
+    height: auto !important;
+    overflow-y: hidden;
+  }
+  .navbar-right {
+    display: flex;
+    flex-direction: row !important;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+  }
+  .navbar-right::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
+  .navbar-links {
+    display: flex;
+    flex-direction: row !important;
+    flex-wrap: nowrap;
+    padding: 0 6px;
+  }
+  .navbar-links > a {
+    flex: 0 0 auto;
+    text-align: center;
+    font-size: 0.85rem;
+    padding: 8px 10px;
+    margin: 0 1px;
+    white-space: nowrap;
+    box-sizing: border-box;
+  }
+  .donate-button {
+    flex: 0 0 auto;
+    text-align: center;
+    white-space: nowrap;
+    padding: 4px 10px !important;
+    margin: 0 6px !important;
+    font-size: 0.85rem;
+    box-sizing: border-box;
+    min-width: 0 !important;
+    width: auto !important;
+    line-height: 26px !important;
+    height: 34px !important;
+  }
+}
