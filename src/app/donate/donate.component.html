@@ -3,12 +3,31 @@
 
     <!-- STEP 1: Select Payment Method -->
     <section *ngIf="!showForm && !showConfirmation" class="view view-form" [@fadeInOut]>
-      <h1 id="donationHeading" class="title">Payment Method</h1>
+      <h1 id="donationHeading" class="title">Payment Method <span class="info-icon"
+          data-title="Some of the payment methods will be available soon"><mat-icon>info</mat-icon></span></h1>
       <p class="subtitle">Please select a payment method</p>
 
       <form>
+
+        <!-- Zelle to -->
+        <div class="method-block highlighted">
+          <div class="method-info">
+            <span>
+                <img src="assets/images/zelle.png" height="24px" width="24px" alt="Zelle" />
+              </span><h3 class="method-title">Zelle To</h3>
+          </div>
+          <label class="method-option">
+            
+            <p class="contact-info">
+              Email: monjur_99@yahoo.com<br>
+              Phone: (408) 857-2217
+            </p>
+          </label>
+        </div>
+
+
         <!-- Cash on Delivery -->
-        <div class="method-block">
+        <div class="method-block disabled">
           <div class="method-info">
             <h3 class="method-title">Cash on Delivery</h3>
             <p class="method-subtitle">Pay with cash when your order is delivered</p>
@@ -24,7 +43,7 @@
 
         <!-- Standalone Wallet Options (Side by Side) -->
         <!-- Standalone Wallet Options (Side by Side) -->
-        <div class="method-block">
+        <div class="method-block disabled">
           <div class="method-info">
             <h3 class="method-title">Mobile Wallets</h3>
             <p class="method-subtitle">Select your preferred mobile wallet</p>
@@ -57,7 +76,7 @@
 
 
         <!-- Debit / Credit Card -->
-        <div class="method-block">
+        <div class="method-block disabled">
           <div class="method-info">
             <h3 class="method-title">Debit / Credit Card</h3>
             <p class="method-subtitle">Pay securely with Visa or Mastercard</p>
@@ -72,7 +91,7 @@
         </div>
       </form>
 
-      <button class="cta" (click)="proceed()" [disabled]="!selectedMethod">
+      <button *ngIf="selectedMethod" class="cta" (click)="proceed()" [disabled]="!selectedMethod">
         Continue
       </button>
     </section>
