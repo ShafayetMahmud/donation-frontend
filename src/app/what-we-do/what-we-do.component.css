@@ -1,62 +1,98 @@
 /* Container */
+body, html {
+  margin: 0;
+  padding: 0;
+}
+
 .homepage-container {
   width: 100%;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  position: relative;
+  align-items: center;
+  padding: 50px 10%;
+  box-sizing: border-box;
   background-color: rgba(179, 224, 153, 1);
-}
-
-/* Hero Section */
-.homepage-hero {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 32px;
-  align-items: start;
-  padding: 80px 10%;
-  position: relative;
-  z-index: 5;
-}
-
-/* Hero Text */
-.hero-left {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.hero-title {
-  font-weight: 400;
-  font-size: 75px;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  line-height: 1.2;
-  color: black;
+  font-weight: 500;
 }
 
-/* Responsive for tablets and small screens */
+h1 {
+  font-size: 60px;
+  font-weight: 400;
+  text-align: center;
+  margin-bottom: 50px;
+  color: #000;
+}
+
+/* Card Styles */
+.activity-card {
+  display: flex;
+  align-items: flex-start;
+  background-color: #fef9f0; /* soft cream */
+  border-radius: 15px;
+  padding: 25px 30px;
+  margin: 20px 0;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+  max-width: 900px;
+  width: 100%;
+  gap: 20px;
+}
+
+.activity-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+}
+
+.icon {
+  font-size: 32px;
+  margin-top: 4px;
+  color: #2e7d32; /* deep green for icons */
+}
+
+.activity-card p {
+  font-size: 18px;
+  line-height: 1.6;
+  margin: 0;
+  color: #333;
+}
+
+/* Responsive */
 @media (max-width: 900px) {
-  .homepage-hero {
-    grid-template-columns: 1fr;
-    padding: 100px 5%;
-    gap: 24px;
+  h1 {
+    font-size: 48px;
   }
 
-  .hero-title {
-    font-size: 50px;
-    line-height: 1.2;
+  .activity-card {
+    padding: 20px 20px;
+    gap: 15px;
+  }
+
+  .activity-card p {
+    font-size: 16px;
+  }
+
+  .icon {
+    font-size: 28px;
   }
 }
 
-/* Extra small screens (phones) */
 @media (max-width: 500px) {
-  .homepage-hero {
-    padding: 60px 3%;
-    gap: 16px;
+  h1 {
+    font-size: 36px;
   }
 
-  .hero-title {
-    font-size: 36px;
-    line-height: 1.2;
+  .activity-card {
+    padding: 15px 15px;
+    gap: 12px;
+  }
+
+  .activity-card p {
+    font-size: 14px;
+  }
+
+  .icon {
+    font-size: 24px;
   }
 }
