@@ -45,7 +45,29 @@
   margin-bottom: 20px;
 }
 
+.method-block.disabled {
+  opacity: 0.5;             /* faded look */
+  pointer-events: none;     /* block all clicks inside */
+  user-select: none;        /* prevent text selection */
+}
+
+/* Highlighted block (Zelle) */
+.method-block.highlighted {     /* strong border in your brand color */
+  border-radius: 14px;           /* soft background tint */
+}
+
+.method-block.highlighted .contact-info {
+  font-size: 15px;
+  font-weight: 700;
+  color: #222;
+  margin-top: 6px;
+  line-height: 1.5;
+}
+
 .method-info {
+  display: flex;
+  align-items: center;
+  gap: 6px; /* spacing between icon and text */
   margin-bottom: 8px;
 
   .method-title {
@@ -62,6 +84,10 @@
   }
 }
 
+.method-info img {
+  display: block;
+}
+
 .method-option,
 .method-group .method-option {
   display: flex;
@@ -73,11 +99,6 @@
   margin-bottom: 12px;
   cursor: pointer;
   transition: all 0.2s ease;
-
-  &:hover {
-    border-color: #d63384;
-    background: #fff0f6;
-  }
 
   input[type="radio"] {
     margin-right: 8px;
@@ -377,4 +398,42 @@
   .confirm-title {
     font-size: 18px;
   }
+}
+
+.info-icon {
+  display: inline-block;
+  margin-left: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  color: #666;
+  position: relative;
+}
+
+.info-icon:hover {
+  color: #000000; /* brand color on hover */
+  cursor: pointer;
+}
+
+/* Tooltip effect */
+.info-icon::after {
+  content: attr(data-title);
+  position: absolute;
+  bottom: 125%; /* above the icon */
+  left: 50%;
+  transform: translateX(-50%);
+  background: #333;
+  color: #fff;
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  cursor: pointer;
+}
+
+.info-icon:hover::after {
+  opacity: 1;
+  cursor: pointer;
 }

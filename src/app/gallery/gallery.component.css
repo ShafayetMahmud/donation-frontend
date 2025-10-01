@@ -91,6 +91,26 @@
   }
 }
 
+@media (min-width: 1200px) {
+  .gallery-carousel {
+    max-width: 1100px; /* increase width */
+  }
+
+  .gallery-image {
+    height: 650px; /* taller image */
+  }
+}
+
+@media (min-width: 1600px) {
+  .gallery-carousel {
+    max-width: 1400px; /* even bigger */
+  }
+
+  .gallery-image {
+    height: 800px; /* very large frame */
+  }
+}
+
 .upload-section {
   margin-top: 1.5rem;
 }
