@@ -13,6 +13,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HomeComponent } from './home/home.component';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatIconModule } from '@angular/material/icon';
+
 
 const routes: Routes = [
   { path: '', component: DonateComponent }, // root route -> donate
@@ -22,6 +24,7 @@ const routes: Routes = [
 @NgModule({
   declarations: [],
   imports: [
+    MatIconModule,
     MatToolbarModule,   // ✅ needed for <mat-toolbar>
     MatButtonModule,
     BrowserModule,
