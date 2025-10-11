@@ -1,10 +1,6 @@
 export const environment = {
   production: true,
-  apiBaseUrl: 'https://mudhammataan.com/api',
-  allowedFrontendDomains: [
-    'https://mudhammataan.com',
-    'http://mudhammataan.com', // optional, if you still serve HTTP
-    'https://almahadassaboor.mudhammataan.com',
-    'https://mudhammataan-app-bcdwa5debqc4h7dj.northeurope-01.azurewebsites.net'
-  ]
+  // apiBaseUrl: window.location.protocol + '//' + window.location.host + '/api',  // Dynamic based on current domain
+  apiBaseUrl: 'https://mudhammataan-api.azurewebsites.net/api',
+  allowedFrontendDomains: ['*']
 };

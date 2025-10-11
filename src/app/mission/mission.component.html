@@ -1,50 +1,26 @@
 <div class="mission-container mat-typography">
 
-  <!-- Top Row -->
-  <section class="mission-top-row mat-elevation-z2">
+  <!-- Dynamic content from campaign if exists -->
+  <section *ngIf="campaign$ | async as campaign; else defaultMission" class="mission-top-row mat-elevation-z2">
     <div class="hero-left">
-      <h1 class="hero-title">
-        “Al-Mahad As-Sabur” means “The Institute for Allah [the All-Patient]”
-      </h1>
-    </div>
-
-    <div class="hero-right">
-      <p class="hero-text">
-        Our journey to worship Allah is eternal, in this world and in Jannah. Mankind, while on earth, needs to live their lives
-        and establish themselves as the rightful successors of Adam to Muhammad (Sallallahu Alaihi wa Sallam). 
-        The individuals involved in organizing and those benefiting from the institute will work with the sole mission of pleasing Allah Subhanahu wa Ta’ala,
-        following Al-Qur'an and the Sunnah of our beloved Prophet Muhammad (Sallallahu Alaihi wa Sallam).
-      </p>
+      <h1 class="hero-title">{{ campaign.whatFor }}</h1>
     </div>
   </section>
 
-  <!-- Full-width Content -->
-  <section class="mission-content-full">
-    <p class="hero-text">
-      The institute will sustain itself through its own income sources and Zakah from its benefactors,
-      using these resources to provide shelter and education for the needy and orphaned children.
-      Since Zakah will be utilized, expenditures will be strictly within the eight categories where Zakah is permissible.
-    </p>
+  <!-- Fallback/default content for root domain -->
+  <ng-template #defaultMission>
+    <section class="mission-top-row mat-elevation-z2">
+      <div class="hero-left">
+        <h1 class="hero-title">
+          “Al-Mahad As-Sabur” means “The Institute for Allah [the All-Patient]”
+        </h1>
+      </div>
+      <div class="hero-right">
+        <p class="hero-text">
+          Our journey to worship Allah is eternal, in this world and in Jannah...
+        </p>
+      </div>
+    </section>
+  </ng-template>
 
-    <p class="hero-text">
-      Children, typically between the ages of 6-8 years and 16-18 years, will receive education centered around the Quran, including:
-    </p>
-
-    <ul class="hero-list">
-      <li>Al-Qur’an (both memorization as Hafiz and understanding its meanings and Tafsir)</li>
-      <li>As-Sunnah and Fiqh</li>
-      <li>Alongside worldly education: Mathematics, Physics, Chemistry, Biology, etc.</li>
-      <li>Technical training and business management</li>
-    </ul>
-
-    <p class="hero-text">
-      Through this comprehensive education, students will grow into individuals who understand how to please Allah Subhanahu wa Ta’ala,
-      contribute to future generations, and become leaders in society. In Sha Allah, students will be equipped to pursue higher education
-      at any esteemed institution (BUET, RUET, DU, Medical Colleges, Al-Azhar University, Al-Medina University, etc.) or start a business/professional life.
-    </p>
-
-     <blockquote class="hero-quote">
-        “I did not create jinn and humans except to worship Me.” [51:56]
-      </blockquote>
-  </section>
 </div>
