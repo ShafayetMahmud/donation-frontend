@@ -2,6 +2,14 @@
 <!-- Link to external CSS -->
 <!-- Using Font Awesome for icons -->
 
+<div class="homepage-container" *ngIf="campaign$ | async as campaign; else defaultHow">
+    <div class="activity-card">
+      <span class="material-icons icon">card_giftcard</span>
+      <p>{{ campaign.how }}</p>
+    </div>
+  </div>
+
+  <ng-template #defaultHow>
   <div class="homepage-container">
    <div class="activity-card">
       <span class="material-icons icon">person</span>
@@ -68,3 +76,4 @@
       <p>Students sit for exams and most often they end up with good results.</p>
     </div>
   </div>
+  </ng-template>
