@@ -1,6 +1,5 @@
 export const environment = {
   production: true,
-  apiBaseUrl: 'https://mudhammataan.com/api',
-  // No need to list specific domains since we're using wildcard subdomain support
+  apiBaseUrl: window.location.protocol + '//' + window.location.host + '/api',  // Dynamic based on current domain
   allowedFrontendDomains: ['*']
 };
