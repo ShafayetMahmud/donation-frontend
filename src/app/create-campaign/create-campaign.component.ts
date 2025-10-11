@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 import { RouterModule, Router } from '@angular/router';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -56,7 +57,7 @@ export class CreateCampaignComponent implements OnInit {
       payload.subdomain = this.subdomainService.getCurrentCampaign()?.subdomain;
 
       // PUT request to update campaign
-      this.http.put<Campaign>('http://localhost:5126/api/campaign/update', payload)
+  this.http.put<Campaign>(`${environment.apiBaseUrl}/campaign/update`, payload)
         .subscribe({
           next: (updatedCampaign) => {
             // 1️⃣ Update in-memory campaign immediately
@@ -70,7 +71,7 @@ export class CreateCampaignComponent implements OnInit {
 
     } else {
       // POST request to create a new campaign
-      this.http.post<Campaign>('http://localhost:5126/api/campaign/create', payload)
+  this.http.post<Campaign>(`${environment.apiBaseUrl}/campaign/create`, payload)
         .subscribe({
           next: (newCampaign) => {
             alert(`Campaign created! Subdomain: ${newCampaign.subdomain}`);

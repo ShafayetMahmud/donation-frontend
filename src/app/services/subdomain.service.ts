@@ -1,7 +1,9 @@
 // services/subdomain.service.ts
+
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface Campaign {
   id: string;
@@ -19,7 +21,7 @@ export class SubdomainService {
   private _campaign$ = new BehaviorSubject<Campaign | null>(null);
   public campaign$ = this._campaign$.asObservable();
   public subdomain: string | null = null;
-  private readonly baseUrl = 'http://localhost:5126/api/campaign';
+  private readonly baseUrl = `${environment.apiBaseUrl}/campaign`;
 
   constructor(private http: HttpClient) {
     // Read query param for local dev
