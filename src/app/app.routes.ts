@@ -6,6 +6,7 @@ import { WhatWeDoComponent } from './what-we-do/what-we-do.component';
 import { ContactComponent } from './contact/contact.component';
 import { GalleryComponent } from './gallery/gallery.component';
 import { MissionComponent } from './mission/mission.component';
+import { CreateCampaignComponent } from './create-campaign/create-campaign.component';
 
 export const routes: Routes = [
   {
@@ -17,7 +18,8 @@ export const routes: Routes = [
       { path: 'whatwedo', component: WhatWeDoComponent },// What We Do
       { path: 'gallery', component: GalleryComponent },              // placeholder
       { path: 'contact', component: ContactComponent },              // placeholder
-      { path: 'donate', component: DonateComponent }     // donation page
+      { path: 'donate', component: DonateComponent },     // donation page
+      { path: 'create-campaign', component: CreateCampaignComponent }  // <-- new
     ]
   }
 ];

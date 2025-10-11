@@ -1,23 +1,60 @@
 <div class="gallery-container mat-typography">
-  <div class="gallery-carousel mat-elevation-z2">
-    <button class="arrow left" (click)="prevImage()">&#10094;</button>
-    <img
-      class="gallery-image"
-      [src]="images[currentIndex]"
-      alt="Gallery Image"
-    />
-    <button class="arrow right" (click)="nextImage()">&#10095;</button>
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-state">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Loading gallery...</p>
   </div>
 
-  <!-- Add image button -->
-  <div class="upload-section">
-    <button class="add-btn" (click)="fileInput.click()">+ Add Image</button>
-    <input
-      #fileInput
-      type="file"
-      accept="image/*"
-      (change)="onFileSelected($event)"
-      hidden
-    />
+  <!-- Error State -->
+  <div *ngIf="error" class="error-state">
+    <mat-icon color="warn">error</mat-icon>
+    <p>Failed to load gallery images</p>
+    <button mat-raised-button color="primary" (click)="loadImages()">Try Again</button>
   </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && !error && images.length === 0" class="empty-state">
+    <mat-icon>photo_library</mat-icon>
+    <p>No images in the gallery yet</p>
+    <p class="subtitle">Add some photos to get started!</p>
+    <button mat-raised-button color="primary" (click)="fileInput.click()">
+      <mat-icon>add_photo_alternate</mat-icon>
+      Add First Photo
+    </button>
+  </div>
+
+  <!-- Gallery Content -->
+  <ng-container *ngIf="!loading && !error && images.length > 0">
+    <div class="gallery-carousel mat-elevation-z2">
+      <button mat-icon-button class="arrow left" (click)="prevImage()" [disabled]="images.length <= 1">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+      
+      <img
+        class="gallery-image"
+        [src]="images[currentIndex]"
+        alt="Gallery Image"
+      />
+      
+      <button mat-icon-button class="arrow right" (click)="nextImage()" [disabled]="images.length <= 1">
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+    </div>
+
+    <div class="upload-section">
+      <button mat-raised-button color="primary" (click)="fileInput.click()">
+        <mat-icon>add_photo_alternate</mat-icon>
+        Add More Photos
+      </button>
+    </div>
+  </ng-container>
+
+  <!-- File Input (Hidden) -->
+  <input
+    #fileInput
+    type="file"
+    accept="image/*"
+    (change)="onFileSelected($event)"
+    hidden
+  />
 </div>

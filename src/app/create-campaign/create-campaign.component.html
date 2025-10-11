@@ -1,0 +1,61 @@
+<div class="campaign-shell">
+  <div class="campaign-card" role="region" aria-labelledby="campaignHeading">
+
+    <h1 id="campaignHeading" class="title">{{ isEditMode ? 'Edit Campaign' : 'Create a Campaign' }}</h1>
+    <p class="subtitle">
+      {{ isEditMode ? 'Update your campaign details' : 'Fill out the form to start your campaign' }}
+    </p>
+
+    <form [formGroup]="campaignForm" (ngSubmit)="onSubmit()" class="campaign-form">
+
+      <!-- Campaign Name -->
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Campaign Name</mat-label>
+        <input matInput formControlName="name" placeholder="e.g., Save the Forest" required>
+        <mat-error *ngIf="campaignForm.get('name')?.invalid && campaignForm.get('name')?.touched">
+          Name is required
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Why -->
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Why is the Campaign?</mat-label>
+        <textarea matInput formControlName="why" placeholder="Explain the purpose of the campaign"></textarea>
+        <mat-error *ngIf="campaignForm.get('why')?.invalid && campaignForm.get('why')?.touched">
+          This field is required
+        </mat-error>
+      </mat-form-field>
+
+      <!-- What For -->
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>What is the Campaign For?</mat-label>
+        <textarea matInput formControlName="whatFor" placeholder="What are the goals?"></textarea>
+        <mat-error *ngIf="campaignForm.get('whatFor')?.invalid && campaignForm.get('whatFor')?.touched">
+          This field is required
+        </mat-error>
+      </mat-form-field>
+
+      <!-- How -->
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>How the Campaign Functions</mat-label>
+        <textarea matInput formControlName="how" placeholder="Describe the process or plan"></textarea>
+        <mat-error *ngIf="campaignForm.get('how')?.invalid && campaignForm.get('how')?.touched">
+          This field is required
+        </mat-error>
+      </mat-form-field>
+
+      <!-- Contact -->
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Contact Number</mat-label>
+        <input matInput formControlName="contact" placeholder="01XXXXXXXXX">
+        <mat-error *ngIf="campaignForm.get('contact')?.invalid && campaignForm.get('contact')?.touched">
+          Contact number is required
+        </mat-error>
+      </mat-form-field>
+
+      <button mat-raised-button color="primary" type="submit" class="cta">
+        {{ isEditMode ? 'Update Campaign' : 'Generate Campaign' }}
+      </button>
+    </form>
+  </div>
+</div>
