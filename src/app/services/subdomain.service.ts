@@ -29,8 +29,14 @@ export class SubdomainService {
     this.subdomain = urlParams.get('subdomain');
 
     // Or production: read hostname
+    // if (!this.subdomain && window.location.hostname !== 'localhost') {
+    //   this.subdomain = window.location.hostname.split('.')[0];
+    // }
     if (!this.subdomain && window.location.hostname !== 'localhost') {
-      this.subdomain = window.location.hostname.split('.')[0];
+      const parts = window.location.hostname.split('.');
+      if (parts.length > 2) {
+        this.subdomain = parts[0]; // Only set if real subdomain
+      }
     }
 
     if (this.subdomain) {
@@ -64,11 +70,11 @@ export class SubdomainService {
   // }
 
   updateCampaign(updated: Campaign) {
-  return this.http.put<Campaign>(`${this.baseUrl}/update`, updated)
-    .pipe(
-      tap((campaign) => this._campaign$.next(campaign)) // updates BehaviorSubject automatically
-    );
-}
+    return this.http.put<Campaign>(`${this.baseUrl}/update`, updated)
+      .pipe(
+        tap((campaign) => this._campaign$.next(campaign)) // updates BehaviorSubject automatically
+      );
+  }
 
 
   /** Helper: check if current hostname is a subdomain */
@@ -84,8 +90,8 @@ export class SubdomainService {
   // }
 
   /** Refresh the campaign in memory */
-refreshCampaign(campaign: Campaign) {
-  this._campaign$.next(campaign);
-}
+  refreshCampaign(campaign: Campaign) {
+    this._campaign$.next(campaign);
+  }
 
 }
