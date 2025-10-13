@@ -4,6 +4,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { Router } from '@angular/router';
 
 export interface Campaign {
   id: string;
@@ -23,7 +24,7 @@ export class SubdomainService {
   public subdomain: string | null = null;
   private readonly baseUrl = `${environment.apiBaseUrl}/campaign`;
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private router: Router,) {
     // Read query param for local dev
     const urlParams = new URLSearchParams(window.location.search);
     this.subdomain = urlParams.get('subdomain');
@@ -45,14 +46,31 @@ export class SubdomainService {
   }
 
   /** Fetch campaign by subdomain */
+  // private fetchCampaign(subdomain: string) {
+  //   this.http
+  //     .get<Campaign>(`${this.baseUrl}/by-subdomain/${subdomain}`)
+  //     .subscribe({
+  //       next: (campaign) => this._campaign$.next(campaign),
+  //       error: (err) => console.error('Campaign not found', err),
+  //     });
+  // }
+
   private fetchCampaign(subdomain: string) {
-    this.http
-      .get<Campaign>(`${this.baseUrl}/by-subdomain/${subdomain}`)
-      .subscribe({
-        next: (campaign) => this._campaign$.next(campaign),
-        error: (err) => console.error('Campaign not found', err),
-      });
-  }
+  this.http
+    .get<Campaign>(`${this.baseUrl}/by-subdomain/${subdomain}`)
+    .subscribe({
+      next: (campaign) => {
+        this._campaign$.next(campaign);
+      },
+      error: (err) => {
+  console.warn(`No campaign found for subdomain: ${subdomain}`);
+  this._campaign$.next(null);
+  // navigate to a not-found route
+  this.router.navigate(['/not-found']);
+}
+    });
+}
+
 
   /** Expose the latest campaign value */
   getCurrentCampaign(): Campaign | null {
