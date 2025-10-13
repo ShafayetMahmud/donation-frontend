@@ -76,7 +76,8 @@ export class CreateCampaignComponent implements OnInit {
           next: (newCampaign) => {
             alert(`Campaign created! Subdomain: ${newCampaign.subdomain}`);
             this.subdomainService.refreshCampaign(newCampaign);
-            this.router.navigate(['/']);
+            // this.router.navigate(['/']);
+            window.location.href = `https://${newCampaign.subdomain}.mudhammataan.com`;
           },
           error: (err) => console.error('Creation failed', err)
         });
