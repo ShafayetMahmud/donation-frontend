@@ -14,14 +14,15 @@ export const routes: Routes = [
     path: '',
     component: LayoutComponent,
     children: [
-      { path: '', component: HomeComponent },                    // Home page
-      { path: 'mission', component: MissionComponent },              // Mission → reuse Home for now
-      { path: 'whatwedo', component: WhatWeDoComponent },// What We Do
-      { path: 'gallery', component: GalleryComponent },              // placeholder
-      { path: 'contact', component: ContactComponent },              // placeholder
-      { path: 'donate', component: DonateComponent },     // donation page
-      { path: 'create-campaign', component: CreateCampaignComponent },  // <-- new
-      { path: 'not-found', component: NotFoundComponent }
+      { path: '', component: HomeComponent },                    
+      { path: 'mission', component: MissionComponent },              
+      { path: 'whatwedo', component: WhatWeDoComponent },
+      { path: 'gallery', component: GalleryComponent },              
+      { path: 'contact', component: ContactComponent },             
+      { path: 'donate', component: DonateComponent },     
+      { path: 'create-campaign', component: CreateCampaignComponent }
     ]
-  }
+  },
+  { path: 'not-found', component: NotFoundComponent },
+  { path: '**', redirectTo: 'not-found' }
 ];
