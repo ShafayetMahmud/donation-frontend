@@ -1,8 +1,7 @@
 // services/subdomain.service.ts
-
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { BehaviorSubject, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { Router } from '@angular/router';
 
@@ -24,21 +23,24 @@ export class SubdomainService {
   public subdomain: string | null = null;
   private readonly baseUrl = `${environment.apiBaseUrl}/campaign`;
 
-  constructor(private http: HttpClient, private router: Router,) {
-    // Read query param for local dev
+  constructor(private http: HttpClient, private router: Router) {
     const urlParams = new URLSearchParams(window.location.search);
     this.subdomain = urlParams.get('subdomain');
 
-    // Or production: read hostname
-    // if (!this.subdomain && window.location.hostname !== 'localhost') {
-    //   this.subdomain = window.location.hostname.split('.')[0];
-    // }
+    // Only detect subdomain for production
     if (!this.subdomain && window.location.hostname !== 'localhost') {
-      const parts = window.location.hostname.split('.');
-      if (parts.length > 2) {
-        this.subdomain = parts[0]; // Only set if real subdomain
+      const hostname = window.location.hostname;
+
+      // Only treat as subdomain if it's really *.mudhammataan.com
+      if (hostname.endsWith('mudhammataan.com')) {
+        const parts = hostname.split('.');
+        if (parts.length === 3) {
+          this.subdomain = parts[0]; // e.g. wildfirefundraising.mudhammataan.com
+        }
       }
     }
+
+    console.log('Detected subdomain:', this.subdomain);
 
     if (this.subdomain) {
       this.fetchCampaign(this.subdomain);
@@ -46,70 +48,47 @@ export class SubdomainService {
   }
 
   /** Fetch campaign by subdomain */
-  // private fetchCampaign(subdomain: string) {
-  //   this.http
-  //     .get<Campaign>(`${this.baseUrl}/by-subdomain/${subdomain}`)
-  //     .subscribe({
-  //       next: (campaign) => this._campaign$.next(campaign),
-  //       error: (err) => console.error('Campaign not found', err),
-  //     });
-  // }
-
   private fetchCampaign(subdomain: string) {
-  this.http
-    .get<Campaign>(`${this.baseUrl}/by-subdomain/${subdomain}`)
-    .subscribe({
-      next: (campaign) => {
-        this._campaign$.next(campaign);
-      },
-      error: (err) => {
-  console.warn(`No campaign found for subdomain: ${subdomain}`);
-  this._campaign$.next(null);
-  // navigate to a not-found route
-  this.router.navigate(['/not-found']);
-}
-    });
-}
+    this.http
+      .get<Campaign>(`${this.baseUrl}/by-subdomain/${subdomain}`)
+      .subscribe({
+        next: (campaign) => {
+          this._campaign$.next(campaign);
+        },
+        error: (err) => {
+          console.warn(`No campaign found for subdomain: ${subdomain}`);
+          this._campaign$.next(null);
 
+          // if subdomain doesn't exist, redirect or route to not-found
+          if (window.location.hostname.endsWith('mudhammataan.com')) {
+            // Option 1: show in-site 404 page
+            setTimeout(() => this.router.navigate(['/not-found']), 100);
+            // Option 2: uncomment if you prefer redirect instead
+            // window.location.href = 'https://mudhammataan.com';
+          }
+        },
+      });
+  }
 
-  /** Expose the latest campaign value */
+  /** Get current campaign value */
   getCurrentCampaign(): Campaign | null {
     return this._campaign$.getValue();
   }
 
-  /** Update existing campaign AND refresh BehaviorSubject */
-  // updateCampaign(updated: Campaign): Observable<Campaign> {
-  //   return this.http.put<Campaign>(`${this.baseUrl}/${updated.id}`, updated)
-  //     .pipe(
-  //       tap((campaign) => {
-  //         this._campaign$.next(campaign);
-  //       })
-  //     );
-  // }
-
+  /** Update existing campaign */
   updateCampaign(updated: Campaign) {
-    return this.http.put<Campaign>(`${this.baseUrl}/update`, updated)
-      .pipe(
-        tap((campaign) => this._campaign$.next(campaign)) // updates BehaviorSubject automatically
-      );
+    return this.http
+      .put<Campaign>(`${this.baseUrl}/update`, updated)
+      .pipe(tap((campaign) => this._campaign$.next(campaign)));
   }
 
-
-  /** Helper: check if current hostname is a subdomain */
+  /** Is current hostname a subdomain? */
   isSubdomain(): boolean {
     return !!this.subdomain;
   }
 
-  /** Refresh campaign from backend manually */
-  // refreshCampaign() {
-  //   if (this.subdomain) {
-  //     this.fetchCampaign(this.subdomain);
-  //   }
-  // }
-
-  /** Refresh the campaign in memory */
+  /** Refresh campaign in memory */
   refreshCampaign(campaign: Campaign) {
     this._campaign$.next(campaign);
   }
-
 }
