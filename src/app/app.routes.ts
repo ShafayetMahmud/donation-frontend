@@ -14,15 +14,16 @@ export const routes: Routes = [
     path: '',
     component: LayoutComponent,
     children: [
-      { path: '', component: HomeComponent },                    
-      { path: 'mission', component: MissionComponent },              
+      { path: '', component: HomeComponent },
+      { path: 'mission', component: MissionComponent },
       { path: 'whatwedo', component: WhatWeDoComponent },
-      { path: 'gallery', component: GalleryComponent },              
-      { path: 'contact', component: ContactComponent },             
-      { path: 'donate', component: DonateComponent },     
+      { path: 'gallery', component: GalleryComponent },
+      { path: 'contact', component: ContactComponent },
+      { path: 'donate', component: DonateComponent },
       { path: 'create-campaign', component: CreateCampaignComponent }
     ]
   },
+  // ⬇️ Note: not-found is now OUTSIDE layout (no nav bar)
   { path: 'not-found', component: NotFoundComponent },
   { path: '**', redirectTo: 'not-found' }
 ];

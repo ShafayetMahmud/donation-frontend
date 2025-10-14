@@ -1,22 +1,9 @@
-<mat-toolbar color="primary" style="background-color: #2e7d32; color: white;">
-  <span style="font-weight: bold; font-size: 1.25rem;">AL-MAHAD AS-SABOOR</span>
-  
-  <span class="spacer"></span>
-  
-  <nav class="nav-links" style="display: flex; gap: 16px;">
-    <a mat-button routerLink="/" style="color: white;">Mission</a>
-    <a mat-button routerLink="/what-we-do" style="color: white;">What We Do</a>
-    <a mat-button routerLink="/gallery" style="color: white;">Gallery</a>
-    <a mat-button routerLink="/contact" style="color: white;">Contact</a>
-    <a mat-raised-button 
-       routerLink="/donate" 
-       color="accent" 
-       style="background-color: white; color: #2e7d32; font-weight: 600;">
-       Donate
-    </a>
-  </nav>
-</mat-toolbar>
-
-<main style="min-height: calc(100vh - 64px); padding: 24px;">
+<ng-container *ngIf="!(subdomainService.loading$ | async); else loading">
   <router-outlet></router-outlet>
-</main>
+</ng-container>
+
+<ng-template #loading>
+  <div class="loading-screen">
+    <p>Loading campaign...</p>
+  </div>
+</ng-template>
