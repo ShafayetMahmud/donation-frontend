@@ -15,11 +15,11 @@
     <button mat-raised-button color="accent" routerLink="/donate" routerLinkActive="active-link" class="donate-button">
       DONATE
     </button>
-    <button *ngIf="!subdomainService.isSubdomain()" mat-raised-button color="primary" routerLink="/create-campaign">
-      Create a Campaign
+    <button *ngIf="!subdomainService.isSubdomain()" mat-raised-button color="primary" routerLink="/create-campaign" class="donate-button">
+      Create Campaign
     </button>
 
-    <button *ngIf="subdomainService.isSubdomain()" mat-raised-button color="primary" (click)="onEditCampaign()">
+    <button *ngIf="subdomainService.isSubdomain()" mat-raised-button color="primary" (click)="onEditCampaign()" class="donate-button">
       Edit Campaign
     </button>
   </div>

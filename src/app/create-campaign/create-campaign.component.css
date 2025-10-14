@@ -2,53 +2,83 @@
 .campaign-shell {
   display: flex;
   justify-content: center;
-  padding: 2rem;
+  padding: clamp(1rem, 5vw, 2rem);
   background: #f5f7fa;
-  min-height: calc(100vh - 80px); /* adjust if you have a navbar */
+  min-height: calc(100vh - 80px);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* Card container */
 .campaign-card {
   background: #ffffff;
-  padding: 2rem;
-  border-radius: 1rem;
+  padding: clamp(1rem, 4vw, 2rem);
+  border-radius: clamp(0.5rem, 2vw, 1rem);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   max-width: 600px;
   width: 100%;
   display: flex;
   flex-direction: column;
+  margin: 0 auto;
 }
 
 /* Heading */
 .campaign-card .title {
-  font-size: 2rem;
+  font-size: clamp(1.5rem, 5vw, 2rem);
   font-weight: 600;
   margin-bottom: 0.25rem;
   color: #1a1a1a;
+  line-height: 1.2;
+  word-wrap: break-word;
 }
 
 .campaign-card .subtitle {
-  font-size: 1rem;
+  font-size: clamp(0.875rem, 3vw, 1rem);
   color: #555;
-  margin-bottom: 2rem;
+  margin-bottom: clamp(1rem, 4vw, 2rem);
+  line-height: 1.4;
+  word-wrap: break-word;
 }
 
 /* Form spacing */
 .campaign-form .full-width {
   width: 100%;
-  margin-bottom: 1.5rem;
+  margin-bottom: clamp(1rem, 3vw, 1.5rem);
 }
 
 /* Button styling */
 .campaign-form .cta {
   width: 100%;
-  padding: 0.75rem;
-  font-size: 1.1rem;
+  padding: clamp(0.5rem, 2vw, 0.75rem);
+  font-size: clamp(1rem, 3vw, 1.1rem);
   font-weight: 600;
   border-radius: 0.5rem;
-  transition: background 0.3s ease;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* .campaign-form .cta:hover {
-  background: #1565c0;
-} */
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .campaign-shell {
+    padding: 0.5rem;
+  }
+  
+  .campaign-card {
+    padding: 1rem;
+    border-radius: 0.5rem;
+  }
+  
+  mat-form-field {
+    font-size: 14px;
+  }
+  
+  textarea {
+    min-height: 80px;
+  }
+}
