@@ -1,11 +1,69 @@
 <div class="mission-container mat-typography">
 
-  <!-- Dynamic content from campaign if exists -->
-  <section *ngIf="campaign$ | async as campaign; else defaultMission" class="mission-top-row mat-elevation-z2">
-    <div class="hero-left">
-      <h1 class="hero-title">{{ campaign.whatFor }}</h1>
-    </div>
-  </section>
+  <ng-container *ngIf="subdomainService.isSpecialSubdomain(); else checkCampaign">
+    <section class="mission-top-row mat-elevation-z2">
+      <div class="hero-left">
+        <h1 class="hero-title">
+          “Al-Mahad As-Sabur” means “The Institute for Allah [the All-Patient]”
+        </h1>
+      </div>
+      <div class="hero-right">
+        <p class="hero-text">
+          Our journey to worship Allah is eternal, in this world and in Jannah. Mankind, while on earth, needs to live
+          their lives and establish themselves as the rightful successors of Adam to Muhammand (Sallallahu Alaihi wa
+          Sallam). The individuals involved in organizing and those benefiting from the institute will work with the sole
+          mission of pleasing Allah Subhanahu wa Ta’ala, following Al-Qur'an and the Sunnah of our beloved Prophet
+          Muhammad (Sallallahu Alaihi wa Sallam).
+        </p>
+      </div>
+    </section>
+
+    <section class="mission-top-row mat-elevation-z2">
+      <div class="hero-text">The institute will sustain itself through its own income sources and Zakah from its benefactors, using these
+        resources to provide shelter and education for the needy and orphaned children. Since Zakah will be utilized,
+        expenditures will be strictly within the eight categories where Zakah is permissible.</div>
+      <div class="hero-text">Children, typically between the ages of 6-8 years and 16-18 years, will receive education centered around the
+        Quran, including:
+        Al-Qur’an (both memorization as Hafiz and understanding its meanings and Tafsir),
+        As-Sunnah and Fiqh,
+        Alongside worldly education in subjects such as Mathematics, Physics, Chemistry, Biology, and more.
+        They will also learn technical training and business management.</div>
+      <div class="hero-text">Through this comprehensive education, students will grow into individuals who understand how to please Allah
+        Subhanahu wa Ta’ala, contribute to future generations, and become leaders in society.</div>
+      <div class="hero-text">In Sha Allah, the students will be equipped to pursue higher education at any esteemed institution of their
+        choice, whether it be BUET, RUET, DU, Medical Colleges, Al-Azhar University, or Al-Medina University, among
+        others. In Sha Allah, they will be ready to start a new business or engage in professional life, if they choose
+        to do so.</div>
+      <blockquote class="hero-quote">
+        “I did not create jinn and humans except to worship Me.” [51:56]
+      </blockquote>
+    </section>
+  </ng-container>
+
+  <ng-template #checkCampaign>
+    <ng-container *ngIf="campaign$ | async as campaign; else defaultMission">
+    <!-- Dynamic content from campaign if exists -->
+    <section class="mission-top-row mat-elevation-z2">
+      <div class="hero-left">
+        <h1 class="hero-title">{{ campaign.whatFor }}</h1>
+      </div>
+      <div class="hero-right">
+        <p class="hero-text">
+          {{ campaign.how }}
+        </p>
+      </div>
+    </section>
+    <section class="mission-top-row mat-elevation-z2">
+      <div class="hero-text">{{ campaign.descriptionone }}</div>
+      <div class="hero-text">{{ campaign.descriptiontwo }}</div>
+      <div class="hero-text">{{ campaign.descriptionthree }}</div>
+      <div class="hero-text">{{ campaign.descriptionfour }}</div>
+      <blockquote class="hero-quote">
+        {{ campaign.missionquote }}
+      </blockquote>
+    </section>
+    </ng-container>
+  </ng-template>
 
   <!-- Fallback/default content for root domain -->
   <ng-template #defaultMission>
@@ -17,9 +75,33 @@
       </div>
       <div class="hero-right">
         <p class="hero-text">
-          Our journey to worship Allah is eternal, in this world and in Jannah...
+          Our journey to worship Allah is eternal, in this world and in Jannah. Mankind, while on earth, needs to live
+          their lives and establish themselves as the rightful successors of Adam to Muhammand (Sallallahu Alaihi wa
+          Sallam) The individuals involved in organizing and those benefiting from the institute will work with the sole
+          mission of pleasing Allah Subhanahu wa Ta’ala, following Al-Qur'an and the Sunnah of our beloved Prophet
+          Muhammad (Sallallahu Alaihi wa Sallam).
         </p>
       </div>
+    </section>
+    <section class="mission-top-row mat-elevation-z2">
+      <div class="hero-text">The institute will sustain itself through its own income sources and Zakah from its benefactors, using these
+        resources to provide shelter and education for the needy and orphaned children. Since Zakah will be utilized,
+        expenditures will be strictly within the eight categories where Zakah is permissible.</div>
+      <div class="hero-text">Children, typically between the ages of 6-8 years and 16-18 years, will receive education centered around the
+        Quran, including:
+        Al-Qur’an (both memorization as Hafiz and understanding its meanings and Tafsir),
+        As-Sunnah and Fiqh,
+        Alongside worldly education in subjects such as Mathematics, Physics, Chemistry, Biology, and more.
+        They will also learn technical training and business management.</div>
+      <div class="hero-text">Through this comprehensive education, students will grow into individuals who understand how to please Allah
+        Subhanahu wa Ta’ala, contribute to future generations, and become leaders in society.</div>
+      <div class="hero-text">In Sha Allah, the students will be equipped to pursue higher education at any esteemed institution of their
+        choice, whether it be BUET, RUET, DU, Medical Colleges, Al-Azhar University, or Al-Medina University, among
+        others. In Sha Allah, they will be ready to start a new business or engage in professional life, if they chose
+        to do so.</div>
+      <blockquote class="hero-quote">
+        “I did not create jinn and humans except to worship Me.” [51:56]
+      </blockquote>
     </section>
   </ng-template>
 
