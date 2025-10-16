@@ -14,7 +14,7 @@ import { Observable } from 'rxjs';
 export class MissionComponent {
   public campaign$: Observable<Campaign | null>;
 
-  constructor(private subdomainService: SubdomainService, private router: Router) {
+  constructor(public subdomainService: SubdomainService, private router: Router) {
     this.campaign$ = this.subdomainService.campaign$;
   }
 
