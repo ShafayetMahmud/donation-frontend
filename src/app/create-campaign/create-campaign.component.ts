@@ -47,40 +47,75 @@ export class CreateCampaignComponent implements OnInit {
     }
   }
 
+  // onSubmit() {
+  //   const payload: any = { ...this.campaignForm.value };
+  //   if (this.isEditMode && this.existingId) {
+  //     payload.id = this.existingId;
+  //     payload.subdomain = this.subdomainService.getCurrentCampaign()?.subdomain;
+  // this.http.put<Campaign>(`${environment.apiBaseUrl}/campaign/update`, payload)
+  //       .subscribe({
+  //         next: (updatedCampaign) => {
+  //           this.subdomainService.refreshCampaign(updatedCampaign);
+  //           this.router.navigate(['/']);
+  //         },
+  //         error: (err) => console.error('Update failed', err)
+  //       });
+
+  //   } else {
+  // this.http.post<Campaign>(`${environment.apiBaseUrl}/campaign/create`, payload)
+  //       .subscribe({
+  //         next: (newCampaign) => {
+  //           alert(`Campaign created! Subdomain: ${newCampaign.subdomain}`);
+  //           this.subdomainService.refreshCampaign(newCampaign);
+  //           window.location.href = `https://${newCampaign.subdomain}.mudhammataan.com`;
+  //         },
+  //         error: (err) => console.error('Creation failed', err)
+  //       });
+  //   }
+  // }
   onSubmit() {
-    const payload: any = { ...this.campaignForm.value };
+  const payload: any = { ...this.campaignForm.value };
+  const currentCampaign = this.subdomainService.getCurrentCampaign();
+  const isFallback = currentCampaign && currentCampaign.id === currentCampaign.subdomain;
 
-    if (this.isEditMode && this.existingId) {
-      payload.id = this.existingId;
+  if (this.isEditMode && this.existingId) {
+    payload.id = this.existingId;
+    payload.subdomain = currentCampaign?.subdomain;
 
-      // Preserve subdomain for edits
-      payload.subdomain = this.subdomainService.getCurrentCampaign()?.subdomain;
+    if (isFallback) {
+      // 🔹 Local fallback edit (no API call)
+      this.subdomainService.refreshCampaign(payload);
 
-      // PUT request to update campaign
-  this.http.put<Campaign>(`${environment.apiBaseUrl}/campaign/update`, payload)
-        .subscribe({
-          next: (updatedCampaign) => {
-            // 1️⃣ Update in-memory campaign immediately
-            this.subdomainService.refreshCampaign(updatedCampaign);
+      // ✅ Persist in localStorage for reloads
+      localStorage.setItem(`campaign_${payload.subdomain}`, JSON.stringify(payload));
 
-            // 2️⃣ Redirect to homepage (or wherever you want)
-            this.router.navigate(['/']);
-          },
-          error: (err) => console.error('Update failed', err)
-        });
-
-    } else {
-      // POST request to create a new campaign
-  this.http.post<Campaign>(`${environment.apiBaseUrl}/campaign/create`, payload)
-        .subscribe({
-          next: (newCampaign) => {
-            alert(`Campaign created! Subdomain: ${newCampaign.subdomain}`);
-            this.subdomainService.refreshCampaign(newCampaign);
-            // this.router.navigate(['/']);
-            window.location.href = `https://${newCampaign.subdomain}.mudhammataan.com`;
-          },
-          error: (err) => console.error('Creation failed', err)
-        });
+      alert('Updated local fallback campaign (not saved to backend).');
+      this.router.navigate(['/']);
+      return;
     }
+
+    // 🟢 Regular API update
+    this.http.put<Campaign>(`${environment.apiBaseUrl}/campaign/update`, payload)
+      .subscribe({
+        next: (updatedCampaign) => {
+          this.subdomainService.refreshCampaign(updatedCampaign);
+          this.router.navigate(['/']);
+        },
+        error: (err) => console.error('Update failed', err)
+      });
+
+  } else {
+    // 🟢 Create new campaign
+    this.http.post<Campaign>(`${environment.apiBaseUrl}/campaign/create`, payload)
+      .subscribe({
+        next: (newCampaign) => {
+          alert(`Campaign created! Subdomain: ${newCampaign.subdomain}`);
+          this.subdomainService.refreshCampaign(newCampaign);
+          window.location.href = `https://${newCampaign.subdomain}.mudhammataan.com`;
+        },
+        error: (err) => console.error('Creation failed', err)
+      });
   }
+}
+
 }
