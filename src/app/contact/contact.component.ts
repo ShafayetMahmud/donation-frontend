@@ -16,7 +16,7 @@ import { Observable } from 'rxjs';
 export class ContactComponent {
   public campaign$: Observable<Campaign | null>;
 
-  constructor(private subdomainService: SubdomainService, private router: Router) {
+  constructor(public subdomainService: SubdomainService, private router: Router) {
     this.campaign$ = this.subdomainService.campaign$;
   }
 }

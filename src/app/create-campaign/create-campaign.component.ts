@@ -33,7 +33,15 @@ export class CreateCampaignComponent implements OnInit {
     this.campaignForm = this.fb.group({
       name: ['', Validators.required],
       why: ['', Validators.required],
+      goals: ['', Validators.required],
+      method: ['', Validators.required],
+      quote: ['', Validators.required],
+      missionquote: ['', Validators.required],
       whatFor: ['', Validators.required],
+      descriptionone: ['', Validators.required],
+      descriptiontwo: ['', Validators.required],
+      descriptionthree: ['', Validators.required],
+      descriptionfour: ['', Validators.required],
       how: ['', Validators.required],
       contact: ['', Validators.required],
     });

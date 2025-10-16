@@ -8,8 +8,16 @@ export interface Campaign {
   id: string;
   name: string;
   why: string;
+  goals: string;
+  method: string;
+  quote: string;
+  missionquote: string;
   whatFor: string;
   how: string;
+  descriptionone: string;
+  descriptiontwo: string;
+  descriptionthree: string;
+  descriptionfour: string;
   contact: string;
   gallery: string[];
   subdomain: string;
@@ -31,8 +39,16 @@ export class SubdomainService {
     {
       id: 'almahadassaboor',
       name: 'Al-Mahad As-Saboor',
-      why: 'To promote knowledge, compassion, and community growth.',
+      why: '‘Al Mahad As Sabur’ means ‘The Institute for Allah’. Sabur refers to The All-Patient, one of the beautiful names of Allah Subhanahu wa Ta’ala.',
+      goals: 'provide shelter and education to orphans, spread Islamic upbringing to grow a better society, get rid of the divide between Islamic track and mainstream track',
+      method: 'Children who are orphaned or needy, typically 6–18 years old, will receive a Quran-centered education. Through this education, students grow into individuals who understand how to please Allah and become leaders in society.',
+      quote: '"I did not create jinn and humans except to worship Me.[51:56]"',
+      missionquote: '"I did not create jinn and humans except to worship Me.[51:56]"',
       whatFor: 'Educational and spiritual initiatives under Al-Mahad As-Saboor.',
+      descriptionone: 'The institute will sustain itself through its own income sources and Zakah from its benefactors, using these resources to provide shelter and education for the needy and orphaned children. Since Zakah will be utilized, expenditures will be strictly within the eight categories where Zakah is permissible.',
+      descriptiontwo: 'Children, typically between the ages of 6-8 years and 16-18 years, will receive education centered around the Quran, including: Al-Qur’an (both memorization as Hafiz and understanding its meanings and Tafsir), As-Sunnah and Fiqh, Alongside worldly education in subjects such as Mathematics, Physics, Chemistry, Biology, and more. They will also learn technical training and business management.',
+      descriptionthree: 'Through this comprehensive education, students will grow into individuals who understand how to please Allah Subhanahu wa Ta’ala, contribute to future generations, and become leaders in society.',
+      descriptionfour: 'In Sha Allah, the students will be equipped to pursue higher education at any esteemed institution of their choice, whether it be BUET, RUET, DU, Medical Colleges, Al-Azhar University, or Al-Medina University, among others. In Sha Allah, they will be ready to start a new business or engage in professional life, if they choose to do so.',
       how: 'Through teachings, programs, and charitable activities.',
       contact: '01700000000',
       gallery: [],
@@ -94,5 +110,9 @@ export class SubdomainService {
 
   isSubdomain(): boolean {
     return !!this.subdomain;
+  }
+
+  isSpecialSubdomain(): boolean {
+    return this.subdomain?.toLowerCase() === 'almahadassaboor';
   }
 }
