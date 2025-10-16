@@ -26,6 +26,20 @@ export class SubdomainService {
   public subdomain: string | null = null;
   private readonly baseUrl = `${environment.apiBaseUrl}/campaign`;
 
+  //Add fallback campaign(s)
+  private fallbackCampaigns: Campaign[] = [
+    {
+      id: 'almahadassaboor',
+      name: 'Al-Mahad As-Saboor',
+      why: 'To promote knowledge, compassion, and community growth.',
+      whatFor: 'Educational and spiritual initiatives under Al-Mahad As-Saboor.',
+      how: 'Through teachings, programs, and charitable activities.',
+      contact: '01700000000',
+      gallery: [],
+      subdomain: 'almahadassaboor'
+    }
+  ];
+
   constructor(private http: HttpClient, private router: Router) {
     const urlParams = new URLSearchParams(window.location.search);
     this.subdomain = urlParams.get('subdomain');
@@ -50,10 +64,22 @@ export class SubdomainService {
         this._campaign$.next(campaign);
         this._loading$.next(false);
       },
+      // error: () => {
+      //   this._campaign$.next(null);
+      //   this._loading$.next(false);
+      //   this.router.navigate(['/not-found']);
+      // }
       error: () => {
-        this._campaign$.next(null);
-        this._loading$.next(false);
-        this.router.navigate(['/not-found']);
+        // 🟢 If campaign not found in backend, check fallback list
+        const fallback = this.fallbackCampaigns.find(c => c.subdomain === subdomain);
+        if (fallback) {
+          this._campaign$.next(fallback);
+          this._loading$.next(false);
+        } else {
+          this._campaign$.next(null);
+          this._loading$.next(false);
+          this.router.navigate(['/not-found']);
+        }
       }
     });
   }
