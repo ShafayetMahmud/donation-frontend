@@ -8,11 +8,22 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { SubdomainService, Campaign } from '../services/subdomain.service';
+import { InteractionType } from '@azure/msal-browser';
+import { AuthService } from '../services/auth.service';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthInterceptor } from '../services/auth.interceptor';
 
 @Component({
   selector: 'app-create-campaign',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterModule, MatInputModule, MatFormFieldModule, MatButtonModule],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
+    }
+  ],
   templateUrl: './create-campaign.component.html',
   styleUrls: ['./create-campaign.component.css']
 })
@@ -26,8 +37,9 @@ export class CreateCampaignComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private http: HttpClient,
-    private subdomainService: SubdomainService
-  ) {}
+    private subdomainService: SubdomainService,
+    private authService: AuthService
+  ) { }
 
   ngOnInit() {
     this.campaignForm = this.fb.group({
@@ -82,48 +94,88 @@ export class CreateCampaignComponent implements OnInit {
   //   }
   // }
   onSubmit() {
-  const payload: any = { ...this.campaignForm.value };
-  const currentCampaign = this.subdomainService.getCurrentCampaign();
-  const isFallback = currentCampaign && currentCampaign.id === currentCampaign.subdomain;
+    const payload: any = { ...this.campaignForm.value };
+    const currentCampaign = this.subdomainService.getCurrentCampaign();
+    const isFallback = currentCampaign && currentCampaign.id === currentCampaign.subdomain;
 
-  if (this.isEditMode && this.existingId) {
-    payload.id = this.existingId;
-    payload.subdomain = currentCampaign?.subdomain;
+    if (this.isEditMode && this.existingId) {
+      payload.id = this.existingId;
+      payload.subdomain = currentCampaign?.subdomain;
 
-    if (isFallback) {
-      // 🔹 Local fallback edit (no API call)
-      this.subdomainService.refreshCampaign(payload);
+      if (isFallback) {
+        // 🔹 Local fallback edit (no API call)
+        this.subdomainService.refreshCampaign(payload);
 
-      // ✅ Persist in localStorage for reloads
-      localStorage.setItem(`campaign_${payload.subdomain}`, JSON.stringify(payload));
+        // ✅ Persist in localStorage for reloads
+        localStorage.setItem(`campaign_${payload.subdomain}`, JSON.stringify(payload));
 
-      alert('Updated local fallback campaign (not saved to backend).');
-      this.router.navigate(['/']);
-      return;
+        alert('Updated local fallback campaign (not saved to backend).');
+        this.router.navigate(['/']);
+        return;
+      }
+
+      // 🟢 Regular API update
+      this.http.put<Campaign>(`${environment.apiBaseUrl}/campaign/update`, payload)
+        .subscribe({
+          next: (updatedCampaign) => {
+            this.subdomainService.refreshCampaign(updatedCampaign);
+            this.router.navigate(['/']);
+          },
+          error: (err) => console.error('Update failed', err)
+        });
+
+    } else {
+      // 🟢 Create new campaign
+      this.http.post<Campaign>(`${environment.apiBaseUrl}/campaign/create`, payload, { withCredentials: true })
+        .subscribe({
+          next: (newCampaign) => {
+            alert(`Campaign created! Subdomain: ${newCampaign.subdomain}`);
+            this.subdomainService.refreshCampaign(newCampaign);
+            window.location.href = `https://${newCampaign.subdomain}.mudhammataan.com`;
+          },
+          error: (err) => console.error('Creation failed', err)
+        });
     }
+  }
 
-    // 🟢 Regular API update
-    this.http.put<Campaign>(`${environment.apiBaseUrl}/campaign/update`, payload)
-      .subscribe({
-        next: (updatedCampaign) => {
-          this.subdomainService.refreshCampaign(updatedCampaign);
-          this.router.navigate(['/']);
-        },
-        error: (err) => console.error('Update failed', err)
-      });
+  login() {
+    this.authService.loginPopup()
+      .then(result => {
+        console.log('MSAL login successful', result);
 
-  } else {
-    // 🟢 Create new campaign
-    this.http.post<Campaign>(`${environment.apiBaseUrl}/campaign/create`, payload)
-      .subscribe({
-        next: (newCampaign) => {
-          alert(`Campaign created! Subdomain: ${newCampaign.subdomain}`);
-          this.subdomainService.refreshCampaign(newCampaign);
-          window.location.href = `https://${newCampaign.subdomain}.mudhammataan.com`;
-        },
-        error: (err) => console.error('Creation failed', err)
+        // Send ID token to backend to create session cookie
+        return this.authService.exchangeIdToken(result.idToken);
+      })
+      .then((res: any) => {
+        console.log('Backend session cookie set!', res);
+
+        // Optionally show a success message
+        alert('Login successful! You can now create or update campaigns.');
+
+        // Optionally, enable your form buttons here
+        // this.isLoggedIn = true;
+      })
+      .catch(err => {
+        console.error('Login failed', err);
+        alert('Login failed. Check console for details.');
       });
   }
+
+  logout() {
+  this.authService.logout()
+    .then(() => {
+      alert('Logged out successfully!');
+
+      // Optionally reload the page to clear UI state
+      // location.reload();
+    })
+    .catch(err => {
+      console.error('Logout failed', err);
+      alert('Logout failed. Check console.');
+    });
 }
+
+
+
 
 }

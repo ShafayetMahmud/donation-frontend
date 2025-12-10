@@ -4,7 +4,9 @@ import { CommonModule, AsyncPipe } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { Router, RouterModule } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
+import { AuthService } from '../services/auth.service';
+import { MatMenuModule } from '@angular/material/menu';
 
 @Component({
   selector: 'app-layout',
@@ -13,6 +15,7 @@ import { Observable } from 'rxjs';
     RouterModule,
     MatToolbarModule,
     MatButtonModule,
+    MatMenuModule,
     CommonModule,
     AsyncPipe
   ],
@@ -21,13 +24,60 @@ import { Observable } from 'rxjs';
 })
 export class LayoutComponent {
   public campaign$: Observable<Campaign | null>;
+  public user$: Observable<{ email: string; name: string; role: string } | null>;
 
   constructor(
     public subdomainService: SubdomainService,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) {
     this.campaign$ = this.subdomainService.campaign$;
+    this.user$ = this.authService.user$;
   }
+
+  async onLogin() {
+  // 1️⃣ Trigger MSAL login popup
+  const result = await this.authService.loginPopup();
+
+  // 2️⃣ Exchange ID token with backend to get role
+  const resp: any = await this.authService.exchangeIdToken(result.idToken);
+
+  // 3️⃣ Update user observable with email, name, and role
+  const user = {
+    email: resp.email || result.account?.username || '',
+    name: resp.name || result.account?.name || result.account?.username || '',
+    role: resp.role || 'AppUser'
+  };
+
+  // 4️⃣ Set current user in AuthService
+  this.authService.setCurrentUser(user);
+}
+
+
+  async onCreateCampaignClick() {
+  let user = await this.authService.getCurrentUser(); // Returns user or null
+  if (!user) {
+    // Trigger login popup
+    const result = await this.authService.loginPopup();
+    
+    // Exchange token with backend to get role
+    const resp: any = await this.authService.exchangeIdToken(result.idToken);
+
+    // Update user observable with role
+    user = {
+      email: resp.email || result.account?.username || '',
+      name: resp.name || result.account?.name || result.account?.username || '',
+      role: resp.role || 'AppUser'
+    };
+
+    // Set the user in AuthService
+    this.authService.setCurrentUser(user); // We'll add this function next
+  }
+
+  // Now navigate to create campaign
+  this.router.navigate(['/create-campaign']);
+}
+
 
   onEditCampaign() {
     // Get the latest campaign directly (not observable)
@@ -39,5 +89,10 @@ export class LayoutComponent {
     } else {
       console.warn('No campaign found to edit.');
     }
+  }
+
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/']);
   }
 }
