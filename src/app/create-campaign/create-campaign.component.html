@@ -74,7 +74,8 @@
       <!-- Mission Quote -->
       <mat-form-field appearance="fill" class="full-width">
         <mat-label>What is the mission quote of this Campaign?</mat-label>
-        <textarea matInput formControlName="missionquote" placeholder="Mention the mission quote of the campaign"></textarea>
+        <textarea matInput formControlName="missionquote"
+          placeholder="Mention the mission quote of the campaign"></textarea>
         <mat-error *ngIf="campaignForm.get('missionquote')?.invalid && campaignForm.get('missionquote')?.touched">
           This field is required
         </mat-error>
@@ -101,8 +102,10 @@
       <!-- Description 3 -->
       <mat-form-field appearance="fill" class="full-width">
         <mat-label>Description line 3</mat-label>
-        <textarea matInput formControlName="descriptionthree" placeholder="Description line 3 of the mission"></textarea>
-        <mat-error *ngIf="campaignForm.get('descriptionthree')?.invalid && campaignForm.get('descriptionthree')?.touched">
+        <textarea matInput formControlName="descriptionthree"
+          placeholder="Description line 3 of the mission"></textarea>
+        <mat-error
+          *ngIf="campaignForm.get('descriptionthree')?.invalid && campaignForm.get('descriptionthree')?.touched">
           This field is required
         </mat-error>
       </mat-form-field>
@@ -124,7 +127,6 @@
           Contact number is required
         </mat-error>
       </mat-form-field>
-
       <button mat-raised-button color="primary" type="submit" class="cta">
         {{ isEditMode ? 'Update Campaign' : 'Generate Campaign' }}
       </button>
