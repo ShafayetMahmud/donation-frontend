@@ -25,7 +25,11 @@
       Create Campaign
     </button>
 
-    <button *ngIf="!(user$ | async)" mat-raised-button color="primary" (click)="onLogin()" class="donate-button">
+    <!-- <button *ngIf="!(user$ | async)" mat-raised-button color="primary" (click)="onLogin()" class="donate-button">
+      Login
+    </button> -->
+
+    <button mat-raised-button color="primary" (click)="onLogin()" class="donate-button">
       Login
     </button>
 
