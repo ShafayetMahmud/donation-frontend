@@ -17,8 +17,11 @@ export class GalleryComponent implements OnInit {
   images: string[] = [];
   loading = true;
   error = false;
-  currentIndex = 0;
   subdomain: string | null = null;
+
+  // Lightbox
+  lightboxOpen = false;
+  selectedIndex = 0;
 
   constructor(
     private galleryService: GalleryService,
@@ -34,43 +37,48 @@ export class GalleryComponent implements OnInit {
   loadImages() {
     this.loading = true;
     this.error = false;
-    
+
     this.galleryService.getGalleryImages(this.subdomain).subscribe({
-      next: (urls) => {
+      next: urls => {
         this.images = urls;
         this.loading = false;
       },
-      error: (err) => {
-        console.error('Failed to fetch images', err);
+      error: () => {
         this.error = true;
         this.loading = false;
       }
     });
   }
 
-  nextImage() {
-    if (this.images.length) {
-      this.currentIndex = (this.currentIndex + 1) % this.images.length;
-    }
+  /** Lightbox controls */
+  openLightbox(index: number) {
+    this.selectedIndex = index;
+    this.lightboxOpen = true;
+    document.body.style.overflow = 'hidden';
   }
 
-  prevImage() {
-    if (this.images.length) {
-      this.currentIndex = (this.currentIndex - 1 + this.images.length) % this.images.length;
-    }
+  closeLightbox() {
+    this.lightboxOpen = false;
+    document.body.style.overflow = '';
+  }
+
+  next() {
+    this.selectedIndex = (this.selectedIndex + 1) % this.images.length;
+  }
+
+  prev() {
+    this.selectedIndex =
+      (this.selectedIndex - 1 + this.images.length) % this.images.length;
   }
 
   async onFileSelected(event: any) {
     const file: File = event.target.files[0];
-    if (file) {
-      try {
-        await this.galleryService.uploadImage(this.subdomain, file).toPromise();
-        this.loadImages(); // Refresh the gallery
-      } catch (err) {
-        console.error('Failed to upload image', err);
-        // TODO: Show error message to user
-      }
-    }
-  }
+    if (!file) return;
 
+    await this.galleryService.uploadImage(this.subdomain, file).toPromise();
+    this.loadImages();
+  }
 }
+
+
+
