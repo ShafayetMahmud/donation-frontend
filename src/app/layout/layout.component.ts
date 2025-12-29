@@ -55,24 +55,24 @@ export class LayoutComponent {
 
 
   async onCreateCampaignClick() {
-  let user = await this.authService.getCurrentUser(); // Returns user or null
-  if (!user) {
-    // Trigger login popup
-    const result = await this.authService.loginPopup();
+  // let user = await this.authService.getCurrentUser(); // Returns user or null
+  // if (!user) {
+  //   Trigger login popup
+  //   const result = await this.authService.loginPopup();
     
-    // Exchange token with backend to get role
-    const resp: any = await this.authService.exchangeIdToken(result.idToken);
+  //   Exchange token with backend to get role
+  //   const resp: any = await this.authService.exchangeIdToken(result.idToken);
 
-    // Update user observable with role
-    user = {
-      email: resp.email || result.account?.username || '',
-      name: resp.name || result.account?.name || result.account?.username || '',
-      role: resp.role || 'AppUser'
-    };
+  //   Update user observable with role
+  //   user = {
+  //     email: resp.email || result.account?.username || '',
+  //     name: resp.name || result.account?.name || result.account?.username || '',
+  //     role: resp.role || 'AppUser'
+  //   };
 
-    // Set the user in AuthService
-    this.authService.setCurrentUser(user); // We'll add this function next
-  }
+  //   Set the user in AuthService
+  //   this.authService.setCurrentUser(user); // We'll add this function next
+  // }
 
   // Now navigate to create campaign
   this.router.navigate(['/create-campaign']);
