@@ -1,6 +1,17 @@
-<ng-container *ngIf="!loading && !error && images.length > 0">
+<!-- Gallery wrapper (always visible when not loading/error) -->
+<ng-container *ngIf="!loading && !error">
+
   <div class="gallery-wrapper">
-    <div class="photo-grid">
+
+    <!-- EMPTY STATE -->
+    <div *ngIf="images.length === 0" class="empty-state">
+      <mat-icon>photo_library</mat-icon>
+      <p>No photos yet</p>
+      <p class="subtitle">Upload the first photo to get started</p>
+    </div>
+
+    <!-- GRID -->
+    <div class="photo-grid" *ngIf="images.length > 0">
       <div
         class="photo-tile"
         *ngFor="let img of images; let i = index"
@@ -10,20 +21,22 @@
       </div>
     </div>
 
+    <!-- UPLOAD BUTTON (ALWAYS VISIBLE) -->
     <div class="upload-section">
       <button mat-raised-button color="primary" (click)="fileInput.click()">
         <mat-icon>add_photo_alternate</mat-icon>
-        Add photos
+        <span>Add photos</span>
       </button>
     </div>
+
   </div>
 </ng-container>
 
+<!-- LIGHTBOX -->
 <div class="lightbox" *ngIf="lightboxOpen">
   <div class="backdrop" (click)="closeLightbox()"></div>
 
   <button class="close-btn" (click)="closeLightbox()">✕</button>
-
   <button class="nav left" (click)="prev()">‹</button>
 
   <img
@@ -42,5 +55,3 @@
   (change)="onFileSelected($event)"
   hidden
 />
-
-
