@@ -143,3 +143,23 @@
   margin: 32px 0 16px;
 }
 
+.empty-state {
+  text-align: center;
+  margin: 64px 0;
+  color: #9aa0a6;
+}
+
+.empty-state mat-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 12px;
+  color: #9aa0a6;
+}
+
+.empty-state .subtitle {
+  font-size: 14px;
+  color: #80868b;
+}
+
+
