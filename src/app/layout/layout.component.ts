@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { LanguageService } from '../services/language.service';
 import { SubdomainService, Campaign } from '../services/subdomain.service';
 import { CommonModule, AsyncPipe } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -7,6 +8,7 @@ import { Router, RouterModule } from '@angular/router';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 import { MatMenuModule } from '@angular/material/menu';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-layout',
@@ -17,7 +19,8 @@ import { MatMenuModule } from '@angular/material/menu';
     MatButtonModule,
     MatMenuModule,
     CommonModule,
-    AsyncPipe
+    AsyncPipe,
+    TranslateModule
   ],
   templateUrl: './layout.component.html',
   styleUrls: ['./layout.component.css']
@@ -27,6 +30,7 @@ export class LayoutComponent {
   public user$: Observable<{ email: string; name: string; role: string } | null>;
 
   constructor(
+    public langService: LanguageService,
     public subdomainService: SubdomainService,
     private router: Router,
     private authService: AuthService
