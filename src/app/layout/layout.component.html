@@ -25,17 +25,17 @@
       {{ 'LAYOUT.CREATE_CAMPAIGN' | translate }}
     </button>
 
-    <!-- <button *ngIf="!(user$ | async)" mat-raised-button color="primary" (click)="onLogin()" class="donate-button">
-      Login
-    </button> -->
+    <button *ngIf="!(user$ | async)" mat-raised-button color="primary" (click)="onLogin()" class="donate-button">
+      {{ 'LAYOUT.LOGIN' | translate }}
+    </button>
 
     <button style="position: fixed; top: 15px; right: 15px" (click)="langService.toggleLanguage()">
       {{ langService.currentLang === 'en' ? 'বাংলা' : 'EN' }}
     </button>
 
-    <button mat-raised-button color="primary" (click)="onLogin()" class="donate-button">
+    <!-- <button mat-raised-button color="primary" (click)="onLogin()" class="donate-button">
       {{ 'LAYOUT.LOGIN' | translate }}
-    </button>
+    </button> -->
 
     <div *ngIf="user$ | async as user" class="user-dropdown">
       <button mat-button [matMenuTriggerFor]="menu">
