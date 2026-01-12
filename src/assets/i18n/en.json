@@ -1,4 +1,5 @@
 {
+  "LAYOUT": {
   "LOGIN": "Login",
   "LOGOUT": "Logout",
   "CREATE_CAMPAIGN": "Create Campaign",
@@ -7,4 +8,20 @@
   "GALLERY": "Gallery",
   "OWR_WORK": "Our Work",
   "MISSION": "Mission"
+  },
+  "HOME": {
+    "WHY": "Why Al-Mahad As-Saboor"
+  },
+  "MISSION": {
+    "THE_INSTITUTE": "The institute will sustain itself through its own income sources and Zakah from its benefactors, using these resources to provide shelter and education for the needy and orphaned children. Since Zakah will be utilized, expenditures will be strictly within the eight categories where Zakah is permissible."
+  },
+  "OUR_WORK": {
+    "THE_DIRECTOR": "The director and teacher admit students together. We observe that directly online."
+  },
+  "GALLERY": {
+    "ADD_PHOTOS": "Add Photos"
+  },
+  "CONTACT": {
+    "MEET_OUR_TEAM": "Meet Our Team"
+  }
 }
