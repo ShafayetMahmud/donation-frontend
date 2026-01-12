@@ -5,11 +5,13 @@ import { SubdomainService } from '../services/subdomain.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { TranslateModule } from '@ngx-translate/core';
+import { LanguageService } from '../services/language.service';
 
 @Component({
   selector: 'app-gallery',
   standalone: true,
-  imports: [CommonModule, MatProgressSpinnerModule, MatButtonModule, MatIconModule],
+  imports: [CommonModule, MatProgressSpinnerModule, MatButtonModule, MatIconModule, TranslateModule],
   templateUrl: './gallery.component.html',
   styleUrls: ['./gallery.component.css']
 })
@@ -25,7 +27,8 @@ export class GalleryComponent implements OnInit {
 
   constructor(
     private galleryService: GalleryService,
-    private subdomainService: SubdomainService
+    private subdomainService: SubdomainService,
+    public langService: LanguageService
   ) {
     this.subdomain = this.subdomainService.subdomain || null;
   }

@@ -44,17 +44,17 @@ export class LayoutComponent {
   const result = await this.authService.loginPopup();
 
   // 2️⃣ Exchange ID token with backend to get role
-  const resp: any = await this.authService.exchangeIdToken(result.idToken);
+  // const resp: any = await this.authService.exchangeIdToken(result.idToken);
 
   // 3️⃣ Update user observable with email, name, and role
-  const user = {
-    email: resp.email || result.account?.username || '',
-    name: resp.name || result.account?.name || result.account?.username || '',
-    role: resp.role || 'AppUser'
-  };
+  // const user = {
+  //   email: resp.email || result.account?.username || '',
+  //   name: resp.name || result.account?.name || result.account?.username || '',
+  //   role: resp.role || 'AppUser'
+  // };
 
   // 4️⃣ Set current user in AuthService
-  this.authService.setCurrentUser(user);
+  // this.authService.setCurrentUser(user);
 }
 
 

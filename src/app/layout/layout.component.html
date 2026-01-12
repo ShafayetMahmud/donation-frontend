@@ -7,14 +7,14 @@
 
   <div class="navbar-right">
     <nav class="navbar-links">
-      <a mat-button routerLink="/mission" routerLinkActive="active-link">{{ 'MISSION' | translate }}</a>
-      <a mat-button routerLink="/whatwedo" routerLinkActive="active-link">{{ 'OWR_WORK' | translate }}</a>
-      <a mat-button routerLink="/gallery" routerLinkActive="active-link">{{ 'GALLERY' | translate }}</a>
-      <a mat-button routerLink="/contact" routerLinkActive="active-link">{{ 'CONTACT' | translate }}</a>
+      <a mat-button routerLink="/mission" routerLinkActive="active-link">{{ 'LAYOUT.MISSION' | translate }}</a>
+      <a mat-button routerLink="/whatwedo" routerLinkActive="active-link">{{ 'LAYOUT.OWR_WORK' | translate }}</a>
+      <a mat-button routerLink="/gallery" routerLinkActive="active-link">{{ 'LAYOUT.GALLERY' | translate }}</a>
+      <a mat-button routerLink="/contact" routerLinkActive="active-link">{{ 'LAYOUT.CONTACT' | translate }}</a>
     </nav>
 
     <button mat-raised-button color="accent" routerLink="/donate" routerLinkActive="active-link" class="donate-button">
-      {{ 'DONATE' | translate }}
+      {{ 'LAYOUT.DONATE' | translate }}
     </button>
     <!-- <button *ngIf="!subdomainService.isSubdomain()" mat-raised-button color="primary" routerLink="/create-campaign" class="donate-button">
       Create Campaign
@@ -22,7 +22,7 @@
 
     <button *ngIf="!subdomainService.isSubdomain()" mat-raised-button color="primary" class="donate-button"
       (click)="onCreateCampaignClick()">
-      {{ 'CREATE_CAMPAIGN' | translate }}
+      {{ 'LAYOUT.CREATE_CAMPAIGN' | translate }}
     </button>
 
     <!-- <button *ngIf="!(user$ | async)" mat-raised-button color="primary" (click)="onLogin()" class="donate-button">
@@ -34,7 +34,7 @@
     </button>
 
     <button mat-raised-button color="primary" (click)="onLogin()" class="donate-button">
-      {{ 'LOGIN' | translate }}
+      {{ 'LAYOUT.LOGIN' | translate }}
     </button>
 
     <div *ngIf="user$ | async as user" class="user-dropdown">

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { PublicClientApplication, AuthenticationResult, PopupRequest } from '@azure/msal-browser';
 import { environment } from '../../environments/environment';
 import { HttpClient } from '@angular/common/http';
@@ -18,10 +18,11 @@ export class AuthService {
 
   private pca: PublicClientApplication;
   private initialized = false;
-  private _userSubject = new BehaviorSubject<AppUser | null>(null);
+  // private _userSubject = new BehaviorSubject<AppUser | null>(null);
+  private _userSubject = new BehaviorSubject<{ email: string; name: string; role: string } | null>(null);
   public user$ = this._userSubject.asObservable();
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private ngZone: NgZone) {
     this.pca = new PublicClientApplication({
       auth: {
         clientId: environment.msalConfig.auth.clientId,
@@ -51,21 +52,38 @@ export class AuthService {
     return this._userSubject.value;
   }
 
+  // async loginPopup(): Promise<AuthenticationResult> {
+  //   await this.ensureInitialized();
+  //   const result = await this.pca.loginPopup({ scopes: ['openid', 'profile', 'email'] });
+
+    
+  //   const resp: any = await this.exchangeIdToken(result.idToken);
+
+  //   this._userSubject.next({
+  //     email: resp.email || result.account?.username || '',
+  //     name: resp.name || result.account?.name || result.account?.username || '',
+  //     role: resp.role || 'AppUser'
+  //   });
+
+  //   return result;
+  // }
+
   async loginPopup(): Promise<AuthenticationResult> {
     await this.ensureInitialized();
     const result = await this.pca.loginPopup({ scopes: ['openid', 'profile', 'email'] });
-
-    // Exchange token with backend to get role
     const resp: any = await this.exchangeIdToken(result.idToken);
 
-    this._userSubject.next({
-      email: resp.email || result.account?.username || '',
-      name: resp.name || result.account?.name || result.account?.username || '',
-      role: resp.role || 'AppUser'
+    // ⚡ Force change detection
+    this.ngZone.run(() => {
+      this._userSubject.next({
+        email: resp.email || result.account?.username || '',
+        name: resp.name || result.account?.name || result.account?.username || '',
+        role: resp.role || 'AppUser'
+      });
     });
 
     return result;
-  }
+}
 
 
 
