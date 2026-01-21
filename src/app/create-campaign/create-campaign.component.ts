@@ -12,11 +12,13 @@ import { InteractionType } from '@azure/msal-browser';
 import { AuthService } from '../services/auth.service';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from '../services/auth.interceptor';
+import { TranslateModule } from '@ngx-translate/core';
+import { LanguageService } from '../services/language.service';
 
 @Component({
   selector: 'app-create-campaign',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, MatInputModule, MatFormFieldModule, MatButtonModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, MatInputModule, MatFormFieldModule, MatButtonModule,TranslateModule],
   providers: [
     {
       provide: HTTP_INTERCEPTORS,
@@ -38,7 +40,8 @@ export class CreateCampaignComponent implements OnInit {
     private router: Router,
     private http: HttpClient,
     private subdomainService: SubdomainService,
-    private authService: AuthService
+    private authService: AuthService,
+    public langService: LanguageService
   ) { }
 
   ngOnInit() {
