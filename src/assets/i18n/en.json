@@ -10,18 +10,69 @@
   "MISSION": "Mission"
   },
   "HOME": {
-    "WHY": "Why Al-Mahad As-Saboor"
+    "WHY": "Why Al-Mahad As-Saboor",
+    "GOALS": "Our main goals",
+    "SHELTER": "provide shelter and education to orphans",
+    "SOCIETY": "spread Islamic upbringing to grow a better society",
+    "DIVIDE": "get rid of the divide between Islamic track and mainstream track",
+    "STATEMENT": "Mission Statement",
+    "ALMAHAD": "‘Al Mahad As Sabur’",
+    "MEANS": "means",
+    "INSTITUTE": "‘The Institute for Allah’",
+    "SABUR": "Sabur",
+    "REFERS": "refers to",
+    "PATIENT": "The All-Patient",
+    "NAMES": "one of the beautiful names of Allah Subhanahu wa Ta’ala.",
+    "CHILDREN": "Children who are orphaned or needy, typically 6–18 years old, will receive a Quran-centered education.Through this education, students grow into individuals who understand how to please Allah and become leaders in society.",
+    "JINN": "“I did not create jinn and humans except to worship Me.”[51:56]"
   },
   "MISSION": {
-    "THE_INSTITUTE": "The institute will sustain itself through its own income sources and Zakah from its benefactors, using these resources to provide shelter and education for the needy and orphaned children. Since Zakah will be utilized, expenditures will be strictly within the eight categories where Zakah is permissible."
+    "AL_MAHAD": "“Al-Mahad As-Sabur” means “The Institute for Allah [the All-Patient]”",
+    "JOURNEY": "Our journey to worship Allah is eternal, in this world and in Jannah. Mankind, while on earth, needs to live their lives and establish themselves as the rightful successors of Adam to Muhammand (Sallallahu Alaihi wa Sallam) The individuals involved in organizing and those benefiting from the institute will work with the sole mission of pleasing Allah Subhanahu wa Ta’ala, following Al-Qur'an and the Sunnah of our beloved Prophet Muhammad (Sallallahu Alaihi wa Sallam).",
+    "THE_INSTITUTE": "The institute will sustain itself through its own income sources and Zakah from its benefactors, using these resources to provide shelter and education for the needy and orphaned children. Since Zakah will be utilized, expenditures will be strictly within the eight categories where Zakah is permissible.",
+    "HAFIZ": "Children, typically between the ages of 6-8 years and 16-18 years, will receive education centered around the Quran, including:Al-Qur’an (both memorization as Hafiz and understanding its meanings and Tafsir),As-Sunnah and Fiqh,Alongside worldly education in subjects such as Mathematics, Physics, Chemistry, Biology, and more.They will also learn technical training and business management.",
+    "FUTURE": "Through this comprehensive education, students will grow into individuals who understand how to please Allah Subhanahu wa Ta’ala, contribute to future generations, and become leaders in society.",
+    "HIGHER_EDU": "In Sha Allah, the students will be equipped to pursue higher education at any esteemed institution of their choice, whether it be BUET, RUET, DU, Medical Colleges, Al-Azhar University, or Al-Medina University, among others. In Sha Allah, they will be ready to start a new business or engage in professional life, if they chose to do so.",
+    "JINN_2": "“I did not create jinn and humans except to worship Me.”[51:56]"
   },
   "OUR_WORK": {
-    "THE_DIRECTOR": "The director and teacher admit students together. We observe that directly online."
+    "THE_DIRECTOR": "The director and teacher admit students together. We observe that directly online.",
+    "THE_PARENTS": "After admission, the parents and the seniors pay visit.",
+    "THE_TEACHER": "After admission, the teacher teaches the lessons and the students learn happily.",
+    "METHODOLOGIES": "Primarily, we teach through projectors with modern methodologies.",
+    "FESTIVALS": "During festivals like Eid, gifts like Punjabis, Pants, Shoes, Caps are presented among the students.",
+    "SURAHS": "Students learn the Surahs from the 30th para.",
+    "MEANING": "Alongside the recitation of the Quran and Hifz, the students learn the meaning of some important Arabic words by heart.",
+    "DAILY_DUA": "Students also learn the necessary daily Duas every day.",
+    "TAJWEED": "Students are learning the methods of Tajweed to ensure correctness and proper pronunciation of the Quran.",
+    "PROPHET": "Students gather knowledge about the life of the Prophet Muhammad (S.A.W).",
+    "BN_EN_MATH": "Students learn Bangla, English, and Mathematics.",
+    "ACCESSORIES": "Students are provided with notebooks, pens, pencils, erasers, and other necessary accessories to continue learning without disruption.",
+    "RESULTS": "Students sit for exams and most often they end up with good results."
   },
   "GALLERY": {
     "ADD_PHOTOS": "Add Photos"
   },
   "CONTACT": {
     "MEET_OUR_TEAM": "Meet Our Team"
+  },
+  "CAMPAIGN":{
+    "CREATE": "Create Campaign",
+    "FORM": "Fill out the form to start your campaign",
+    "NAME": "Campaign Name",
+    "WHY": "Why is the Campaign?",
+    "GOALS": "What are the goals of this Campaign?",
+    "METHODS": "What are the methods of this Campaign?",
+    "QUOTE": "What is the quote of this Campaign?",
+    "FOR": "What is the Campaign For?",
+    "FUNCTIONS": "How the Campaign Functions",
+    "MISSION_QUOTE": "What is the mission quote of this Campaign?",
+    "LINE_1": "Description line 1",
+    "LINE_2": "Description line 2",
+    "LINE_3": "Description line 3",
+    "LINE_4": "Description line 4",
+    "CONTACT": "Contact Number",
+    "GENERATE": "Generate Campaign"
+
   }
 }

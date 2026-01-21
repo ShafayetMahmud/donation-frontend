@@ -1,16 +1,16 @@
 <div class="campaign-shell">
   <div class="campaign-card" role="region" aria-labelledby="campaignHeading">
 
-    <h1 id="campaignHeading" class="title">{{ isEditMode ? 'Edit Campaign' : 'Create Campaign' }}</h1>
+    <h1 id="campaignHeading" class="title">{{ 'CAMPAIGN.CREATE' | translate }} </h1>
     <p class="subtitle">
-      {{ isEditMode ? 'Update your campaign details' : 'Fill out the form to start your campaign' }}
+      {{ 'CAMPAIGN.FORM' | translate }} 
     </p>
 
     <form [formGroup]="campaignForm" (ngSubmit)="onSubmit()" class="campaign-form">
 
       <!-- Campaign Name -->
       <mat-form-field appearance="fill" class="full-width">
-        <mat-label>Campaign Name</mat-label>
+        <mat-label>{{ 'CAMPAIGN.NAME' | translate }}</mat-label>
         <input matInput formControlName="name" placeholder="e.g., Save the Forest" required>
         <mat-error *ngIf="campaignForm.get('name')?.invalid && campaignForm.get('name')?.touched">
           Name is required
@@ -19,7 +19,7 @@
 
       <!-- Why -->
       <mat-form-field appearance="fill" class="full-width">
-        <mat-label>Why is the Campaign?</mat-label>
+        <mat-label>{{ 'CAMPAIGN.WHY' | translate }}</mat-label>
         <textarea matInput formControlName="why" placeholder="Explain the purpose of the campaign"></textarea>
         <mat-error *ngIf="campaignForm.get('why')?.invalid && campaignForm.get('why')?.touched">
           This field is required
@@ -28,7 +28,7 @@
 
       <!-- Goals -->
       <mat-form-field appearance="fill" class="full-width">
-        <mat-label>What are the goals of this Campaign?</mat-label>
+        <mat-label>{{ 'CAMPAIGN.GOALS' | translate }}</mat-label>
         <textarea matInput formControlName="goals" placeholder="Mention the goals of the campaign"></textarea>
         <mat-error *ngIf="campaignForm.get('goals')?.invalid && campaignForm.get('goals')?.touched">
           This field is required
@@ -37,7 +37,7 @@
 
       <!-- methods -->
       <mat-form-field appearance="fill" class="full-width">
-        <mat-label>What are the methods of this Campaign?</mat-label>
+        <mat-label>{{ 'CAMPAIGN.METHODS' | translate }}</mat-label>
         <textarea matInput formControlName="method" placeholder="Mention the method of the campaign"></textarea>
         <mat-error *ngIf="campaignForm.get('method')?.invalid && campaignForm.get('method')?.touched">
           This field is required
@@ -46,7 +46,7 @@
 
       <!-- Quote -->
       <mat-form-field appearance="fill" class="full-width">
-        <mat-label>What is the quote of this Campaign?</mat-label>
+        <mat-label>{{ 'CAMPAIGN.QUOTE' | translate }}</mat-label>
         <textarea matInput formControlName="quote" placeholder="Mention the quote of the campaign"></textarea>
         <mat-error *ngIf="campaignForm.get('quote')?.invalid && campaignForm.get('quote')?.touched">
           This field is required
@@ -55,7 +55,7 @@
 
       <!-- What For -->
       <mat-form-field appearance="fill" class="full-width">
-        <mat-label>What is the Campaign For?</mat-label>
+        <mat-label>{{ 'CAMPAIGN.FOR' | translate }}</mat-label>
         <textarea matInput formControlName="whatFor" placeholder="What is the campaign for?"></textarea>
         <mat-error *ngIf="campaignForm.get('whatFor')?.invalid && campaignForm.get('whatFor')?.touched">
           This field is required
@@ -64,7 +64,7 @@
 
       <!-- How -->
       <mat-form-field appearance="fill" class="full-width">
-        <mat-label>How the Campaign Functions</mat-label>
+        <mat-label>{{ 'CAMPAIGN.FUNCTIONS' | translate }}</mat-label>
         <textarea matInput formControlName="how" placeholder="Describe the process or plan"></textarea>
         <mat-error *ngIf="campaignForm.get('how')?.invalid && campaignForm.get('how')?.touched">
           This field is required
@@ -73,7 +73,7 @@
 
       <!-- Mission Quote -->
       <mat-form-field appearance="fill" class="full-width">
-        <mat-label>What is the mission quote of this Campaign?</mat-label>
+        <mat-label>{{ 'CAMPAIGN.MISSION_QUOTE' | translate }}</mat-label>
         <textarea matInput formControlName="missionquote"
           placeholder="Mention the mission quote of the campaign"></textarea>
         <mat-error *ngIf="campaignForm.get('missionquote')?.invalid && campaignForm.get('missionquote')?.touched">
@@ -83,7 +83,7 @@
 
       <!-- Description 1 -->
       <mat-form-field appearance="fill" class="full-width">
-        <mat-label>Description line 1</mat-label>
+        <mat-label>{{ 'CAMPAIGN.LINE_1' | translate }}</mat-label>
         <textarea matInput formControlName="descriptionone" placeholder="Description line 1 of the mission"></textarea>
         <mat-error *ngIf="campaignForm.get('descriptionone')?.invalid && campaignForm.get('descriptionone')?.touched">
           This field is required
@@ -92,7 +92,7 @@
 
       <!-- Description 2 -->
       <mat-form-field appearance="fill" class="full-width">
-        <mat-label>Description line 2</mat-label>
+        <mat-label>{{ 'CAMPAIGN.LINE_2' | translate }}</mat-label>
         <textarea matInput formControlName="descriptiontwo" placeholder="Description line 2 of the mission"></textarea>
         <mat-error *ngIf="campaignForm.get('descriptiontwo')?.invalid && campaignForm.get('descriptiontwo')?.touched">
           This field is required
@@ -101,7 +101,7 @@
 
       <!-- Description 3 -->
       <mat-form-field appearance="fill" class="full-width">
-        <mat-label>Description line 3</mat-label>
+        <mat-label>{{ 'CAMPAIGN.LINE_3' | translate }}</mat-label>
         <textarea matInput formControlName="descriptionthree"
           placeholder="Description line 3 of the mission"></textarea>
         <mat-error
@@ -112,7 +112,7 @@
 
       <!-- Description 1 -->
       <mat-form-field appearance="fill" class="full-width">
-        <mat-label>Description line 4</mat-label>
+        <mat-label>{{ 'CAMPAIGN.LINE_4' | translate }}</mat-label>
         <textarea matInput formControlName="descriptionfour" placeholder="Description line 4 of the mission"></textarea>
         <mat-error *ngIf="campaignForm.get('descriptionfour')?.invalid && campaignForm.get('descriptionfour')?.touched">
           This field is required
@@ -121,14 +121,14 @@
 
       <!-- Contact -->
       <mat-form-field appearance="fill" class="full-width">
-        <mat-label>Contact Number</mat-label>
+        <mat-label>{{ 'CAMPAIGN.CONTACT' | translate }}</mat-label>
         <input matInput formControlName="contact" placeholder="01XXXXXXXXX">
         <mat-error *ngIf="campaignForm.get('contact')?.invalid && campaignForm.get('contact')?.touched">
           Contact number is required
         </mat-error>
       </mat-form-field>
       <button mat-raised-button color="primary" type="submit" class="cta">
-        {{ isEditMode ? 'Update Campaign' : 'Generate Campaign' }}
+        {{ 'CAMPAIGN.GENERATE' | translate }}
       </button>
     </form>
   </div>
