@@ -89,7 +89,7 @@ export class AuthService {
 
   async exchangeIdToken(idToken: string) {
     const resp: any = await firstValueFrom(
-      this.http.post(`${environment.apiBaseUrl}/auth/exchange-token`, { idToken }, { withCredentials: true })
+      this.http.post(`${environment.apiBaseUrl}/auth/authentication`, { idToken }, { withCredentials: true })
     );
     // Store role if needed: resp.role
     return resp;
