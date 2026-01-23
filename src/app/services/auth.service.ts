@@ -88,33 +88,43 @@ export class AuthService {
 
 
   async exchangeIdToken(idToken: string) {
-    const resp: any = await firstValueFrom(
-      this.http.post(`${environment.apiBaseUrl}/auth/authentication`, { idToken }, { withCredentials: true })
-    );
-    // Store role if needed: resp.role
-    return resp;
-  }
+  const resp: any = await firstValueFrom(
+    this.http.post(
+      `${environment.apiBaseUrl}/auth/authentication`,
+      { idToken }
+    )
+  );
+
+  // ✅ STORE TOKENS
+  localStorage.setItem('access_token', resp.accessToken);
+  localStorage.setItem('refresh_token', resp.refreshToken);
+
+  return resp;
+}
+
 
   async logout() {
-    // 🔹 1. Call backend logout to clear your app session cookie
-    try {
-      await firstValueFrom(
-        this.http.post(
-          `${environment.apiBaseUrl}/auth/logout`,
-          {},
-          { withCredentials: true }
-        )
-      );
-      console.log('Backend logout successful.');
-    } catch (err) {
-      console.warn('Backend logout failed (maybe already logged out).');
-    }
+  try {
+    await firstValueFrom(
+      this.http.post(`${environment.apiBaseUrl}/auth/logout`, {
+        refreshToken: localStorage.getItem('refresh_token')
+      })
+    );
+  } catch {}
 
-    // 🔹 2. Clear frontend user state
-    this._userSubject.next(null);
-    // 🔹 3. Do NOT call MSAL logout
-    // The Microsoft session remains active, so no popup appears
-  }
+  this.clearTokens();
+  this._userSubject.next(null);
+}
+
+
+  getAccessToken(): string | null {
+  return localStorage.getItem('access_token');
+}
+
+clearTokens() {
+  localStorage.removeItem('access_token');
+  localStorage.removeItem('refresh_token');
+}
 
 
 }
