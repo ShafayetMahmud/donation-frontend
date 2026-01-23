@@ -21,6 +21,7 @@ export class AuthInterceptor implements HttpInterceptor {
           }
         })
       : req;
+    console.log('INTERCEPTOR TOKEN:', token);
 
     return next.handle(authReq).pipe(
       catchError((err: HttpErrorResponse) => {
@@ -30,6 +31,7 @@ export class AuthInterceptor implements HttpInterceptor {
         return throwError(() => err);
       })
     );
+    
   }
 }
 

@@ -55,14 +55,7 @@ const routes: Routes = [
         useClass: TranslateHttpLoader
       }
     })
-  ],
-  providers: [
-  {
-    provide: HTTP_INTERCEPTORS,
-    useClass: AuthInterceptor,
-    multi: true
-  }
-]
+  ]
 
   // bootstrap: [AppComponent]
 })
