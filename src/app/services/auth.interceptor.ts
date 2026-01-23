@@ -6,15 +6,28 @@ import { catchError } from 'rxjs/operators';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    return next.handle(req).pipe(
+
+  intercept(req: HttpRequest<any>, next: HttpHandler) {
+    const token = localStorage.getItem('access_token');
+
+    let authReq = req;
+
+    if (token) {
+      authReq = req.clone({
+        setHeaders: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+    }
+
+    return next.handle(authReq).pipe(
       catchError((err: HttpErrorResponse) => {
         if (err.status === 401) {
-          alert('You are not authenticated. Please log in.');
-          // Optional: redirect to login page
+          console.warn('Unauthorized – token expired or missing');
         }
         return throwError(() => err);
       })
     );
   }
 }
+

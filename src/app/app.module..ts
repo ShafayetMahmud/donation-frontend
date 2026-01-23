@@ -18,6 +18,7 @@ import { HttpClient } from '@angular/common/http';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { inject } from '@angular/core';
+import { AuthInterceptor } from './services/auth.interceptor';
 
 
 const routes: Routes = [
@@ -55,6 +56,14 @@ const routes: Routes = [
       }
     })
   ],
+  providers: [
+  {
+    provide: HTTP_INTERCEPTORS,
+    useClass: AuthInterceptor,
+    multi: true
+  }
+]
+
   // bootstrap: [AppComponent]
 })
 export class AppModule {}
