@@ -36,6 +36,34 @@ export class AuthService {
     });
   }
 
+  async storeAccessToken() {
+  await this.ensureInitialized();
+
+  const account =
+    this.pca.getActiveAccount() ??
+    this.pca.getAllAccounts()[0];
+
+  if (!account) {
+    console.warn('No MSAL account found');
+    return;
+  }
+
+  this.pca.setActiveAccount(account);
+
+  try {
+    const result = await this.pca.acquireTokenSilent({
+      scopes: ['api://mudhammataan-api/access_as_user'],
+      account
+    });
+
+    localStorage.setItem('access_token', result.accessToken);
+    console.log('JWT stored');
+  } catch (err) {
+    console.error('Token acquisition failed', err);
+  }
+}
+
+
   setCurrentUser(user: { email: string; name: string; role: string }) {
     this._userSubject.next(user);
   }
