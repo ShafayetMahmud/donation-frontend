@@ -1,7 +1,7 @@
-// src/app/services/campaign.service.ts
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { AuthService } from './auth.service';
 
 export interface Campaign {
   id: string;
@@ -18,9 +18,25 @@ export interface Campaign {
   providedIn: 'root'
 })
 export class CampaignService {
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private auth: AuthService
+  ) {}
+
+  // getCampaignBySubdomain(subdomain: string): Observable<Campaign> {
+  //   return this.http.get<Campaign>(`/api/campaign/by-subdomain/${subdomain}`);
+  // }
 
   getCampaignBySubdomain(subdomain: string): Observable<Campaign> {
-    return this.http.get<Campaign>(`/api/campaign/by-subdomain/${subdomain}`);
+    const token = this.auth.getAccessToken();
+
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+
+    return this.http.get<Campaign>(
+      `/api/campaign/by-subdomain/${subdomain}`,
+      { headers }
+    );
   }
 }
