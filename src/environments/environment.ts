@@ -17,6 +17,7 @@ export const environment = {
     }
   },
   loginRequest: {
-    scopes: ['User.Read']
-  }
+  scopes: ['api://99d94324-a3a8-4ace-b4b2-0ae093229b62/access_as_user']
+}
+
 };

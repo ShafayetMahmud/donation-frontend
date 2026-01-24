@@ -66,55 +66,48 @@ export class AuthService {
   }
 
 
-  async loginPopup(): Promise<AuthenticationResult> {
+//   async loginPopup(): Promise<AuthenticationResult> {
+//   await this.ensureInitialized();
+
+//   const result = await this.pca.loginPopup({
+//     scopes: ['openid', 'profile', 'email']
+//   });
+
+//   this.ngZone.run(() => {
+//   this._userSubject.next({
+//     email: result.account?.username ?? '',
+//     name: result.account?.name ?? result.account?.username ?? '',
+//     role: 'AppUser'
+//   });
+
+//   localStorage.setItem('access_token', result.accessToken);
+// });
+
+
+//   return result;
+// }
+
+async loginPopup(): Promise<AuthenticationResult> {
   await this.ensureInitialized();
 
   const result = await this.pca.loginPopup({
-    scopes: ['openid', 'profile', 'email']
+    scopes: ['api://99d94324-a3a8-4ace-b4b2-0ae093229b62/access_as_user'] // ✅ change this
   });
-
-  // const resp: any = await this.exchangeIdToken(result.idToken);
-
-  // this.ngZone.run(() => {
-  //   this._userSubject.next({
-  //     email: resp.email ?? result.account?.username ?? '',
-  //     name: resp.name ?? result.account?.name ?? '',
-  //     role: resp.role ?? 'AppUser'
-  //   });
-  // });
 
   this.ngZone.run(() => {
-  this._userSubject.next({
-    email: result.account?.username ?? '',
-    name: result.account?.name ?? result.account?.username ?? '',
-    role: 'AppUser' // you can add role logic if you want
+    this._userSubject.next({
+      email: result.account?.username ?? '',
+      name: result.account?.name ?? result.account?.username ?? '',
+      role: 'AppUser'
+    });
+
+    localStorage.setItem('access_token', result.accessToken); // this will now be valid for your API
   });
-
-  // ✅ Store Azure AD token directly
-  localStorage.setItem('access_token', result.accessToken);
-});
-
 
   return result;
 }
 
 
-
-
-//   async exchangeIdToken(idToken: string) {
-//   const resp: any = await firstValueFrom(
-//     this.http.post(
-//       `${environment.apiBaseUrl}/auth/authentication`,
-//       { idToken }
-//     )
-//   );
-
-  
-//   localStorage.setItem('access_token', resp.accessToken);
-//   localStorage.setItem('refresh_token', resp.refreshToken);
-
-//   return resp;
-// }
 
 
   async logout() {
