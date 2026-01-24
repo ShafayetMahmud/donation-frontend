@@ -11,28 +11,22 @@ export class AuthInterceptor implements HttpInterceptor {
   constructor(private authService: AuthService) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-
-    const token = this.authService.getAccessToken();
-
-    const authReq = token
-      ? req.clone({
-          setHeaders: {
-            Authorization: `Bearer ${token}`
-          }
-        })
-      : req;
-    console.log('INTERCEPTOR TOKEN:', token);
-
-    return next.handle(authReq).pipe(
-      catchError((err: HttpErrorResponse) => {
-        if (err.status === 401) {
-          alert('You are not authenticated. Please log in.');
-        }
-        return throwError(() => err);
-      })
-    );
-    
+  if (req.url.includes('/auth/')) {
+    return next.handle(req);
   }
+
+  const token = this.authService.getAccessToken();
+  if (!token) return next.handle(req);
+
+  const authReq = req.clone({
+    setHeaders: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+
+  return next.handle(authReq);
+}
+
 }
 
 

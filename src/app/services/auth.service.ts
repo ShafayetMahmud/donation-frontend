@@ -16,6 +16,16 @@ interface AppUser {
 
 export class AuthService {
 
+  private msalInstance = new PublicClientApplication({
+    auth: {
+      clientId: 'YOUR_CLIENT_ID',
+      authority: 'https://login.microsoftonline.com/YOUR_TENANT_ID',
+      redirectUri: window.location.origin
+    }
+  });
+
+  private apiToken: string | null = null;
+
   private pca: PublicClientApplication;
   private initialized = false;
   // private _userSubject = new BehaviorSubject<AppUser | null>(null);
@@ -36,32 +46,7 @@ export class AuthService {
     });
   }
 
-  async storeAccessToken() {
-  await this.ensureInitialized();
-
-  const account =
-    this.pca.getActiveAccount() ??
-    this.pca.getAllAccounts()[0];
-
-  if (!account) {
-    console.warn('No MSAL account found');
-    return;
-  }
-
-  this.pca.setActiveAccount(account);
-
-  try {
-    const result = await this.pca.acquireTokenSilent({
-      scopes: ['api://mudhammataan-api/access_as_user'],
-      account
-    });
-
-    localStorage.setItem('access_token', result.accessToken);
-    console.log('JWT stored');
-  } catch (err) {
-    console.error('Token acquisition failed', err);
-  }
-}
+  
 
 
   setCurrentUser(user: { email: string; name: string; role: string }) {
@@ -80,38 +65,27 @@ export class AuthService {
     return this._userSubject.value;
   }
 
-  // async loginPopup(): Promise<AuthenticationResult> {
-  //   await this.ensureInitialized();
-  //   const result = await this.pca.loginPopup({ scopes: ['openid', 'profile', 'email'] });
-
-    
-  //   const resp: any = await this.exchangeIdToken(result.idToken);
-
-  //   this._userSubject.next({
-  //     email: resp.email || result.account?.username || '',
-  //     name: resp.name || result.account?.name || result.account?.username || '',
-  //     role: resp.role || 'AppUser'
-  //   });
-
-  //   return result;
-  // }
 
   async loginPopup(): Promise<AuthenticationResult> {
-    await this.ensureInitialized();
-    const result = await this.pca.loginPopup({ scopes: ['openid', 'profile', 'email'] });
-    const resp: any = await this.exchangeIdToken(result.idToken);
+  await this.ensureInitialized();
 
-    // ⚡ Force change detection
-    this.ngZone.run(() => {
-      this._userSubject.next({
-        email: resp.email || result.account?.username || '',
-        name: resp.name || result.account?.name || result.account?.username || '',
-        role: resp.role || 'AppUser'
-      });
+  const result = await this.pca.loginPopup({
+    scopes: ['openid', 'profile', 'email']
+  });
+
+  const resp: any = await this.exchangeIdToken(result.idToken);
+
+  this.ngZone.run(() => {
+    this._userSubject.next({
+      email: resp.email ?? result.account?.username ?? '',
+      name: resp.name ?? result.account?.name ?? '',
+      role: resp.role ?? 'AppUser'
     });
+  });
 
-    return result;
+  return result;
 }
+
 
 
 
