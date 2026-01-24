@@ -119,9 +119,10 @@ export class AuthService {
 }
 
 
-  getAccessToken(): string | null {
+ async getAccessToken(): Promise<string | null> {
   return localStorage.getItem('access_token');
 }
+
 
 clearTokens() {
   localStorage.removeItem('access_token');
