@@ -28,15 +28,25 @@ export class CampaignService {
   // }
 
   getCampaignBySubdomain(subdomain: string): Observable<Campaign> {
-    const token = this.auth.getAccessToken();
+  return new Observable<Campaign>(observer => {
+    this.auth.getAccessToken().then(token => {
+      if (!token) {
+        observer.error("No access token found. Login required.");
+        return;
+      }
 
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`
+      const headers = new HttpHeaders({
+        Authorization: `Bearer ${token}`
+      });
+
+      this.http.get<Campaign>(`/api/campaign/by-subdomain/${subdomain}`, { headers })
+        .subscribe({
+          next: data => observer.next(data),
+          error: err => observer.error(err),
+          complete: () => observer.complete()
+        });
     });
+  });
+}
 
-    return this.http.get<Campaign>(
-      `/api/campaign/by-subdomain/${subdomain}`,
-      { headers }
-    );
-  }
 }
