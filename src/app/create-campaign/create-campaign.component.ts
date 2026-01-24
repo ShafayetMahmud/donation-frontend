@@ -70,33 +70,15 @@ export class CreateCampaignComponent implements OnInit {
     }
   }
 
-  // onSubmit() {
-  //   const payload: any = { ...this.campaignForm.value };
-  //   if (this.isEditMode && this.existingId) {
-  //     payload.id = this.existingId;
-  //     payload.subdomain = this.subdomainService.getCurrentCampaign()?.subdomain;
-  // this.http.put<Campaign>(`${environment.apiBaseUrl}/campaign/update`, payload)
-  //       .subscribe({
-  //         next: (updatedCampaign) => {
-  //           this.subdomainService.refreshCampaign(updatedCampaign);
-  //           this.router.navigate(['/']);
-  //         },
-  //         error: (err) => console.error('Update failed', err)
-  //       });
+  async onSubmit() {
 
-  //   } else {
-  // this.http.post<Campaign>(`${environment.apiBaseUrl}/campaign/create`, payload)
-  //       .subscribe({
-  //         next: (newCampaign) => {
-  //           alert(`Campaign created! Subdomain: ${newCampaign.subdomain}`);
-  //           this.subdomainService.refreshCampaign(newCampaign);
-  //           window.location.href = `https://${newCampaign.subdomain}.mudhammataan.com`;
-  //         },
-  //         error: (err) => console.error('Creation failed', err)
-  //       });
-  //   }
-  // }
-  onSubmit() {
+    // 1️⃣ Check if the user has logged in
+  const token = await this.authService.getAccessToken();
+  if (!token) {
+    alert('Please login first!');
+    return; // stop submission
+  }
+
     const payload: any = { ...this.campaignForm.value };
     const currentCampaign = this.subdomainService.getCurrentCampaign();
     const isFallback = currentCampaign && currentCampaign.id === currentCampaign.subdomain;
@@ -117,7 +99,6 @@ export class CreateCampaignComponent implements OnInit {
         return;
       }
 
-      // 🟢 Regular API update
       this.http.put<Campaign>(`${environment.apiBaseUrl}/campaign/update`, payload)
         .subscribe({
           next: (updatedCampaign) => {
@@ -128,41 +109,44 @@ export class CreateCampaignComponent implements OnInit {
         });
 
     } else {
-      // 🟢 Create new campaign
-      this.http.post<Campaign>(`${environment.apiBaseUrl}/campaign/create`, payload, { withCredentials: true })
+      this.http.post<Campaign>(`${environment.apiBaseUrl}/campaign/create`, payload)
         .subscribe({
           next: (newCampaign) => {
             alert(`Campaign created! Subdomain: ${newCampaign.subdomain}`);
             this.subdomainService.refreshCampaign(newCampaign);
             window.location.href = `https://${newCampaign.subdomain}.mudhammataan.com`;
           },
+          
           error: (err) => console.error('Creation failed', err)
+          
         });
+        
     }
   }
 
   login() {
-    this.authService.loginPopup()
-      .then(result => {
-        console.log('MSAL login successful', result);
+  this.authService.loginPopup()
+    .then(result => {
+      console.log('MSAL login successful', result);
 
-        // Send ID token to backend to create session cookie
-        return this.authService.exchangeIdToken(result.idToken);
-      })
-      .then((res: any) => {
-        console.log('Backend session cookie set!', res);
+      // ✅ Store Azure AD token directly
+      localStorage.setItem('access_token', result.accessToken);
 
-        // Optionally show a success message
-        alert('Login successful! You can now create or update campaigns.');
-
-        // Optionally, enable your form buttons here
-        // this.isLoggedIn = true;
-      })
-      .catch(err => {
-        console.error('Login failed', err);
-        alert('Login failed. Check console for details.');
+      // Update user observable
+      this.authService.setCurrentUser({
+        email: result.account?.username ?? '',
+        name: result.account?.name ?? result.account?.username ?? '',
+        role: 'AppUser' // or fetch from your own logic if needed
       });
-  }
+
+      alert('Login successful! You can now create or update campaigns.');
+    })
+    .catch(err => {
+      console.error('Login failed', err);
+      alert('Login failed. Check console for details.');
+    });
+}
+
 
   logout() {
   this.authService.logout()

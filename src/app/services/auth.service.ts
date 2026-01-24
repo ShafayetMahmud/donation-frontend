@@ -73,15 +73,27 @@ export class AuthService {
     scopes: ['openid', 'profile', 'email']
   });
 
-  const resp: any = await this.exchangeIdToken(result.idToken);
+  // const resp: any = await this.exchangeIdToken(result.idToken);
+
+  // this.ngZone.run(() => {
+  //   this._userSubject.next({
+  //     email: resp.email ?? result.account?.username ?? '',
+  //     name: resp.name ?? result.account?.name ?? '',
+  //     role: resp.role ?? 'AppUser'
+  //   });
+  // });
 
   this.ngZone.run(() => {
-    this._userSubject.next({
-      email: resp.email ?? result.account?.username ?? '',
-      name: resp.name ?? result.account?.name ?? '',
-      role: resp.role ?? 'AppUser'
-    });
+  this._userSubject.next({
+    email: result.account?.username ?? '',
+    name: result.account?.name ?? result.account?.username ?? '',
+    role: 'AppUser' // you can add role logic if you want
   });
+
+  // ✅ Store Azure AD token directly
+  localStorage.setItem('access_token', result.accessToken);
+});
+
 
   return result;
 }
@@ -89,20 +101,20 @@ export class AuthService {
 
 
 
-  async exchangeIdToken(idToken: string) {
-  const resp: any = await firstValueFrom(
-    this.http.post(
-      `${environment.apiBaseUrl}/auth/authentication`,
-      { idToken }
-    )
-  );
+//   async exchangeIdToken(idToken: string) {
+//   const resp: any = await firstValueFrom(
+//     this.http.post(
+//       `${environment.apiBaseUrl}/auth/authentication`,
+//       { idToken }
+//     )
+//   );
 
-  // ✅ STORE TOKENS
-  localStorage.setItem('access_token', resp.accessToken);
-  localStorage.setItem('refresh_token', resp.refreshToken);
+  
+//   localStorage.setItem('access_token', resp.accessToken);
+//   localStorage.setItem('refresh_token', resp.refreshToken);
 
-  return resp;
-}
+//   return resp;
+// }
 
 
   async logout() {
