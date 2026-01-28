@@ -56,6 +56,19 @@ export class AuthService {
     });
   }
 
+  async getApiToken(): Promise<string> {
+  const result = await this.msalInstance.acquireTokenSilent({
+    scopes: ['api://99d94324-a3a8-4ace-b4b2-0ae093229b62/access_as_user']
+  }).catch(async () => {
+    return this.msalInstance.acquireTokenPopup({
+      scopes: ['api://99d94324-a3a8-4ace-b4b2-0ae093229b62/access_as_user']
+    });
+  });
+
+  return result.accessToken;
+}
+
+
   getTokenPayload(): JwtPayload | null {
   const token = this.getAccessTokenSync();
   if (!token) return null;
@@ -135,9 +148,23 @@ checkAudience(expectedAud: string) {
     this._userSubject.next(null);
   }
 
-  async getAccessToken(): Promise<string | null> {
-    return localStorage.getItem('access_token');
+  // async getAccessToken(): Promise<string | null> {
+  //   return localStorage.getItem('access_token');
+  // }
+
+  // AuthService
+async getAccessToken(): Promise<string | null> {
+  try {
+    const token = await this.getApiToken();
+    // save latest token in localStorage for sync access if needed
+    localStorage.setItem('access_token', token);
+    return token;
+  } catch (err) {
+    console.error('Failed to get API token', err);
+    return null;
   }
+}
+
 
   clearTokens() {
     localStorage.removeItem('access_token');

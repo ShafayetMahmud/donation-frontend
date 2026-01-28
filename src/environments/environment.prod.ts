@@ -5,7 +5,8 @@ export const environmentOld = {
   allowedFrontendDomains: ['*'],
   msalConfig: {
     auth: {
-      clientId: '99d94324-a3a8-4ace-b4b2-0ae093229b62', // your Azure app client ID
+      // clientId: '99d94324-a3a8-4ace-b4b2-0ae093229b62',
+      clientId: '9a7bbbc7-dad0-4ef7-841b-b8b45a7605ed',
       authority: 'https://login.microsoftonline.com/8adf6212-f010-45db-b70e-7bc732eb2759', // tenant ID
       redirectUri: 'https://mudhammataan.com', // Angular base URL
       postLogoutRedirectUri: 'https://mudhammataan.com'
@@ -15,6 +16,7 @@ export const environmentOld = {
       storeAuthStateInCookie: false,
     }
   },
+  
   loginRequest: {
   scopes: ['api://99d94324-a3a8-4ace-b4b2-0ae093229b62/access_as_user']
 }
@@ -26,7 +28,8 @@ export const environment = {
   apiBaseUrl: window.location.protocol + '//' + window.location.host + '/api',
   msalConfig: {
     auth: {
-      clientId: '99d94324-a3a8-4ace-b4b2-0ae093229b62', // your Azure app client ID
+      // clientId: '99d94324-a3a8-4ace-b4b2-0ae093229b62',
+      clientId: '9a7bbbc7-dad0-4ef7-841b-b8b45a7605ed',
       authority: 'https://login.microsoftonline.com/8adf6212-f010-45db-b70e-7bc732eb2759', // tenant ID
       redirectUri: 'https://mudhammataan.com', // Angular base URL
       postLogoutRedirectUri: 'https://mudhammataan.com'
