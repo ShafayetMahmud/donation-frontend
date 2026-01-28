@@ -1,52 +1,27 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { AuthService } from './auth.service';
-
-export interface Campaign {
-  id: string;
-  name: string;
-  why: string;
-  whatFor: string;
-  how: string;
-  contact: string;
-  gallery: string[];
-  subdomain: string;
-}
+import { environment } from '../../environments/environment';
+import { Campaign } from '../../models/campaign.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CampaignService {
-  constructor(
-    private http: HttpClient,
-    private auth: AuthService
-  ) {}
+  private baseUrl = `${environment.apiBaseUrl}/api/campaign`;
 
-  // getCampaignBySubdomain(subdomain: string): Observable<Campaign> {
-  //   return this.http.get<Campaign>(`/api/campaign/by-subdomain/${subdomain}`);
-  // }
+  constructor(private http: HttpClient) {}
+
+  createCampaign(campaign: Campaign): Observable<Campaign> {
+    // No need to manually attach token anymore
+    return this.http.post<Campaign>(`${this.baseUrl}/create`, campaign);
+  }
+
+  updateCampaign(campaign: Campaign): Observable<Campaign> {
+    return this.http.put<Campaign>(`${this.baseUrl}/update`, campaign);
+  }
 
   getCampaignBySubdomain(subdomain: string): Observable<Campaign> {
-  return new Observable<Campaign>(observer => {
-    this.auth.getAccessToken().then(token => {
-      if (!token) {
-        observer.error("No access token found. Login required.");
-        return;
-      }
-
-      const headers = new HttpHeaders({
-        Authorization: `Bearer ${token}`
-      });
-
-      this.http.get<Campaign>(`/api/campaign/by-subdomain/${subdomain}`, { headers })
-        .subscribe({
-          next: data => observer.next(data),
-          error: err => observer.error(err),
-          complete: () => observer.complete()
-        });
-    });
-  });
-}
-
+    return this.http.get<Campaign>(`${this.baseUrl}/by-subdomain/${subdomain}`);
+  }
 }
