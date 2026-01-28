@@ -13,15 +13,15 @@ export class AuthInterceptor implements HttpInterceptor {
     if (!req.url.includes('/api/')) return next.handle(req);
 
     return from(this.authService.getAccessToken()).pipe(
-      switchMap(token => {
-        if (!token) return next.handle(req);
+  switchMap(token => {
+    if (!token) return next.handle(req);
 
-        const authReq = req.clone({
-          setHeaders: { Authorization: `Bearer ${token}` }
-        });
+    const authReq = req.clone({
+      setHeaders: { Authorization: `Bearer ${token}` }
+    });
 
-        return next.handle(authReq);
-      })
-    );
+    return next.handle(authReq);
+  })
+);
   }
 }
