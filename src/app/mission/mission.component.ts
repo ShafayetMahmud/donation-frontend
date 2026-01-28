@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
-import { SubdomainService, Campaign } from '../services/subdomain.service';
+import { SubdomainService } from '../services/subdomain.service';
 import { AsyncPipe, CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
 import { LanguageService } from '../services/language.service';
+import { Campaign } from '../../models/campaign.model';
 
 @Component({
   selector: 'app-mission',
