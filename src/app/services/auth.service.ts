@@ -2,7 +2,7 @@ import { Injectable, NgZone } from '@angular/core';
 import { PublicClientApplication, AuthenticationResult, PopupRequest } from '@azure/msal-browser';
 import { environment } from '../../environments/environment';
 import { HttpClient } from '@angular/common/http';
-import { firstValueFrom, Observable, BehaviorSubject } from 'rxjs';
+import { firstValueFrom, BehaviorSubject } from 'rxjs';
 import { jwtDecode } from 'jwt-decode';
 
 export interface JwtPayload {
@@ -27,15 +27,6 @@ interface AppUser {
 })
 
 export class AuthService {
-
-  private msalInstance = new PublicClientApplication({
-    auth: {
-      clientId: 'YOUR_CLIENT_ID',
-      authority: 'https://login.microsoftonline.com/YOUR_TENANT_ID',
-      redirectUri: window.location.origin
-    }
-  });
-
   private pca: PublicClientApplication;
   private initialized = false;
   // private _userSubject = new BehaviorSubject<AppUser | null>(null);
@@ -57,42 +48,41 @@ export class AuthService {
   }
 
   async getApiToken(): Promise<string> {
-  const result = await this.msalInstance.acquireTokenSilent({
-    scopes: ['api://99d94324-a3a8-4ace-b4b2-0ae093229b62/access_as_user']
-  }).catch(async () => {
-    return this.msalInstance.acquireTokenPopup({
+    const result = await this.pca.acquireTokenSilent({
       scopes: ['api://99d94324-a3a8-4ace-b4b2-0ae093229b62/access_as_user']
+    }).catch(async () => {
+      return this.pca.acquireTokenPopup({
+        scopes: ['api://99d94324-a3a8-4ace-b4b2-0ae093229b62/access_as_user']
+      });
     });
-  });
 
-  return result.accessToken;
-}
-
+    localStorage.setItem('access_token', result.accessToken);
+    return result.accessToken;
+  }
 
   getTokenPayload(): JwtPayload | null {
-  const token = this.getAccessTokenSync();
-  if (!token) return null;
+    const token = this.getAccessTokenSync();
+    if (!token) return null;
 
-  try {
-    return jwtDecode<JwtPayload>(token);
-  } catch (e) {
-    console.error("Invalid JWT:", e);
-    return null;
+    try {
+      return jwtDecode<JwtPayload>(token);
+    } catch (e) {
+      console.error("Invalid JWT:", e);
+      return null;
+    }
   }
-}
 
-getAccessTokenSync(): string | null {
-  return localStorage.getItem('access_token');
-}
+  getAccessTokenSync(): string | null {
+    return localStorage.getItem('access_token');
+  }
 
+  checkAudience(expectedAud: string) {
+    const payload = this.getTokenPayload();
+    if (!payload) return false;
 
-checkAudience(expectedAud: string) {
-  const payload = this.getTokenPayload();
-  if (!payload) return false;
-
-  console.log("Token payload:", payload);
-  return payload.aud === expectedAud;
-}
+    console.log("Token payload:", payload);
+    return payload.aud === expectedAud;
+  }
 
   setCurrentUser(user: { email: string; name: string; role: string }) {
     this._userSubject.next(user);
@@ -110,30 +100,29 @@ checkAudience(expectedAud: string) {
   }
 
   async loginPopup(): Promise<AuthenticationResult> {
-  await this.ensureInitialized();
+    await this.ensureInitialized();
 
-  const result = await this.pca.loginPopup({
-    scopes: ['api://99d94324-a3a8-4ace-b4b2-0ae093229b62/access_as_user']
-  });
-
-  this.ngZone.run(() => {
-    this._userSubject.next({
-      email: result.account?.username ?? '',
-      name: result.account?.name ?? result.account?.username ?? '',
-      role: 'AppUser'
+    const result = await this.pca.loginPopup({
+      scopes: ['api://99d94324-a3a8-4ace-b4b2-0ae093229b62/access_as_user']
     });
-    localStorage.setItem('access_token', result.accessToken);
-    const expectedAud = '99d94324-a3a8-4ace-b4b2-0ae093229b62';
-    if (!this.checkAudience(expectedAud)) {
-      console.warn("Warning: Token audience does not match API!");
-    } else {
-      console.log("Token audience ✅ matches API");
-    }
-  });
 
-  return result;
-}
+    this.ngZone.run(() => {
+      this._userSubject.next({
+        email: result.account?.username ?? '',
+        name: result.account?.name ?? result.account?.username ?? '',
+        role: 'AppUser'
+      });
+      localStorage.setItem('access_token', result.accessToken);
+      const expectedAud = '99d94324-a3a8-4ace-b4b2-0ae093229b62';
+      if (!this.checkAudience(expectedAud)) {
+        console.warn("Warning: Token audience does not match API!");
+      } else {
+        console.log("Token audience ✅ matches API");
+      }
+    });
 
+    return result;
+  }
 
   async logout() {
     try {
@@ -148,35 +137,27 @@ checkAudience(expectedAud: string) {
     this._userSubject.next(null);
   }
 
-  // async getAccessToken(): Promise<string | null> {
-  //   return localStorage.getItem('access_token');
-  // }
+  async getAccessToken(): Promise<string | null> {
+    try {
+      const accounts = this.pca.getAllAccounts();
+      if (!accounts || accounts.length === 0) return null;
 
-  // AuthService
-async getAccessToken(): Promise<string | null> {
-  // Always use the initialized MSAL instance (this.pca)
-  try {
-    const accounts = this.pca.getAllAccounts();
-    if (!accounts || accounts.length === 0) return null;
+      const silentRequest = {
+        account: accounts[0],
+        scopes: ['api://99d94324-a3a8-4ace-b4b2-0ae093229b62/access_as_user']
+      };
 
-    const silentRequest = {
-      account: accounts[0],
-      scopes: ['api://99d94324-a3a8-4ace-b4b2-0ae093229b62/access_as_user']
-    };
+      const result = await this.pca.acquireTokenSilent(silentRequest).catch(async () => {
+        return this.pca.acquireTokenPopup(silentRequest);
+      });
 
-    const result = await this.pca.acquireTokenSilent(silentRequest).catch(async () => {
-      return this.pca.acquireTokenPopup(silentRequest);
-    });
-
-    localStorage.setItem('access_token', result.accessToken);
-    return result.accessToken;
-  } catch (err) {
-    console.error('Failed to get API token', err);
-    return null;
+      localStorage.setItem('access_token', result.accessToken);
+      return result.accessToken;
+    } catch (err) {
+      console.error('Failed to get API token', err);
+      return null;
+    }
   }
-}
-
-
 
   clearTokens() {
     localStorage.removeItem('access_token');
