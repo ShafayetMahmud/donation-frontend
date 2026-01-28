@@ -3,6 +3,18 @@ import { PublicClientApplication, AuthenticationResult, PopupRequest } from '@az
 import { environment } from '../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom, Observable, BehaviorSubject } from 'rxjs';
+import { jwtDecode } from 'jwt-decode';
+
+export interface JwtPayload {
+  aud: string;
+  iss: string;
+  exp: number;
+  iat: number;
+  name: string;
+  preferred_username: string;
+  tid: string;
+  [key: string]: any;
+}
 
 interface AppUser {
   email: string;
@@ -24,8 +36,6 @@ export class AuthService {
     }
   });
 
-  private apiToken: string | null = null;
-
   private pca: PublicClientApplication;
   private initialized = false;
   // private _userSubject = new BehaviorSubject<AppUser | null>(null);
@@ -46,13 +56,34 @@ export class AuthService {
     });
   }
 
-  
+  getTokenPayload(): JwtPayload | null {
+  const token = this.getAccessTokenSync();
+  if (!token) return null;
 
+  try {
+    return jwtDecode<JwtPayload>(token);
+  } catch (e) {
+    console.error("Invalid JWT:", e);
+    return null;
+  }
+}
+
+getAccessTokenSync(): string | null {
+  return localStorage.getItem('access_token');
+}
+
+
+checkAudience(expectedAud: string) {
+  const payload = this.getTokenPayload();
+  if (!payload) return false;
+
+  console.log("Token payload:", payload);
+  return payload.aud === expectedAud;
+}
 
   setCurrentUser(user: { email: string; name: string; role: string }) {
     this._userSubject.next(user);
   }
-
 
   private async ensureInitialized() {
     if (!this.initialized) {
@@ -65,33 +96,11 @@ export class AuthService {
     return this._userSubject.value;
   }
 
-
-//   async loginPopup(): Promise<AuthenticationResult> {
-//   await this.ensureInitialized();
-
-//   const result = await this.pca.loginPopup({
-//     scopes: ['openid', 'profile', 'email']
-//   });
-
-//   this.ngZone.run(() => {
-//   this._userSubject.next({
-//     email: result.account?.username ?? '',
-//     name: result.account?.name ?? result.account?.username ?? '',
-//     role: 'AppUser'
-//   });
-
-//   localStorage.setItem('access_token', result.accessToken);
-// });
-
-
-//   return result;
-// }
-
-async loginPopup(): Promise<AuthenticationResult> {
+  async loginPopup(): Promise<AuthenticationResult> {
   await this.ensureInitialized();
 
   const result = await this.pca.loginPopup({
-    scopes: ['api://99d94324-a3a8-4ace-b4b2-0ae093229b62/access_as_user'] // ✅ change this
+    scopes: ['api://99d94324-a3a8-4ace-b4b2-0ae093229b62/access_as_user']
   });
 
   this.ngZone.run(() => {
@@ -100,39 +109,39 @@ async loginPopup(): Promise<AuthenticationResult> {
       name: result.account?.name ?? result.account?.username ?? '',
       role: 'AppUser'
     });
-
-    localStorage.setItem('access_token', result.accessToken); // this will now be valid for your API
+    localStorage.setItem('access_token', result.accessToken);
+    const expectedAud = '99d94324-a3a8-4ace-b4b2-0ae093229b62';
+    if (!this.checkAudience(expectedAud)) {
+      console.warn("Warning: Token audience does not match API!");
+    } else {
+      console.log("Token audience ✅ matches API");
+    }
   });
 
   return result;
 }
 
 
-
-
   async logout() {
-  try {
-    await firstValueFrom(
-      this.http.post(`${environment.apiBaseUrl}/auth/logout`, {
-        refreshToken: localStorage.getItem('refresh_token')
-      })
-    );
-  } catch {}
+    try {
+      await firstValueFrom(
+        this.http.post(`${environment.apiBaseUrl}/auth/logout`, {
+          refreshToken: localStorage.getItem('refresh_token')
+        })
+      );
+    } catch { }
 
-  this.clearTokens();
-  this._userSubject.next(null);
-}
+    this.clearTokens();
+    this._userSubject.next(null);
+  }
 
+  async getAccessToken(): Promise<string | null> {
+    return localStorage.getItem('access_token');
+  }
 
- async getAccessToken(): Promise<string | null> {
-  return localStorage.getItem('access_token');
-}
-
-
-clearTokens() {
-  localStorage.removeItem('access_token');
-  localStorage.removeItem('refresh_token');
-}
-
+  clearTokens() {
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+  }
 
 }
