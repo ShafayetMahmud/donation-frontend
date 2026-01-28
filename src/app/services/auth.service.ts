@@ -154,16 +154,28 @@ checkAudience(expectedAud: string) {
 
   // AuthService
 async getAccessToken(): Promise<string | null> {
+  // Always use the initialized MSAL instance (this.pca)
   try {
-    const token = await this.getApiToken();
-    // save latest token in localStorage for sync access if needed
-    localStorage.setItem('access_token', token);
-    return token;
+    const accounts = this.pca.getAllAccounts();
+    if (!accounts || accounts.length === 0) return null;
+
+    const silentRequest = {
+      account: accounts[0],
+      scopes: ['api://99d94324-a3a8-4ace-b4b2-0ae093229b62/access_as_user']
+    };
+
+    const result = await this.pca.acquireTokenSilent(silentRequest).catch(async () => {
+      return this.pca.acquireTokenPopup(silentRequest);
+    });
+
+    localStorage.setItem('access_token', result.accessToken);
+    return result.accessToken;
   } catch (err) {
     console.error('Failed to get API token', err);
     return null;
   }
 }
+
 
 
   clearTokens() {
