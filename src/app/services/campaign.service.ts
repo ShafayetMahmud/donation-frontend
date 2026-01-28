@@ -8,7 +8,7 @@ import { Campaign } from '../../models/campaign.model';
   providedIn: 'root'
 })
 export class CampaignService {
-  private baseUrl = `${environment.apiBaseUrl}/api/campaign`;
+  private baseUrl = `${environment.apiBaseUrl}/campaign`;
 
   constructor(private http: HttpClient) {}
 
