@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { LanguageService } from '../services/language.service';
-import { SubdomainService, Campaign } from '../services/subdomain.service';
+import { SubdomainService } from '../services/subdomain.service';
 import { CommonModule, AsyncPipe } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
@@ -9,6 +9,7 @@ import { Observable, BehaviorSubject } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 import { MatMenuModule } from '@angular/material/menu';
 import { TranslateModule } from '@ngx-translate/core';
+import { Campaign } from '../../models/campaign.model';
 
 @Component({
   selector: 'app-layout',
