@@ -4,6 +4,8 @@ import { BehaviorSubject } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { Router } from '@angular/router';
 import { Campaign } from '../../models/campaign.model';
+import { catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class SubdomainService {
@@ -56,22 +58,38 @@ export class SubdomainService {
   private fetchCampaign(subdomain: string) {
     this._loading$.next(true);
 
-    this.http.get<Campaign>(`${this.baseUrl}/by-subdomain/${subdomain}`).subscribe({
-      next: (campaign) => {
-        this._campaign$.next(campaign);
-        this._loading$.next(false);
-      },
-      error: () => {
-        const fallback = this.fallbackCampaigns.find(c => c.subdomain === subdomain);
-        if (fallback) {
-          this._campaign$.next(fallback);
-        } else {
-          this._campaign$.next(null);
-          this.router.navigate(['/not-found']);
-        }
-        this._loading$.next(false);
-      }
-    });
+    // this.http.get<Campaign>(`${this.baseUrl}/by-subdomain/${subdomain}`).subscribe({
+    //   next: (campaign) => {
+    //     this._campaign$.next(campaign);
+    //     this._loading$.next(false);
+    //   },
+    //   error: () => {
+    //     const fallback = this.fallbackCampaigns.find(c => c.subdomain === subdomain);
+    //     if (fallback) {
+    //       this._campaign$.next(fallback);
+    //     } else {
+    //       this._campaign$.next(null);
+    //       this.router.navigate(['/not-found']);
+    //     }
+    //     this._loading$.next(false);
+    //   }
+    // });
+    this.http.get<Campaign>(`${this.baseUrl}/by-subdomain/${subdomain}`)
+  .pipe(
+    catchError(err => {
+      console.warn('Failed to load campaign (maybe anonymous)', err);
+      const fallback = this.fallbackCampaigns.find(c => c.subdomain === subdomain);
+      return of(fallback ?? null);
+    })
+  )
+  .subscribe(campaign => {
+    if (campaign) {
+      this._campaign$.next(campaign);
+    } else {
+      this.router.navigate(['/not-found']);
+    }
+    this._loading$.next(false);
+  });
   }
 
   getCurrentCampaign(): Campaign | null {

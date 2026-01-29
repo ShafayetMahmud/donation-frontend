@@ -21,7 +21,17 @@ export class CampaignService {
     return this.http.put<Campaign>(`${this.baseUrl}/update`, campaign);
   }
 
-  getCampaignBySubdomain(subdomain: string): Observable<Campaign> {
-    return this.http.get<Campaign>(`${this.baseUrl}/by-subdomain/${subdomain}`);
-  }
+  // getCampaignBySubdomain(subdomain: string): Observable<Campaign> {
+  //   return this.http.get<Campaign>(`${this.baseUrl}/by-subdomain/${subdomain}`);
+  // }
+  // campaign.service.ts
+getCampaignBySubdomain(subdomain: string) {
+  return this.http.get<Campaign>(`/api/campaign/by-subdomain/${subdomain}`)
+    .toPromise()
+    .catch(err => {
+      console.warn('Failed to load campaign (anonymous or error)', err);
+      return null; // fallback to show "campaign not found" page
+    });
+}
+
 }

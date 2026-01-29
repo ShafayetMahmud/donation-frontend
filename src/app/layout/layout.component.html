@@ -25,7 +25,10 @@
       {{ 'LAYOUT.CREATE_CAMPAIGN' | translate }}
     </button>
 
-    <button *ngIf="!(user$ | async)" mat-raised-button color="primary" (click)="onLogin()" class="donate-button">
+    <!-- <button *ngIf="!(user$ | async)" mat-raised-button color="primary" (click)="onLogin()" class="donate-button">
+      {{ 'LAYOUT.LOGIN' | translate }}
+    </button> -->
+    <button *ngIf="!(user$ | async)" mat-raised-button color="primary" (click)="onLogin()">
       {{ 'LAYOUT.LOGIN' | translate }}
     </button>
 
@@ -46,10 +49,17 @@
       </mat-menu>
     </div>
 
-    <button *ngIf="subdomainService.isSubdomain() && !subdomainService.isSpecialSubdomain()" mat-raised-button
+    <!-- <button *ngIf="subdomainService.isSubdomain() && !subdomainService.isSpecialSubdomain()" mat-raised-button
       color="primary" (click)="onEditCampaign()" class="donate-button">
       Edit Campaign
+    </button> -->
+    <button
+      *ngIf="subdomainService.isSubdomain() && !subdomainService.isSpecialSubdomain() && (user$ | async) && subdomainService.getCurrentCampaign()"
+      mat-raised-button color="primary" (click)="onEditCampaign()" [disabled]="!(subdomainService.getCurrentCampaign())"
+      class="donate-button">
+      Edit Campaign
     </button>
+
   </div>
 </mat-toolbar>
 
