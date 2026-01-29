@@ -163,12 +163,18 @@ export class CreateCampaignComponent implements OnInit {
         this.subdomainService.refreshCampaign(newCampaign);
         alert(`Campaign created! Subdomain: ${newCampaign.subdomain}`);
         // Redirect to new campaign subdomain
-        window.location.href = `https://${newCampaign.subdomain}.mudhammataan.com`;
+        if (newCampaign.subdomain) {
+      window.location.href = `https://${newCampaign.subdomain}.mudhammataan.com`;
+    }
       },
       error: (err) => {
-        console.error('Creation failed', err);
-        alert('Campaign creation failed. Check console.');
-      }
+    if (err.status === 401) {
+      alert('Please login to create a campaign');
+      this.authService.loginPopup(); // trigger login
+    } else {
+      console.error('Creation failed', err);
+    }
+  }
     });
   }
 }
