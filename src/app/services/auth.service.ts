@@ -106,13 +106,19 @@ export class AuthService {
       scopes: ['api://99d94324-a3a8-4ace-b4b2-0ae093229b62/access_as_user']
     });
 
+    localStorage.setItem('access_token', result.accessToken);
+
+    await firstValueFrom(
+    this.http.get(`${environment.apiBaseUrl}/auth/me`)
+  );
+
+
     this.ngZone.run(() => {
       this._userSubject.next({
         email: result.account?.username ?? '',
         name: result.account?.name ?? result.account?.username ?? '',
         role: 'AppUser'
       });
-      localStorage.setItem('access_token', result.accessToken);
       const expectedAud = '99d94324-a3a8-4ace-b4b2-0ae093229b62';
       if (!this.checkAudience(expectedAud)) {
         console.warn("Warning: Token audience does not match API!");
