@@ -8,12 +8,12 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
   selector: 'app-login',
   standalone: true,
   imports: [CommonModule, RouterModule],
+  providers: [MsalService],
   template: `
     <div class="login-container">
       <p>Redirecting… Please wait, logging you in</p>
     </div>
-  `,
-  providers: [MsalService]
+  `
 })
 export class LoginComponent implements OnInit {
   private msalService = inject(MsalService);
