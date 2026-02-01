@@ -40,20 +40,26 @@ export class SubdomainService {
   ];
 
   constructor(private http: HttpClient, private router: Router) {
-    const urlParams = new URLSearchParams(window.location.search);
-    this.subdomain = urlParams.get('subdomain');
+  const urlParams = new URLSearchParams(window.location.search);
+  this.subdomain = urlParams.get('subdomain');
 
-    if (!this.subdomain && window.location.hostname !== 'localhost') {
-      const parts = window.location.hostname.split('.');
-      if (parts.length > 2) this.subdomain = parts[0];
-    }
+  const hostname = window.location.hostname;
 
-    if (this.subdomain) {
-      this.fetchCampaign(this.subdomain);
-    } else {
-      this._loading$.next(false);
-    }
+  // Only set subdomain if NOT main domain
+  if (!this.subdomain && hostname !== 'localhost' && hostname !== 'mudhammataan.com') {
+    const parts = hostname.split('.');
+    if (parts.length > 2) this.subdomain = parts[0];
   }
+
+  if (this.subdomain) {
+    this.fetchCampaign(this.subdomain);
+  } else {
+    // MAIN DOMAIN → skip fetching campaign
+    this._campaign$.next(null);
+    this._loading$.next(false);
+  }
+}
+
 
   private fetchCampaign(subdomain: string) {
   this._loading$.next(true);
