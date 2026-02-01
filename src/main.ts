@@ -31,9 +31,7 @@ importProvidersFrom(
         authority: environment.msalConfig.auth.authority,
         redirectUri: window.location.origin + '/login'
       },
-      cache: {
-        cacheLocation: 'localStorage'
-      }
+      cache: { cacheLocation: 'localStorage' }
     }),
     {
       interactionType: InteractionType.Redirect,
@@ -44,7 +42,8 @@ importProvidersFrom(
       protectedResourceMap: new Map()
     }
   )
-)
+);
+
 
 bootstrapApplication(AppComponent, {
   providers: [
