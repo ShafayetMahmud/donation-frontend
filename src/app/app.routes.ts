@@ -24,7 +24,11 @@ export const routes: Routes = [
       { path: 'create-campaign', component: CreateCampaignComponent }
     ]
   },
-  { path: 'login', component: LoginComponent },
+  {
+    path: 'login',
+    loadComponent: () =>
+      import('./login/login.component').then((m) => m.LoginComponent)
+  },
   { path: 'not-found', component: NotFoundComponent },
   { path: '**', redirectTo: 'not-found' }
 ];
