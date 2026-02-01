@@ -25,16 +25,18 @@ export class LoginComponent implements OnInit {
   async ngOnInit() {
     this.returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
 
-    // ✅ Wait for MSAL to initialize first
+    // ✅ Initialize MSAL
     await this.msalService.instance.initialize();
 
+    // ✅ Handle redirect
     this.msalService.instance.handleRedirectPromise()
       .then(result => {
+        // After redirect, if logged in, go back to returnUrl or home
         const accounts = this.msalService.instance.getAllAccounts();
-
         if (result || accounts.length > 0) {
           window.location.href = this.returnUrl ?? '/';
         } else {
+          // Not logged in yet → trigger MSAL redirect login
           this.msalService.loginRedirect(environment.loginRequest);
         }
       })

@@ -4,6 +4,7 @@ import { environment } from '../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom, BehaviorSubject } from 'rxjs';
 import { jwtDecode } from 'jwt-decode';
+import { MsalService } from '@azure/msal-angular';
 
 export interface JwtPayload {
   aud: string;
@@ -27,37 +28,29 @@ interface AppUser {
 })
 
 export class AuthService {
-  private pca: PublicClientApplication;
-  private initialized = false;
-  // private _userSubject = new BehaviorSubject<AppUser | null>(null);
   private _userSubject = new BehaviorSubject<{ email: string; name: string; role: string } | null>(null);
   public user$ = this._userSubject.asObservable();
 
-  constructor(private http: HttpClient, private ngZone: NgZone) {
-    this.pca = new PublicClientApplication({
-      auth: {
-        clientId: environment.msalConfig.auth.clientId,
-        authority: environment.msalConfig.auth.authority,
-        redirectUri: environment.msalConfig.auth.redirectUri,
-      },
-      cache: {
-        cacheLocation: environment.msalConfig.cache.cacheLocation as 'localStorage' | 'sessionStorage',
-        // storeAuthStateInCookie: environment.msalConfig.cache.storeAuthStateInCookie
-      }
-    });
-  }
+  constructor(private http: HttpClient, private ngZone: NgZone, private msalService: MsalService) { }
 
-  async getApiToken(): Promise<string> {
-    const result = await this.pca.acquireTokenSilent({
-      scopes: ['api://99d94324-a3a8-4ace-b4b2-0ae093229b62/access_as_user']
-    }).catch(async () => {
-      return this.pca.acquireTokenPopup({
+  async getAccessToken(): Promise<string | null> {
+    const accounts = this.msalService.instance.getAllAccounts();
+    if (!accounts || accounts.length === 0) return null;
+
+    try {
+      const silentRequest = {
+        account: accounts[0],
         scopes: ['api://99d94324-a3a8-4ace-b4b2-0ae093229b62/access_as_user']
-      });
-    });
+      };
+      const result = await this.msalService.instance.acquireTokenSilent(silentRequest)
+        .catch(() => this.msalService.instance.acquireTokenPopup(silentRequest));
 
-    localStorage.setItem('access_token', result.accessToken);
-    return result.accessToken;
+      localStorage.setItem('access_token', result.accessToken);
+      return result.accessToken;
+    } catch (err) {
+      console.error('Failed to get API token', err);
+      return null;
+    }
   }
 
   getTokenPayload(): JwtPayload | null {
@@ -88,80 +81,32 @@ export class AuthService {
     this._userSubject.next(user);
   }
 
-  private async ensureInitialized() {
-    if (!this.initialized) {
-      await this.pca.initialize();
-      this.initialized = true;
-    }
-  }
-
   async getCurrentUser() {
     return this._userSubject.value;
   }
 
-  async loginPopup(): Promise<AuthenticationResult> {
-    await this.ensureInitialized();
-
-    const result = await this.pca.loginPopup({
-      scopes: ['api://99d94324-a3a8-4ace-b4b2-0ae093229b62/access_as_user']
+  // In AuthService
+async initializeUserAfterRedirect(): Promise<void> {
+  const accounts = this.msalService.instance.getAllAccounts();
+  if (accounts.length > 0) {
+    const account = accounts[0];
+    this._userSubject.next({
+      email: account.username ?? '',
+      name: account.name ?? account.username ?? '',
+      role: 'AppUser'
     });
-
-    localStorage.setItem('access_token', result.accessToken);
-
-    await firstValueFrom(
-    this.http.get(`${environment.apiBaseUrl}/auth/me`)
-  );
-
-
-    this.ngZone.run(() => {
-      this._userSubject.next({
-        email: result.account?.username ?? '',
-        name: result.account?.name ?? result.account?.username ?? '',
-        role: 'AppUser'
-      });
-      const expectedAud = '99d94324-a3a8-4ace-b4b2-0ae093229b62';
-      if (!this.checkAudience(expectedAud)) {
-        console.warn("Warning: Token audience does not match API!");
-      } else {
-        console.log("Token audience ✅ matches API");
-      }
-    });
-
-    return result;
   }
+}
+
 
   async logout() {
-    try {
-      await firstValueFrom(
-        this.http.post(`${environment.apiBaseUrl}/auth/logout`, {
-          refreshToken: localStorage.getItem('refresh_token')
-        })
-      );
-    } catch { }
-
-    this.clearTokens();
     this._userSubject.next(null);
-  }
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
 
-  async getAccessToken(): Promise<string | null> {
-    try {
-      const accounts = this.pca.getAllAccounts();
-      if (!accounts || accounts.length === 0) return null;
-
-      const silentRequest = {
-        account: accounts[0],
-        scopes: ['api://99d94324-a3a8-4ace-b4b2-0ae093229b62/access_as_user']
-      };
-
-      const result = await this.pca.acquireTokenSilent(silentRequest).catch(async () => {
-        return this.pca.acquireTokenPopup(silentRequest);
-      });
-
-      localStorage.setItem('access_token', result.accessToken);
-      return result.accessToken;
-    } catch (err) {
-      console.error('Failed to get API token', err);
-      return null;
+    const accounts = this.msalService.instance.getAllAccounts();
+    if (accounts.length > 0) {
+      await this.msalService.logoutRedirect({ account: accounts[0] });
     }
   }
 
