@@ -21,7 +21,6 @@ import { AppComponent } from './app/app.component';
 import { routes } from './app/app.routes';
 import { AuthInterceptor } from './app/services/auth.interceptor';
 import { MsalService, MsalGuard, MsalBroadcastService } from '@azure/msal-angular';
-import { MsalRedirectComponent } from '@azure/msal-angular';
 
 importProvidersFrom(
   MsalModule.forRoot(
