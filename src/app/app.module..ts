@@ -61,21 +61,25 @@ const routes: Routes = [
       }
     }),
     MsalModule.forRoot(
-      new PublicClientApplication({
-        auth: {
-          clientId: environment.msalConfig.auth.clientId,
-          authority: environment.msalConfig.auth.authority,
-          redirectUri: window.location.origin,
-          postLogoutRedirectUri: window.location.origin
-        },
-        cache: { cacheLocation: 'localStorage' }
-      }),
-      {
-        interactionType: InteractionType.Popup,
-        authRequest: environment.loginRequest
-      },
-      { interactionType: InteractionType.Redirect, protectedResourceMap: new Map() }
-    )
+  new PublicClientApplication({
+    auth: {
+      clientId: environment.msalConfig.auth.clientId,
+      authority: environment.msalConfig.auth.authority,
+      redirectUri: window.location.origin + '/login',  // must match Azure AD
+      postLogoutRedirectUri: window.location.origin
+    },
+    cache: { cacheLocation: 'localStorage' }  // storeAuthStateInCookie removed
+  }),
+  {
+    interactionType: InteractionType.Redirect,  // uses redirect flow
+    authRequest: environment.loginRequest
+  },
+  {
+    interactionType: InteractionType.Redirect,
+    protectedResourceMap: new Map()
+  }
+)
+
   ],
 
   providers: [
