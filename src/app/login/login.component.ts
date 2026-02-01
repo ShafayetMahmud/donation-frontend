@@ -17,25 +17,18 @@ export class LoginComponent implements OnInit {
   constructor(
     private msalService: MsalService,
     private route: ActivatedRoute
-  ) {}
+  ) { }
 
   ngOnInit() {
-  this.returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
-
-  // Trigger login redirect
-  this.msalService.loginRedirect(environment.loginRequest);
-
-  // After returning from Azure AD, Angular will reload the app.
-  // So we need to detect that and redirect properly:
-  const urlParams = new URLSearchParams(window.location.search);
-  const code = urlParams.get('code');
-  if (code) {
-    // User just returned from Azure AD
-    window.location.href = this.returnUrl ?? '/';
+    this.returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
+    this.msalService.loginRedirect(environment.loginRequest);
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+    if (code) {
+      window.location.href = this.returnUrl ?? '/';
+    }
   }
-}
-
-//important login redirect logic
-
-
+  examplefunction(){
+    
+  }
 }
