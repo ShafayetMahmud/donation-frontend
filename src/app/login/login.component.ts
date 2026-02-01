@@ -19,15 +19,30 @@ export class LoginComponent implements OnInit {
     private route: ActivatedRoute
   ) { }
 
+  // ngOnInit() {
+  //   this.returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
+  //   this.msalService.loginRedirect(environment.loginRequest);
+  //   const urlParams = new URLSearchParams(window.location.search);
+  //   const code = urlParams.get('code');
+  //   if (code) {
+  //     window.location.href = this.returnUrl ?? '/';
+  //   }
+  // }
+
   ngOnInit() {
-    this.returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
+  this.returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
+
+  // Only redirect if user is not already logged in
+  const accounts = this.msalService.instance.getAllAccounts();
+  if (accounts.length === 0) {
+    // Not logged in → trigger redirect
     this.msalService.loginRedirect(environment.loginRequest);
-    const urlParams = new URLSearchParams(window.location.search);
-    const code = urlParams.get('code');
-    if (code) {
-      window.location.href = this.returnUrl ?? '/';
-    }
+  } else {
+    // Already logged in → go to returnUrl or root
+    window.location.href = this.returnUrl ?? '/';
   }
+}
+
   examplefunction(){
     console.log("example function called");
   }
