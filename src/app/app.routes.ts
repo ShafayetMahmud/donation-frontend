@@ -8,6 +8,7 @@ import { GalleryComponent } from './gallery/gallery.component';
 import { MissionComponent } from './mission/mission.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { CreateCampaignComponent } from './create-campaign/create-campaign.component';
+import { LoginComponent } from './login/login.component';
 
 export const routes: Routes = [
   {
@@ -23,7 +24,7 @@ export const routes: Routes = [
       { path: 'create-campaign', component: CreateCampaignComponent }
     ]
   },
-  // ⬇️ Note: not-found is now OUTSIDE layout (no nav bar)
+  { path: 'login', component: LoginComponent },
   { path: 'not-found', component: NotFoundComponent },
   { path: '**', redirectTo: 'not-found' }
 ];
