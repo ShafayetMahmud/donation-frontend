@@ -28,6 +28,8 @@ interface AppUser {
 })
 
 export class AuthService {
+  // private flag
+  private msalInitialized = false;
   private _userSubject = new BehaviorSubject<{ email: string; name: string; role: string } | null>(null);
   public user$ = this._userSubject.asObservable();
 
@@ -85,18 +87,29 @@ export class AuthService {
     return this._userSubject.value;
   }
 
-  // In AuthService
-async initializeUserAfterRedirect(): Promise<void> {
-  const accounts = this.msalService.instance.getAllAccounts();
-  if (accounts.length > 0) {
-    const account = accounts[0];
-    this._userSubject.next({
-      email: account.username ?? '',
-      name: account.name ?? account.username ?? '',
-      role: 'AppUser'
-    });
+  async ensureInitialized(): Promise<void> {
+    // Only call initialize once
+    if (!this.msalInitialized) {
+      await this.msalService.instance.initialize();
+      this.msalInitialized = true;
+    }
   }
-}
+
+
+  async loadUserFromMsal() {
+    await this.ensureInitialized();
+
+    const accounts = this.msalService.instance.getAllAccounts();
+    if (accounts.length > 0) {
+      const account = accounts[0];
+      this._userSubject.next({
+        email: account.username ?? '',
+        name: account.name ?? account.username ?? '',
+        role: 'AppUser'
+      });
+    }
+  }
+
 
 
   async logout() {
