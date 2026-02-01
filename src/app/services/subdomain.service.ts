@@ -16,7 +16,7 @@ export class SubdomainService {
   public loading$ = this._loading$.asObservable();
 
   public subdomain: string | null = null;
-  private readonly baseUrl = `${environment.apiBaseUrl}/api/campaign`;
+  private readonly baseUrl = `${environment.apiBaseUrl}/campaign`;
 
   private fallbackCampaigns: Campaign[] = [
     {
@@ -56,41 +56,27 @@ export class SubdomainService {
   }
 
   private fetchCampaign(subdomain: string) {
-    this._loading$.next(true);
+  this._loading$.next(true);
 
-    // this.http.get<Campaign>(`${this.baseUrl}/by-subdomain/${subdomain}`).subscribe({
-    //   next: (campaign) => {
-    //     this._campaign$.next(campaign);
-    //     this._loading$.next(false);
-    //   },
-    //   error: () => {
-    //     const fallback = this.fallbackCampaigns.find(c => c.subdomain === subdomain);
-    //     if (fallback) {
-    //       this._campaign$.next(fallback);
-    //     } else {
-    //       this._campaign$.next(null);
-    //       this.router.navigate(['/not-found']);
-    //     }
-    //     this._loading$.next(false);
-    //   }
-    // });
-    this.http.get<Campaign>(`${this.baseUrl}/by-subdomain/${subdomain}`)
-  .pipe(
-    catchError(err => {
-      console.warn('Failed to load campaign (maybe anonymous)', err);
-      const fallback = this.fallbackCampaigns.find(c => c.subdomain === subdomain);
-      return of(fallback ?? null);
-    })
-  )
-  .subscribe(campaign => {
-    if (campaign) {
+  this.http.get<Campaign>(`${environment.apiBaseUrl}/campaign/by-subdomain/${subdomain}`).subscribe({
+    next: (campaign) => {
       this._campaign$.next(campaign);
-    } else {
-      this.router.navigate(['/not-found']);
+      this._loading$.next(false);
+    },
+    error: (err) => {
+      console.warn('Failed to load campaign (anonymous or error)', err);
+      const fallback = this.fallbackCampaigns.find(c => c.subdomain === subdomain);
+      if (fallback) {
+        this._campaign$.next(fallback);
+      } else {
+        this._campaign$.next(null);
+        this.router.navigate(['/not-found']);
+      }
+      this._loading$.next(false);
     }
-    this._loading$.next(false);
   });
-  }
+}
+
 
   getCurrentCampaign(): Campaign | null {
     return this._campaign$.getValue();
