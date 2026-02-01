@@ -61,10 +61,27 @@ export class LayoutComponent {
 //   }
 // }
 
+// onLogin() {
+//   const returnUrl = encodeURIComponent(window.location.origin); // subdomain URL
+//   window.location.href = `https://mudhammataan.com/login?returnUrl=${returnUrl}`;
+// }
+
 onLogin() {
-  const returnUrl = encodeURIComponent(window.location.origin); // subdomain URL
-  window.location.href = `https://mudhammataan.com/login?returnUrl=${returnUrl}`;
+  let returnUrl: string | null = null;
+
+  // Only set returnUrl if we are in a subdomain
+  if (this.subdomainService.isSubdomain() && !this.subdomainService.isSpecialSubdomain()) {
+    returnUrl = encodeURIComponent(window.location.href); // full current subdomain URL
+  }
+
+  if (returnUrl) {
+    window.location.href = `https://mudhammataan.com/login?returnUrl=${returnUrl}`;
+  } else {
+    // Main domain login
+    window.location.href = `https://mudhammataan.com/login`;
+  }
 }
+
 
 
 

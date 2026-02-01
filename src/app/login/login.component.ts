@@ -21,10 +21,25 @@ export class LoginComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    // 1. Get the returnUrl query param (from subdomain)
-    this.returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
+  this.returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
 
-    // 2. Trigger login via redirect (full-page)
-    this.msalService.loginRedirect(environment.loginRequest);
-  }
+  this.msalService.handleRedirectObservable().subscribe({
+    next: (result) => {
+      if (result) {
+        console.log('Logged in successfully', result);
+      }
+      // Redirect back
+      if (this.returnUrl) {
+        window.location.href = this.returnUrl;
+      } else {
+        window.location.href = '/';
+      }
+    },
+    error: (error) => console.error('Login error', error)
+  });
+
+  // Start login
+  this.msalService.loginRedirect(environment.loginRequest);
+}
+
 }
