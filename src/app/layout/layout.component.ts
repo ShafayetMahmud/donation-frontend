@@ -40,46 +40,19 @@ export class LayoutComponent {
     this.user$ = this.authService.user$;
   }
 
-  async onLogin() {
-  // 1️⃣ Trigger MSAL login popup
-  const result = await this.authService.loginPopup();
+//   async onLogin() {
+//   const result = await this.authService.loginPopup();
+// }
 
-  // 2️⃣ Exchange ID token with backend to get role
-  // const resp: any = await this.authService.exchangeIdToken(result.idToken);
-
-  // 3️⃣ Update user observable with email, name, and role
-  // const user = {
-  //   email: resp.email || result.account?.username || '',
-  //   name: resp.name || result.account?.name || result.account?.username || '',
-  //   role: resp.role || 'AppUser'
-  // };
-
-  // 4️⃣ Set current user in AuthService
-  // this.authService.setCurrentUser(user);
+// layout.component.ts
+onLogin() {
+  const returnUrl = encodeURIComponent(window.location.origin); // subdomain URL
+  window.location.href = `https://mudhammataan.com/login?returnUrl=${returnUrl}`;
 }
 
 
+
   async onCreateCampaignClick() {
-  // let user = await this.authService.getCurrentUser(); // Returns user or null
-  // if (!user) {
-  //   Trigger login popup
-  //   const result = await this.authService.loginPopup();
-    
-  //   Exchange token with backend to get role
-  //   const resp: any = await this.authService.exchangeIdToken(result.idToken);
-
-  //   Update user observable with role
-  //   user = {
-  //     email: resp.email || result.account?.username || '',
-  //     name: resp.name || result.account?.name || result.account?.username || '',
-  //     role: resp.role || 'AppUser'
-  //   };
-
-  //   Set the user in AuthService
-  //   this.authService.setCurrentUser(user); // We'll add this function next
-  // }
-
-  // Now navigate to create campaign
   this.router.navigate(['/create-campaign']);
 }
 
