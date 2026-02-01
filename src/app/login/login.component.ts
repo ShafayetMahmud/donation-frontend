@@ -29,6 +29,6 @@ export class LoginComponent implements OnInit {
     }
   }
   examplefunction(){
-    
+    console.log("example function called");
   }
 }
