@@ -19,11 +19,15 @@ import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { inject } from '@angular/core';
 import { AuthInterceptor } from './services/auth.interceptor';
+import { MsalModule, MsalService, MsalBroadcastService } from '@azure/msal-angular';
+import { PublicClientApplication, InteractionType } from '@azure/msal-browser';
+import { environment } from '../environments/environment';
+import { LoginComponent } from './login/login.component';
 
 
 const routes: Routes = [
-  { path: '', component: DonateComponent }, // root route -> donate
-  // { path: 'donate', component: DonateComponent } // optional alias
+  { path: '', component: DonateComponent },
+  { path: 'login', loadComponent: () => import('./login/login.component').then(m => m.LoginComponent) }
 ];
 
 @NgModule({
@@ -36,6 +40,7 @@ const routes: Routes = [
     FormsModule,
     HttpClientModule,
     AppComponent,
+    LoginComponent,
     BrowserAnimationsModule, // required for Angular Material
     MatCardModule,
     MatFormFieldModule,
@@ -54,11 +59,29 @@ const routes: Routes = [
         provide: TranslateLoader,
         useClass: TranslateHttpLoader
       }
-    })
+    }),
+    MsalModule.forRoot(
+      new PublicClientApplication({
+        auth: {
+          clientId: environment.msalConfig.auth.clientId,
+          authority: environment.msalConfig.auth.authority,
+          redirectUri: window.location.origin,
+          postLogoutRedirectUri: window.location.origin
+        },
+        cache: { cacheLocation: 'localStorage' }
+      }),
+      {
+        interactionType: InteractionType.Popup,
+        authRequest: environment.loginRequest
+      },
+      { interactionType: InteractionType.Redirect, protectedResourceMap: new Map() }
+    )
   ],
 
   providers: [
-  { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
+  { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+  MsalService,
+  MsalBroadcastService
 ]
 
   // bootstrap: [AppComponent]
