@@ -42,7 +42,7 @@ export class AuthService {
       },
       cache: {
         cacheLocation: environment.msalConfig.cache.cacheLocation as 'localStorage' | 'sessionStorage',
-        storeAuthStateInCookie: environment.msalConfig.cache.storeAuthStateInCookie
+        // storeAuthStateInCookie: environment.msalConfig.cache.storeAuthStateInCookie
       }
     });
   }
