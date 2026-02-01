@@ -50,18 +50,22 @@ export class LayoutComponent {
 //   window.location.href = `https://mudhammataan.com/login?returnUrl=${returnUrl}`;
 // }
 
+// onLogin() {
+//   if (this.subdomainService.isSubdomain() && !this.subdomainService.isSpecialSubdomain()) {
+//     const returnUrl = encodeURIComponent(window.location.href); // return to this subdomain page
+//     window.location.href = `https://mudhammataan.com/login?returnUrl=${returnUrl}`;
+//   } else {
+//     this.authService.loginPopup()
+//       .then(result => console.log('Logged in successfully', result))
+//       .catch(error => console.error('Login error', error));
+//   }
+// }
+
 onLogin() {
-  if (this.subdomainService.isSubdomain() && !this.subdomainService.isSpecialSubdomain()) {
-    // Subdomain login → redirect to main domain login
-    const returnUrl = encodeURIComponent(window.location.href); // return to this subdomain page
-    window.location.href = `https://mudhammataan.com/login?returnUrl=${returnUrl}`;
-  } else {
-    // Main domain login → use popup (old behavior)
-    this.authService.loginPopup()
-      .then(result => console.log('Logged in successfully', result))
-      .catch(error => console.error('Login error', error));
-  }
+  const returnUrl = encodeURIComponent(window.location.origin); // subdomain URL
+  window.location.href = `https://mudhammataan.com/login?returnUrl=${returnUrl}`;
 }
+
 
 
 
