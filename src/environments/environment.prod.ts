@@ -8,8 +8,8 @@ export const environmentOld = {
       // clientId: '99d94324-a3a8-4ace-b4b2-0ae093229b62',
       clientId: '9a7bbbc7-dad0-4ef7-841b-b8b45a7605ed',
       authority: 'https://login.microsoftonline.com/8adf6212-f010-45db-b70e-7bc732eb2759', // tenant ID
-      redirectUri: 'window.location.origin', // Angular base URL
-      postLogoutRedirectUri: 'window.location.origin'
+      redirectUri: window.location.origin,
+      postLogoutRedirectUri: window.location.origin
     },
     cache: {
       cacheLocation: 'localStorage',
@@ -32,8 +32,8 @@ export const environment = {
       // clientId: '99d94324-a3a8-4ace-b4b2-0ae093229b62',
       clientId: '9a7bbbc7-dad0-4ef7-841b-b8b45a7605ed',
       authority: 'https://login.microsoftonline.com/8adf6212-f010-45db-b70e-7bc732eb2759', // tenant ID
-      redirectUri: 'window.location.origin', // Angular base URL
-      postLogoutRedirectUri: 'window.location.origin'
+      redirectUri: window.location.origin,
+      postLogoutRedirectUri: window.location.origin
     },
     cache: {
       cacheLocation: 'localStorage',
