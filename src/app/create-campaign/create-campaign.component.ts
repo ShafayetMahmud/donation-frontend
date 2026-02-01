@@ -170,7 +170,7 @@ export class CreateCampaignComponent implements OnInit {
       error: (err) => {
     if (err.status === 401) {
       alert('Please login to create a campaign');
-      this.authService.loginPopup(); // trigger login
+      // this.authService.loginPopup(); // trigger login
     } else {
       console.error('Creation failed', err);
     }
@@ -178,21 +178,6 @@ export class CreateCampaignComponent implements OnInit {
     });
   }
 }
-
-
-  login() {
-    this.authService.loginPopup()
-      .then(result => {
-        localStorage.setItem('access_token', result.accessToken);
-        this.authService.setCurrentUser({
-          email: result.account?.username ?? '',
-          name: result.account?.name ?? result.account?.username ?? '',
-          role: 'AppUser'
-        });
-        alert('Login successful! You can now create or update campaigns.');
-      })
-      .catch(err => console.error('Login failed', err));
-  }
 
   logout() {
     this.authService.logout()
