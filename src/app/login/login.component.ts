@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MsalService } from '@azure/msal-angular';
 import { environment } from '../../environments/environment';
@@ -13,11 +13,14 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
       <p>Redirecting… Please wait, logging you in</p>
     </div>
   `,
+  providers: [MsalService]
 })
 export class LoginComponent implements OnInit {
+  private msalService = inject(MsalService);
   returnUrl: string | null = null;
+  private route = inject(ActivatedRoute);
 
-  constructor(private msalService: MsalService, private route: ActivatedRoute) {}
+  // constructor(private msalService: MsalService, private route: ActivatedRoute) {}
 
   ngOnInit() {
     this.returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
