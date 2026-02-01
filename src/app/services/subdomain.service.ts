@@ -40,48 +40,61 @@ export class SubdomainService {
   ];
 
   constructor(private http: HttpClient, private router: Router) {
-  const urlParams = new URLSearchParams(window.location.search);
-  this.subdomain = urlParams.get('subdomain');
 
-  const hostname = window.location.hostname;
+    const path = window.location.pathname;
 
-  // Only set subdomain if NOT main domain
-  if (!this.subdomain && hostname !== 'localhost' && hostname !== 'mudhammataan.com') {
-    const parts = hostname.split('.');
-    if (parts.length > 2) this.subdomain = parts[0];
+    // 🚨 DO NOT run campaign logic on these routes
+    const skipCampaignRoutes = ['/login', '/not-found', '/create-campaign'];
+
+    if (skipCampaignRoutes.some(r => path.startsWith(r))) {
+      this._loading$.next(false);
+      return;
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    this.subdomain = urlParams.get('subdomain');
+
+    if (!this.subdomain && window.location.hostname !== 'localhost' && window.location.hostname !== 'mudhammataan.com') {
+      const parts = window.location.hostname.split('.');
+      if (parts.length > 2) this.subdomain = parts[0];
+    }
+
+    if (this.subdomain) {
+      this.fetchCampaign(this.subdomain);
+    } else {
+      this._loading$.next(false);
+    }
   }
 
-  if (this.subdomain) {
-    this.fetchCampaign(this.subdomain);
-  } else {
-    // MAIN DOMAIN → skip fetching campaign
-    this._campaign$.next(null);
-    this._loading$.next(false);
-  }
-}
 
 
   private fetchCampaign(subdomain: string) {
-  this._loading$.next(true);
+    this._loading$.next(true);
 
-  this.http.get<Campaign>(`${environment.apiBaseUrl}/campaign/by-subdomain/${subdomain}`).subscribe({
-    next: (campaign) => {
-      this._campaign$.next(campaign);
-      this._loading$.next(false);
-    },
-    error: (err) => {
-      console.warn('Failed to load campaign (anonymous or error)', err);
-      const fallback = this.fallbackCampaigns.find(c => c.subdomain === subdomain);
-      if (fallback) {
-        this._campaign$.next(fallback);
-      } else {
-        this._campaign$.next(null);
-        this.router.navigate(['/not-found']);
+    this.http.get<Campaign>(`${environment.apiBaseUrl}/campaign/by-subdomain/${subdomain}`).subscribe({
+      next: (campaign) => {
+        this._campaign$.next(campaign);
+        this._loading$.next(false);
+      },
+      error: (err) => {
+        console.warn('Failed to load campaign (anonymous or error)', err);
+        const fallback = this.fallbackCampaigns.find(c => c.subdomain === subdomain);
+        if (fallback) {
+          this._campaign$.next(fallback);
+        }
+        else if (this.subdomain) {   // only subdomains should 404
+          this._campaign$.next(null);
+          this.router.navigate(['/not-found']);
+        }
+        else {
+          // Main domain → no campaign is fine
+          this._campaign$.next(null);
+        }
+
+        this._loading$.next(false);
       }
-      this._loading$.next(false);
-    }
-  });
-}
+    });
+  }
 
 
   getCurrentCampaign(): Campaign | null {
