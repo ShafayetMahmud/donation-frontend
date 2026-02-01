@@ -17,24 +17,27 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 })
 export class LoginComponent implements OnInit {
   private msalService = inject(MsalService);
-  returnUrl: string | null = null;
   private route = inject(ActivatedRoute);
+  returnUrl: string | null = null;
 
   // constructor(private msalService: MsalService, private route: ActivatedRoute) {}
 
-  ngOnInit() {
+  async ngOnInit() {
     this.returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
 
-    this.msalService.instance.handleRedirectPromise().then((result) => {
-      const accounts = this.msalService.instance.getAllAccounts();
+    // ✅ Wait for MSAL to initialize first
+    await this.msalService.instance.initialize();
 
-      if (result !== null || accounts.length > 0) {
-        // User is logged in → redirect
-        window.location.href = this.returnUrl ?? '/';
-      } else {
-        // Not logged in → trigger MSAL redirect
-        this.msalService.loginRedirect(environment.loginRequest);
-      }
-    }).catch(err => console.error('MSAL login error', err));
+    this.msalService.instance.handleRedirectPromise()
+      .then(result => {
+        const accounts = this.msalService.instance.getAllAccounts();
+
+        if (result || accounts.length > 0) {
+          window.location.href = this.returnUrl ?? '/';
+        } else {
+          this.msalService.loginRedirect(environment.loginRequest);
+        }
+      })
+      .catch(err => console.error('MSAL login error', err));
   }
 }
