@@ -26,11 +26,11 @@ const routes: Routes = [
   { path: '', component: HomeComponent },  // index.html page
   // { path: 'gallery', component: GalleryComponent },
   // { path: 'mission', component: MissionComponent },
-  {
-    path: 'login',
-    loadComponent: () =>
-      import('./login/login.component').then((m) => m.LoginComponent)
-  },
+  // {
+  //   path: 'login',
+  //   loadComponent: () =>
+  //     import('./login/login.component').then((m) => m.LoginComponent)
+  // },
   { path: '**', redirectTo: '' } , // fallback to home
   { path: 'donate', component: DonateComponent },
   { path: '', redirectTo: '/donate', pathMatch: 'full' }
