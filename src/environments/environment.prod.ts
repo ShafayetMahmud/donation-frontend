@@ -25,6 +25,7 @@ export const environmentOld = {
 
 export const environment = {
   production: true,
+  // apiBaseUrl: window.location.protocol + '//' + window.location.host + '/api',
   apiBaseUrl: window.location.protocol + '//' + window.location.host + '/api',
   msalConfig: {
     auth: {
