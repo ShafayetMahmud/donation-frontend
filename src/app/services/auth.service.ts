@@ -97,36 +97,49 @@ export class AuthService {
 
 
 
-  async ensureInitialized(): Promise<void> {
-    // Only call initialize once
-    if (!this.msalInitialized) {
-      await this.msalService.instance.initialize();
-      this.msalInitialized = true;
-    }
-  }
+  // async ensureInitialized(): Promise<void> {
+  //   if (!this.msalInitialized) {
+  //     await this.msalService.instance.initialize();
+  //     this.msalInitialized = true;
+  //   }
+  // }
 
-  async loadUserFromMsal() {
-    await this.ensureInitialized();
+  // async loadUserFromMsal() {
+  //   await this.ensureInitialized();
 
-    const accounts = this.msalService.instance.getAllAccounts();
-    if (accounts.length > 0) {
-      const account = accounts[0];
-      this._userSubject.next({
-        email: account.username ?? '',
-        name: account.name ?? account.username ?? '',
-        role: 'AppUser'
-      });
-    }
-  }
+  //   const accounts = this.msalService.instance.getAllAccounts();
+  //   if (accounts.length > 0) {
+  //     const account = accounts[0];
+  //     this._userSubject.next({
+  //       email: account.username ?? '',
+  //       name: account.name ?? account.username ?? '',
+  //       role: 'AppUser'
+  //     });
+  //   }
+  // }
+
+  // async restoreUserFromMsal(): Promise<void> {
+  //   await this.msalService.instance.initialize();
+
+  //   const accounts = this.msalService.instance.getAllAccounts();
+
+  //   if (accounts.length > 0) {
+  //     const account = accounts[0];
+
+  //     this._userSubject.next({
+  //       email: account.username ?? '',
+  //       name: account.name ?? account.username ?? '',
+  //       role: 'AppUser'
+  //     });
+  //   }
+  // }
 
   async restoreUserFromMsal(): Promise<void> {
     await this.msalService.instance.initialize();
-
+    await this.msalService.instance.handleRedirectPromise();
     const accounts = this.msalService.instance.getAllAccounts();
-
     if (accounts.length > 0) {
       const account = accounts[0];
-
       this._userSubject.next({
         email: account.username ?? '',
         name: account.name ?? account.username ?? '',
@@ -134,6 +147,7 @@ export class AuthService {
       });
     }
   }
+
 
 
   async logout() {
