@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { firstValueFrom, BehaviorSubject } from 'rxjs';
 import { jwtDecode } from 'jwt-decode';
 import { MsalService } from '@azure/msal-angular';
+import { EventType } from '@azure/msal-browser';
 
 export interface JwtPayload {
   aud: string;
@@ -33,7 +34,33 @@ export class AuthService {
   private _userSubject = new BehaviorSubject<{ email: string; name: string; role: string } | null>(null);
   public user$ = this._userSubject.asObservable();
 
-  constructor(private http: HttpClient, private ngZone: NgZone, private msalService: MsalService) { }
+  constructor(private http: HttpClient, private ngZone: NgZone, private msalService: MsalService) {
+    this.listenToMsalEvents();
+  }
+
+  private listenToMsalEvents() {
+    this.msalService.instance.addEventCallback((event) => {
+
+      if (
+        event.eventType === EventType.LOGIN_SUCCESS ||
+        event.eventType === EventType.ACQUIRE_TOKEN_SUCCESS
+      ) {
+        const accounts = this.msalService.instance.getAllAccounts();
+
+        if (accounts.length > 0) {
+          const account = accounts[0];
+
+          this.ngZone.run(() => {
+            this._userSubject.next({
+              email: account.username ?? '',
+              name: account.name ?? account.username ?? '',
+              role: 'AppUser'
+            });
+          });
+        }
+      }
+    });
+  }
 
   async getAccessToken(): Promise<string | null> {
     const accounts = this.msalService.instance.getAllAccounts();
@@ -134,19 +161,36 @@ export class AuthService {
   //   }
   // }
 
+  // async restoreUserFromMsal(): Promise<void> {
+  //   await this.msalService.instance.initialize();
+  //   await this.msalService.instance.handleRedirectPromise();
+  //   const accounts = this.msalService.instance.getAllAccounts();
+  //   if (accounts.length > 0) {
+  //     const account = accounts[0];
+  //     this._userSubject.next({
+  //       email: account.username ?? '',
+  //       name: account.name ?? account.username ?? '',
+  //       role: 'AppUser'
+  //     });
+  //   }
+  // }
+
   async restoreUserFromMsal(): Promise<void> {
-    await this.msalService.instance.initialize();
-    await this.msalService.instance.handleRedirectPromise();
-    const accounts = this.msalService.instance.getAllAccounts();
-    if (accounts.length > 0) {
-      const account = accounts[0];
-      this._userSubject.next({
-        email: account.username ?? '',
-        name: account.name ?? account.username ?? '',
-        role: 'AppUser'
-      });
-    }
+  await this.msalService.instance.initialize();
+
+  const accounts = this.msalService.instance.getAllAccounts();
+
+  if (accounts.length > 0) {
+    const account = accounts[0];
+
+    this._userSubject.next({
+      email: account.username ?? '',
+      name: account.name ?? account.username ?? '',
+      role: 'AppUser'
+    });
   }
+}
+
 
 
 
