@@ -83,9 +83,14 @@ export class AuthService {
     this._userSubject.next(user);
   }
 
-  async getCurrentUser() {
-    return this._userSubject.value;
-  }
+  // async getCurrentUser() {
+  //   return this._userSubject.value;
+  // }
+
+  getCurrentUser() {
+  return this._userSubject.value;
+}
+
 
   async ensureInitialized(): Promise<void> {
     // Only call initialize once
@@ -94,7 +99,6 @@ export class AuthService {
       this.msalInitialized = true;
     }
   }
-
 
   async loadUserFromMsal() {
     await this.ensureInitialized();
@@ -110,6 +114,21 @@ export class AuthService {
     }
   }
 
+  async restoreUserFromMsal(): Promise<void> {
+  await this.msalService.instance.initialize();
+
+  const accounts = this.msalService.instance.getAllAccounts();
+
+  if (accounts.length > 0) {
+    const account = accounts[0];
+
+    this._userSubject.next({
+      email: account.username ?? '',
+      name: account.name ?? account.username ?? '',
+      role: 'AppUser'
+    });
+  }
+}
 
 
   async logout() {
