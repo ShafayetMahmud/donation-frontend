@@ -31,6 +31,7 @@
     <!-- <button *ngIf="!(user$ | async)" mat-raised-button color="primary" (click)="onLogin()">
       {{ 'LAYOUT.LOGIN' | translate }}
     </button> -->
+    <!-- Login button -->
     <ng-container *ngIf="user$ | async as user; else showLogin">
       <div class="user-dropdown">
         <button mat-button [matMenuTriggerFor]="menu">
@@ -42,41 +43,18 @@
       </div>
     </ng-container>
 
-    <button style="position: fixed; top: 15px; right: 15px" (click)="langService.toggleLanguage()">
-      {{ langService.currentLang === 'en' ? 'বাংলা' : 'EN' }}
-    </button>
-
-    <!-- <button mat-raised-button color="primary" (click)="onLogin()" class="donate-button">
-      {{ 'LAYOUT.LOGIN' | translate }}
-    </button> -->
-
     <ng-template #showLogin>
       <button mat-raised-button color="primary" (click)="onLogin()">
         {{ 'LAYOUT.LOGIN' | translate }}
       </button>
     </ng-template>
 
-    <!-- <div *ngIf="user$ | async as user" class="user-dropdown">
-      <button mat-button [matMenuTriggerFor]="menu">
-        {{ user.name }} ({{ user.role }})
-      </button>
-      <mat-menu #menu="matMenu">
-        <button mat-menu-item (click)="logout()">Logout</button>
-      </mat-menu>
-    </div> -->
+    <button style="position: fixed; top: 15px; right: 15px" (click)="langService.toggleLanguage()">
+      {{ langService.currentLang === 'en' ? 'বাংলা' : 'EN' }}
+    </button>
 
-    <!-- <button *ngIf="subdomainService.isSubdomain() && !subdomainService.isSpecialSubdomain()" mat-raised-button
-      color="primary" (click)="onEditCampaign()" class="donate-button">
-      Edit Campaign
-    </button> -->
-    <!-- <button
-      *ngIf="subdomainService.isSubdomain() && !subdomainService.isSpecialSubdomain() && (user$ | async) && subdomainService.getCurrentCampaign()"
-      mat-raised-button color="primary" (click)="onEditCampaign()" [disabled]="!(subdomainService.getCurrentCampaign())"
-      class="donate-button">
-      Edit Campaign
-    </button> -->
-
-    <button *ngIf="canEditCampaign" mat-raised-button color="primary" (click)="onEditCampaign()" class="donate-button">
+    <!-- Edit Campaign button -->
+    <button *ngIf="canEditCampaign$ | async" mat-raised-button color="primary" (click)="onEditCampaign()">
       Edit Campaign
     </button>
 

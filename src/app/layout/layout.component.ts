@@ -5,11 +5,11 @@ import { CommonModule, AsyncPipe } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { Router, RouterModule } from '@angular/router';
-import { Observable, BehaviorSubject } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 import { MatMenuModule } from '@angular/material/menu';
 import { TranslateModule } from '@ngx-translate/core';
 import { Campaign } from '../../models/campaign.model';
+import { combineLatest, map, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-layout',
@@ -29,6 +29,7 @@ import { Campaign } from '../../models/campaign.model';
 export class LayoutComponent {
   public campaign$: Observable<Campaign | null>;
   public user$: Observable<{ email: string; name: string; role: string } | null>;
+  public canEditCampaign$: Observable<boolean>;
 
   constructor(
     public langService: LanguageService,
@@ -38,6 +39,14 @@ export class LayoutComponent {
   ) {
     this.campaign$ = this.subdomainService.campaign$;
     this.user$ = this.authService.user$;
+    this.canEditCampaign$ = combineLatest([this.user$, this.campaign$]).pipe(
+      map(([user, campaign]) => 
+        !!user &&
+        !!campaign &&
+        this.subdomainService.isSubdomain() &&
+        !this.subdomainService.isSpecialSubdomain()
+      )
+    );
   }
 
   onLogin() {
@@ -63,47 +72,14 @@ export class LayoutComponent {
     }
   }
 
-  //   get canEditCampaign(): boolean {
-  //   return (
-  //     this.subdomainService.isSubdomain() &&
-  //     !this.subdomainService.isSpecialSubdomain() &&
-  //     this.subdomainService.getCurrentCampaign() &&
-  //     this.authService.getCurrentUser()
-  //   );
-  // }
-
-  // get canEditCampaign(): boolean {
-  //   const user = this.authService.getCurrentUser();
-  //   const campaign = this.subdomainService.getCurrentCampaign();
-
-  //   return (
-  //     this.subdomainService.isSubdomain() &&
-  //     !this.subdomainService.isSpecialSubdomain() &&
-  //     !!campaign &&
-  //     !!user
-  //   );
-  // }
-
-  // get canEditCampaign(): boolean {
-  //   const campaign = this.subdomainService.getCurrentCampaign();
-  //   const user = this.authService.currentUser;
-
-  //   return (
-  //     this.subdomainService.isSubdomain() &&
-  //     !this.subdomainService.isSpecialSubdomain() &&
-  //     !!campaign &&
-  //     !!user
-  //   );
-  // }
-
-  get canEditCampaign(): boolean {
-  return (
-    this.subdomainService.isSubdomain() &&
-    !this.subdomainService.isSpecialSubdomain() &&
-    !!this.subdomainService.getCurrentCampaign() &&
-    !!this.authService.currentUser
-  );
-}
+//   get canEditCampaign(): boolean {
+//   return (
+//     this.subdomainService.isSubdomain() &&
+//     !this.subdomainService.isSpecialSubdomain() &&
+//     !!this.subdomainService.getCurrentCampaign() &&
+//     !!this.authService.currentUser
+//   );
+// }
 
 
   logout() {
