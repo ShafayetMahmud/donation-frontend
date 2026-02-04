@@ -32,6 +32,14 @@
       {{ 'LAYOUT.LOGIN' | translate }}
     </button> -->
     <ng-container *ngIf="user$ | async as user; else showLogin">
+      <div class="user-dropdown">
+        <button mat-button [matMenuTriggerFor]="menu">
+          {{ user.name }} ({{ user.role }})
+        </button>
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item (click)="logout()">Logout</button>
+        </mat-menu>
+      </div>
     </ng-container>
 
     <button style="position: fixed; top: 15px; right: 15px" (click)="langService.toggleLanguage()">
@@ -48,14 +56,14 @@
       </button>
     </ng-template>
 
-    <div *ngIf="user$ | async as user" class="user-dropdown">
+    <!-- <div *ngIf="user$ | async as user" class="user-dropdown">
       <button mat-button [matMenuTriggerFor]="menu">
         {{ user.name }} ({{ user.role }})
       </button>
       <mat-menu #menu="matMenu">
         <button mat-menu-item (click)="logout()">Logout</button>
       </mat-menu>
-    </div>
+    </div> -->
 
     <!-- <button *ngIf="subdomainService.isSubdomain() && !subdomainService.isSpecialSubdomain()" mat-raised-button
       color="primary" (click)="onEditCampaign()" class="donate-button">

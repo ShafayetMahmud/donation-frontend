@@ -87,9 +87,14 @@ export class AuthService {
   //   return this._userSubject.value;
   // }
 
-  getCurrentUser() {
-  return this._userSubject.value;
-}
+  //   getCurrentUser() {
+  //   return this._userSubject.value;
+  // }
+
+  get currentUser() {
+    return this._userSubject.value;
+  }
+
 
 
   async ensureInitialized(): Promise<void> {
@@ -115,20 +120,20 @@ export class AuthService {
   }
 
   async restoreUserFromMsal(): Promise<void> {
-  await this.msalService.instance.initialize();
+    await this.msalService.instance.initialize();
 
-  const accounts = this.msalService.instance.getAllAccounts();
+    const accounts = this.msalService.instance.getAllAccounts();
 
-  if (accounts.length > 0) {
-    const account = accounts[0];
+    if (accounts.length > 0) {
+      const account = accounts[0];
 
-    this._userSubject.next({
-      email: account.username ?? '',
-      name: account.name ?? account.username ?? '',
-      role: 'AppUser'
-    });
+      this._userSubject.next({
+        email: account.username ?? '',
+        name: account.name ?? account.username ?? '',
+        role: 'AppUser'
+      });
+    }
   }
-}
 
 
   async logout() {
