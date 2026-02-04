@@ -22,7 +22,8 @@ export class AppComponent implements OnInit {
 
   async ngOnInit() {
     // Initialize user after redirect login
-    await this.authService.ensureInitialized();
-  this.authService.loadUserFromMsal();
+  //   await this.authService.ensureInitialized();
+  // this.authService.loadUserFromMsal();
+  await this.authService.restoreUserFromMsal();
   }
 }

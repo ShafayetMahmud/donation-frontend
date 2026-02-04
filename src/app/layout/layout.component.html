@@ -28,9 +28,11 @@
     <!-- <button *ngIf="!(user$ | async)" mat-raised-button color="primary" (click)="onLogin()" class="donate-button">
       {{ 'LAYOUT.LOGIN' | translate }}
     </button> -->
-    <button *ngIf="!(user$ | async)" mat-raised-button color="primary" (click)="onLogin()">
+    <!-- <button *ngIf="!(user$ | async)" mat-raised-button color="primary" (click)="onLogin()">
       {{ 'LAYOUT.LOGIN' | translate }}
-    </button>
+    </button> -->
+    <ng-container *ngIf="user$ | async as user; else showLogin">
+    </ng-container>
 
     <button style="position: fixed; top: 15px; right: 15px" (click)="langService.toggleLanguage()">
       {{ langService.currentLang === 'en' ? 'বাংলা' : 'EN' }}
@@ -39,6 +41,12 @@
     <!-- <button mat-raised-button color="primary" (click)="onLogin()" class="donate-button">
       {{ 'LAYOUT.LOGIN' | translate }}
     </button> -->
+
+    <ng-template #showLogin>
+      <button mat-raised-button color="primary" (click)="onLogin()">
+        {{ 'LAYOUT.LOGIN' | translate }}
+      </button>
+    </ng-template>
 
     <div *ngIf="user$ | async as user" class="user-dropdown">
       <button mat-button [matMenuTriggerFor]="menu">
@@ -53,10 +61,14 @@
       color="primary" (click)="onEditCampaign()" class="donate-button">
       Edit Campaign
     </button> -->
-    <button
+    <!-- <button
       *ngIf="subdomainService.isSubdomain() && !subdomainService.isSpecialSubdomain() && (user$ | async) && subdomainService.getCurrentCampaign()"
       mat-raised-button color="primary" (click)="onEditCampaign()" [disabled]="!(subdomainService.getCurrentCampaign())"
       class="donate-button">
+      Edit Campaign
+    </button> -->
+
+    <button *ngIf="canEditCampaign" mat-raised-button color="primary" (click)="onEditCampaign()" class="donate-button">
       Edit Campaign
     </button>
 

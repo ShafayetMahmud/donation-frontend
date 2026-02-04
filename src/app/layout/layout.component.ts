@@ -63,6 +63,29 @@ export class LayoutComponent {
     }
   }
 
+//   get canEditCampaign(): boolean {
+//   return (
+//     this.subdomainService.isSubdomain() &&
+//     !this.subdomainService.isSpecialSubdomain() &&
+//     this.subdomainService.getCurrentCampaign() &&
+//     this.authService.getCurrentUser()
+//   );
+// }
+
+get canEditCampaign(): boolean {
+  const user = this.authService.getCurrentUser();
+  const campaign = this.subdomainService.getCurrentCampaign();
+
+  return (
+    this.subdomainService.isSubdomain() &&
+    !this.subdomainService.isSpecialSubdomain() &&
+    !!campaign &&
+    !!user
+  );
+}
+
+
+
   logout() {
     this.authService.logout();
     this.router.navigate(['/']);
