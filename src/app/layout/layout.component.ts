@@ -40,12 +40,11 @@ export class LayoutComponent {
     this.campaign$ = this.subdomainService.campaign$;
     this.user$ = this.authService.user$;
     this.canEditCampaign$ = combineLatest([this.user$, this.campaign$]).pipe(
-      map(([user, campaign]) => 
-        !!user &&
-        !!campaign &&
-        this.subdomainService.isSubdomain() &&
-        !this.subdomainService.isSpecialSubdomain()
-      )
+      map(([user, campaign]) => {
+        if (!user || !campaign) return false;
+        return this.subdomainService.isSubdomain() &&
+          !this.subdomainService.isSpecialSubdomain();
+      })
     );
   }
 
@@ -71,16 +70,6 @@ export class LayoutComponent {
       console.warn('No campaign found to edit.');
     }
   }
-
-//   get canEditCampaign(): boolean {
-//   return (
-//     this.subdomainService.isSubdomain() &&
-//     !this.subdomainService.isSpecialSubdomain() &&
-//     !!this.subdomainService.getCurrentCampaign() &&
-//     !!this.authService.currentUser
-//   );
-// }
-
 
   logout() {
     this.authService.logout();
