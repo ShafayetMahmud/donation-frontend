@@ -84,17 +84,27 @@ export class LayoutComponent {
   //   );
   // }
 
-  get canEditCampaign(): boolean {
-    const campaign = this.subdomainService.getCurrentCampaign();
-    const user = this.authService.currentUser;
+  // get canEditCampaign(): boolean {
+  //   const campaign = this.subdomainService.getCurrentCampaign();
+  //   const user = this.authService.currentUser;
 
-    return (
-      this.subdomainService.isSubdomain() &&
-      !this.subdomainService.isSpecialSubdomain() &&
-      !!campaign &&
-      !!user
-    );
-  }
+  //   return (
+  //     this.subdomainService.isSubdomain() &&
+  //     !this.subdomainService.isSpecialSubdomain() &&
+  //     !!campaign &&
+  //     !!user
+  //   );
+  // }
+
+  get canEditCampaign(): boolean {
+  return (
+    this.subdomainService.isSubdomain() &&
+    !this.subdomainService.isSpecialSubdomain() &&
+    !!this.subdomainService.getCurrentCampaign() &&
+    !!this.authService.currentUser
+  );
+}
+
 
   logout() {
     this.authService.logout();
