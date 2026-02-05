@@ -140,23 +140,31 @@ export class AuthService {
 
   /** ---------------- MAIN DOMAIN LOGIN ---------------- */
   async restoreUserFromMsal(): Promise<void> {
-    await this.msalService.instance.initialize();
-    const result = await this.msalService.instance.handleRedirectPromise();
-    const accounts = this.msalService.instance.getAllAccounts();
-    if (accounts.length === 0) return;
 
-    const account = accounts[0];
-    this.msalService.instance.setActiveAccount(account);
+  await this.msalService.instance.initialize();
 
-    const idToken = (account.idTokenClaims as any)?.rawIdToken;
-    if (idToken) this.setCookie('msal_id_token', idToken, 7);
+  const result = await this.msalService.instance.handleRedirectPromise();
 
-    this._userSubject.next({
-      email: account.username ?? '',
-      name: account.name ?? account.username ?? '',
-      role: 'AppUser'
-    });
+  // ⭐ This contains the real ID token
+  if (result?.idToken) {
+    this.setCookie('msal_id_token', result.idToken, 7);
   }
+
+  const accounts = this.msalService.instance.getAllAccounts();
+  if (accounts.length === 0) return;
+
+  const account = accounts[0];
+  this.msalService.instance.setActiveAccount(account);
+
+  this._userSubject.next({
+    email: account.username ?? '',
+    name: account.name ?? account.username ?? '',
+    role: 'AppUser'
+  });
+
+  console.log('[Auth] User restored on main domain');
+}
+
 
   /** ---------------- RESTORE FROM COOKIE ---------------- */
   restoreUserFromCookie() {
