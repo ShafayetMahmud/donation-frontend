@@ -20,10 +20,16 @@ export class AppComponent implements OnInit {
     private authService: AuthService
   ) {}
 
+  // async ngOnInit() {
+  // await this.authService.restoreUserFromMsal();
+  // }
+
   async ngOnInit() {
-    // Initialize user after redirect login
-  //   await this.authService.ensureInitialized();
-  // this.authService.loadUserFromMsal();
-  await this.authService.restoreUserFromMsal();
+  if (this.subdomainService.isSubdomain()) {
+    await this.authService.restoreUserOnSubdomain();
+  } else {
+    await this.authService.restoreUserFromMsal(); // main domain login
   }
+}
+
 }
