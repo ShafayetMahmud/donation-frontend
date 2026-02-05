@@ -36,143 +36,106 @@ export class AuthService {
   }
 
   /** ---------------- MSAL EVENT LISTENER ---------------- */
-  // private listenToMsalEvents() {
-  //   this.msalService.instance.addEventCallback((event) => {
-  //     if (
-  //       event.eventType === EventType.LOGIN_SUCCESS ||
-  //       event.eventType === EventType.ACQUIRE_TOKEN_SUCCESS
-  //     ) {
-  //       const accounts = this.msalService.instance.getAllAccounts();
-  //       if (accounts.length > 0) {
-  //         const account = accounts[0];
-  //         this.ngZone.run(() => {
-  //           const user: AppUser = {
-  //             email: account.username ?? '',
-  //             name: account.name ?? account.username ?? '',
-  //             role: 'AppUser'
-  //           };
-  //           this._userSubject.next(user);
-  //           this.setCookie('msal_id_token', this.getIdToken(), 7); // share across subdomains for 7 days
-  //         });
-  //       }
-  //     }
-  //   });
-  // }
-
   private listenToMsalEvents() {
-  this.msalService.instance.addEventCallback((event) => {
-    if (
-      event.eventType === EventType.LOGIN_SUCCESS ||
-      event.eventType === EventType.ACQUIRE_TOKEN_SUCCESS
-    ) {
-      const accounts = this.msalService.instance.getAllAccounts();
-      if (accounts.length > 0) {
-        const account = accounts[0];
-        this.ngZone.run(() => {
-          const user: AppUser = {
-            email: account.username ?? '',
-            name: account.name ?? account.username ?? '',
-            role: 'AppUser'
-          };
-          this._userSubject.next(user);
+    this.msalService.instance.addEventCallback((event) => {
+      if (
+        event.eventType === EventType.LOGIN_SUCCESS ||
+        event.eventType === EventType.ACQUIRE_TOKEN_SUCCESS
+      ) {
+        const accounts = this.msalService.instance.getAllAccounts();
+        if (accounts.length > 0) {
+          const account = accounts[0];
+          this.ngZone.run(() => {
+            const user: AppUser = {
+              email: account.username ?? '',
+              name: account.name ?? account.username ?? '',
+              role: 'AppUser'
+            };
+            this._userSubject.next(user);
 
-          // ✅ Set cookie AFTER login
-          const idToken = this.getIdToken();
-          if (idToken) {
-            this.setCookie('msal_id_token', idToken, 7); // 7 days
-          }
-        });
+            // ✅ Set cookie AFTER login for subdomain usage
+            const idToken = this.getIdToken();
+            if (idToken) {
+              this.setCookie('msal_id_token', idToken, 7); // 7 days
+            }
+          });
+        }
       }
-    }
-  });
-}
-
-
-//   async restoreUserOnSubdomain() {
-//   const idToken = this.getCookie('msal_id_token');
-//   if (!idToken) return false;
-
-//   try {
-//     const payload = jwtDecode<JwtPayload>(idToken);
-//     this._userSubject.next({
-//       email: payload.preferred_username,
-//       name: payload.name,
-//       role: 'AppUser'
-//     });
-//     return true;
-//   } catch {
-//     return false;
-//   }
-// }
-
-async restoreUserOnSubdomain() {
-  const idToken = this.getCookie('msal_id_token');
-  if (!idToken) return false;
-
-  try {
-    const payload = jwtDecode<JwtPayload>(idToken);
-    this._userSubject.next({
-      email: payload.preferred_username,
-      name: payload.name,
-      role: 'AppUser'
     });
-    return true;
-  } catch {
-    return false;
   }
-}
 
-
-
-  async restoreUserFromMsal(): Promise<void> {
-
-  await this.msalService.instance.initialize();
-  await this.msalService.instance.handleRedirectPromise();
-
-  let accounts = this.msalService.instance.getAllAccounts();
-
-  // ⭐ If no cached account, try silent SSO
-  if (accounts.length === 0) {
+  /** ---------------- RESTORE USER ON SUBDOMAIN ---------------- */
+  async restoreUserOnSubdomain(): Promise<boolean> {
+    const idToken = this.getCookie('msal_id_token');
+    if (!idToken) return false;
 
     try {
+      const payload = jwtDecode<JwtPayload>(idToken);
 
-      const result = await this.msalService.instance.ssoSilent({
+      this._userSubject.next({
+        email: payload.preferred_username,
+        name: payload.name,
+        role: 'AppUser'
+      });
+
+      // Optional: set as active account in MSAL for token acquisition
+      const accounts = this.msalService.instance.getAllAccounts();
+      if (accounts.length === 0) {
+        this.msalService.instance.setActiveAccount({
+          idTokenClaims: payload,
+          username: payload.preferred_username,
+          name: payload.name
+        } as any);
+      }
+
+      return true;
+    } catch (err) {
+      console.warn('Failed to restore user on subdomain', err);
+      return false;
+    }
+  }
+
+  /** ---------------- RESTORE USER FROM MSAL (MAIN DOMAIN) ---------------- */
+  async restoreUserFromMsal(): Promise<void> {
+    await this.msalService.instance.initialize();
+    await this.msalService.instance.handleRedirectPromise();
+
+    let accounts = this.msalService.instance.getAllAccounts();
+
+    // ⭐ If no cached account, try silent SSO
+    if (accounts.length === 0) {
+      try {
+        const result = await this.msalService.instance.ssoSilent({
+          scopes: environment.loginRequest.scopes
+        });
+        accounts = [result.account!];
+      } catch (e) {
+        console.log('SSO silent failed — user not logged in yet');
+        return;
+      }
+    }
+
+    const account = accounts[0];
+    this.msalService.instance.setActiveAccount(account);
+
+    try {
+      await this.msalService.instance.acquireTokenSilent({
+        account,
         scopes: environment.loginRequest.scopes
       });
 
-      accounts = [result.account!];
+      this._userSubject.next({
+        email: account.username ?? '',
+        name: account.name ?? account.username ?? '',
+        role: 'AppUser'
+      });
 
     } catch (e) {
-      console.log('SSO silent failed — user not logged in yet');
-      return;
+      console.warn('Silent token failed', e);
     }
   }
 
-  const account = accounts[0];
-
-  this.msalService.instance.setActiveAccount(account);
-
-  try {
-
-    await this.msalService.instance.acquireTokenSilent({
-      account,
-      scopes: environment.loginRequest.scopes
-    });
-
-    this._userSubject.next({
-      email: account.username ?? '',
-      name: account.name ?? account.username ?? '',
-      role: 'AppUser'
-    });
-
-  } catch (e) {
-    console.warn('Silent token failed', e);
-  }
-}
-
-
-
-  /** ---------------- RESTORE USER FROM COOKIE (SUBDOMAINS) ---------------- */
+  /** ---------------- RESTORE USER FROM COOKIE ---------------- */
   restoreUserFromCookie() {
     const idToken = this.getCookie('msal_id_token');
     if (idToken) {
@@ -259,16 +222,10 @@ async restoreUserOnSubdomain() {
   }
 
   /** ---------------- COOKIE HELPERS ---------------- */
-  // private setCookie(name: string, value: string, days: number) {
-  //   const expires = new Date(Date.now() + days * 864e5).toUTCString();
-  //   document.cookie = `${name}=${value}; path=/; domain=.mudhammataan.com; SameSite=Lax; Secure`;
-  // }
-
   private setCookie(name: string, value: string, days: number) {
-  const expires = new Date(Date.now() + days * 864e5).toUTCString();
-  document.cookie = `${name}=${value}; path=/; domain=.mudhammataan.com; SameSite=None; Secure; Expires=${expires}`;
-}
-
+    const expires = new Date(Date.now() + days * 864e5).toUTCString();
+    document.cookie = `${name}=${value}; path=/; domain=.mudhammataan.com; SameSite=None; Secure; Expires=${expires}`;
+  }
 
   private getCookie(name: string): string | null {
     const matches = document.cookie.match(new RegExp(
@@ -285,9 +242,8 @@ async restoreUserOnSubdomain() {
   private getIdToken(): string {
     const accounts = this.msalService.instance.getAllAccounts();
     if (!accounts || accounts.length === 0) return '';
-    const account = accounts[0];
-    const idToken = (this.msalService.instance.getActiveAccount() || account)?.idTokenClaims as any;
-    return idToken?.rawIdToken || '';
+    const account = this.msalService.instance.getActiveAccount() || accounts[0];
+    const idToken = (account?.idTokenClaims as any)?.rawIdToken;
+    return idToken || '';
   }
 }
-
