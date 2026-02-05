@@ -200,20 +200,54 @@ export class AuthService {
   }
 
   /** ---------------- RESTORE USER FROM MSAL ---------------- */
+  // async restoreUserFromMsal(): Promise<void> {
+  //   await this.msalService.instance.initialize();
+  //   const accounts = this.msalService.instance.getAllAccounts();
+  //   if (accounts.length > 0) {
+  //     const account = accounts[0];
+  //     const user: AppUser = {
+  //       email: account.username ?? '',
+  //       name: account.name ?? account.username ?? '',
+  //       role: 'AppUser'
+  //     };
+  //     this._userSubject.next(user);
+  //     this.setCookie('msal_id_token', this.getIdToken(), 7);
+  //   }
+  // }
+
   async restoreUserFromMsal(): Promise<void> {
-    await this.msalService.instance.initialize();
-    const accounts = this.msalService.instance.getAllAccounts();
-    if (accounts.length > 0) {
-      const account = accounts[0];
-      const user: AppUser = {
-        email: account.username ?? '',
-        name: account.name ?? account.username ?? '',
-        role: 'AppUser'
-      };
-      this._userSubject.next(user);
-      this.setCookie('msal_id_token', this.getIdToken(), 7);
-    }
+
+  await this.msalService.instance.initialize();
+
+  // VERY IMPORTANT
+  await this.msalService.instance.handleRedirectPromise();
+
+  const accounts = this.msalService.instance.getAllAccounts();
+
+  if (accounts.length === 0) return;
+
+  const account = accounts[0];
+
+  this.msalService.instance.setActiveAccount(account);
+
+  try {
+
+    await this.msalService.instance.acquireTokenSilent({
+      account,
+      scopes: environment.loginRequest.scopes
+    });
+
+    this._userSubject.next({
+      email: account.username ?? '',
+      name: account.name ?? account.username ?? '',
+      role: 'AppUser'
+    });
+
+  } catch (e) {
+    console.warn('Silent token failed', e);
   }
+}
+
 
   /** ---------------- RESTORE USER FROM COOKIE (SUBDOMAINS) ---------------- */
   restoreUserFromCookie() {
