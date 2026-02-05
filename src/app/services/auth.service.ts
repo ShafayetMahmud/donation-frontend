@@ -63,6 +63,33 @@ export class AuthService {
   });
 }
 
+/** ---------------- ACCESS TOKEN METHODS ---------------- */
+async getAccessToken(): Promise<string | null> {
+  const accounts = this.msalService.instance.getAllAccounts();
+  if (!accounts || accounts.length === 0) return null;
+
+  try {
+    const silentRequest = {
+      account: accounts[0],
+      scopes: ['api://99d94324-a3a8-4ace-b4b2-0ae093229b62/access_as_user'] // your API scope
+    };
+
+    const result = await this.msalService.instance.acquireTokenSilent(silentRequest)
+      .catch(() => this.msalService.instance.acquireTokenPopup(silentRequest));
+
+    localStorage.setItem('access_token', result.accessToken);
+    return result.accessToken;
+  } catch (err) {
+    console.error('Failed to get API token', err);
+    return null;
+  }
+}
+
+getAccessTokenSync(): string | null {
+  return localStorage.getItem('access_token');
+}
+
+
 
   /** ---------------- SUBDOMAIN LOGIN FLOW ---------------- */
   async restoreUserOnSubdomain(): Promise<boolean> {
