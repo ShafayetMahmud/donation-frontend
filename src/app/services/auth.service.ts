@@ -93,29 +93,33 @@ getAccessTokenSync(): string | null {
 
   /** ---------------- SUBDOMAIN LOGIN FLOW ---------------- */
   async restoreUserOnSubdomain(): Promise<boolean> {
-    const idToken = this.getCookie('msal_id_token');
-    if (!idToken) return false;
+  const idToken = this.getCookie('msal_id_token');
+  if (!idToken) return false;
 
-    try {
-      const payload = jwtDecode<JwtPayload>(idToken);
-      this._userSubject.next({
-        email: payload.preferred_username,
-        name: payload.name,
-        role: 'AppUser'
-      });
-      return true;
-    } catch {
-      return false;
-    }
+  try {
+    const payload = jwtDecode<JwtPayload>(idToken);
+    this._userSubject.next({
+      email: payload.preferred_username,
+      name: payload.name,
+      role: 'AppUser'
+    });
+    return true; // success → no MSAL redirect
+  } catch {
+    return false;
   }
+}
+
 
   async loginOnSubdomainIfNeeded() {
-    if (!await this.restoreUserOnSubdomain()) {
-      // Redirect to main domain login with returnUrl pointing to current subdomain
+  if (!await this.restoreUserOnSubdomain()) {
+    // Don't redirect if we are already on main domain login
+    if (!window.location.href.startsWith('https://mudhammataan.com/login')) {
       const mainDomainLogin = `https://mudhammataan.com/login?returnUrl=${encodeURIComponent(window.location.href)}`;
       window.location.href = mainDomainLogin;
     }
   }
+}
+
 
   /** ---------------- MAIN DOMAIN LOGIN ---------------- */
   async restoreUserFromMsal(): Promise<void> {
