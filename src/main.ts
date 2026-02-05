@@ -82,6 +82,8 @@ import { provideRouter } from '@angular/router';
 import { MsalModule, MsalService } from '@azure/msal-angular';
 import { PublicClientApplication, InteractionType } from '@azure/msal-browser';
 import { environment } from './environments/environment';
+import { APP_INITIALIZER } from '@angular/core';
+
 
 import {
   TranslateModule,
@@ -97,11 +99,24 @@ import { routes } from './app/app.routes';
 import { AuthInterceptor } from './app/services/auth.interceptor';
 import { AuthService } from './app/services/auth.service';
 
+export function initializeAuth(authService: AuthService) {
+  return () => authService.restoreUserFromMsal();
+}
+
+
 bootstrapApplication(AppComponent, {
   providers: [
     provideRouter(routes),
     provideAnimations(),
     provideHttpClient(withInterceptorsFromDi()),
+
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeAuth,
+      deps: [AuthService],
+      multi: true
+    },
+
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
@@ -151,15 +166,15 @@ bootstrapApplication(AppComponent, {
     )
   ]
 })
-.then(async (appRef) => {
+  // .then(async (appRef) => {
 
-  // ⭐ CRITICAL: Handle MSAL redirect result
-  const msalService = appRef.injector.get(MsalService);
-  await msalService.instance.handleRedirectPromise();
+  //   // ⭐ CRITICAL: Handle MSAL redirect result
+  //   const msalService = appRef.injector.get(MsalService);
+  //   await msalService.instance.handleRedirectPromise();
 
-  // ⭐ Restore user state (MSAL + Cookie fallback)
-  const authService = appRef.injector.get(AuthService);
-  await authService.restoreUserFromMsal();
+  //   // ⭐ Restore user state (MSAL + Cookie fallback)
+  //   const authService = appRef.injector.get(AuthService);
+  //   await authService.restoreUserFromMsal();
 
-})
-.catch(err => console.error(err));
+  // })
+  .catch(err => console.error(err));
