@@ -130,10 +130,18 @@ export class LayoutComponent implements OnInit {
     );
   }
 
+  // async ngOnInit() {
+  //   await this.authService.restoreUserFromMsal();
+  // }
+
   async ngOnInit() {
-    // ⭐ restores login state when opening subdomain directly
-    await this.authService.restoreUserFromMsal();
+  if (this.subdomainService.isSubdomain()) {
+    await this.authService.restoreUserOnSubdomain();
+  } else {
+    await this.authService.restoreUserFromMsal(); // main domain login
   }
+}
+
 
   onLogin() {
     if (this.subdomainService.isSubdomain() && !this.subdomainService.isSpecialSubdomain()) {
