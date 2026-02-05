@@ -36,30 +36,76 @@ export class AuthService {
   }
 
   /** ---------------- MSAL EVENT LISTENER ---------------- */
-  private listenToMsalEvents() {
-    this.msalService.instance.addEventCallback((event) => {
-      if (
-        event.eventType === EventType.LOGIN_SUCCESS ||
-        event.eventType === EventType.ACQUIRE_TOKEN_SUCCESS
-      ) {
-        const accounts = this.msalService.instance.getAllAccounts();
-        if (accounts.length > 0) {
-          const account = accounts[0];
-          this.ngZone.run(() => {
-            const user: AppUser = {
-              email: account.username ?? '',
-              name: account.name ?? account.username ?? '',
-              role: 'AppUser'
-            };
-            this._userSubject.next(user);
-            this.setCookie('msal_id_token', this.getIdToken(), 7); // share across subdomains for 7 days
-          });
-        }
-      }
-    });
-  }
+  // private listenToMsalEvents() {
+  //   this.msalService.instance.addEventCallback((event) => {
+  //     if (
+  //       event.eventType === EventType.LOGIN_SUCCESS ||
+  //       event.eventType === EventType.ACQUIRE_TOKEN_SUCCESS
+  //     ) {
+  //       const accounts = this.msalService.instance.getAllAccounts();
+  //       if (accounts.length > 0) {
+  //         const account = accounts[0];
+  //         this.ngZone.run(() => {
+  //           const user: AppUser = {
+  //             email: account.username ?? '',
+  //             name: account.name ?? account.username ?? '',
+  //             role: 'AppUser'
+  //           };
+  //           this._userSubject.next(user);
+  //           this.setCookie('msal_id_token', this.getIdToken(), 7); // share across subdomains for 7 days
+  //         });
+  //       }
+  //     }
+  //   });
+  // }
 
-  async restoreUserOnSubdomain() {
+  private listenToMsalEvents() {
+  this.msalService.instance.addEventCallback((event) => {
+    if (
+      event.eventType === EventType.LOGIN_SUCCESS ||
+      event.eventType === EventType.ACQUIRE_TOKEN_SUCCESS
+    ) {
+      const accounts = this.msalService.instance.getAllAccounts();
+      if (accounts.length > 0) {
+        const account = accounts[0];
+        this.ngZone.run(() => {
+          const user: AppUser = {
+            email: account.username ?? '',
+            name: account.name ?? account.username ?? '',
+            role: 'AppUser'
+          };
+          this._userSubject.next(user);
+
+          // ✅ Set cookie AFTER login
+          const idToken = this.getIdToken();
+          if (idToken) {
+            this.setCookie('msal_id_token', idToken, 7); // 7 days
+          }
+        });
+      }
+    }
+  });
+}
+
+
+//   async restoreUserOnSubdomain() {
+//   const idToken = this.getCookie('msal_id_token');
+//   if (!idToken) return false;
+
+//   try {
+//     const payload = jwtDecode<JwtPayload>(idToken);
+//     this._userSubject.next({
+//       email: payload.preferred_username,
+//       name: payload.name,
+//       role: 'AppUser'
+//     });
+//     return true;
+//   } catch {
+//     return false;
+//   }
+// }
+
+async restoreUserOnSubdomain() {
   const idToken = this.getCookie('msal_id_token');
   if (!idToken) return false;
 
@@ -75,6 +121,7 @@ export class AuthService {
     return false;
   }
 }
+
 
 
   async restoreUserFromMsal(): Promise<void> {
@@ -212,10 +259,16 @@ export class AuthService {
   }
 
   /** ---------------- COOKIE HELPERS ---------------- */
+  // private setCookie(name: string, value: string, days: number) {
+  //   const expires = new Date(Date.now() + days * 864e5).toUTCString();
+  //   document.cookie = `${name}=${value}; path=/; domain=.mudhammataan.com; SameSite=Lax; Secure`;
+  // }
+
   private setCookie(name: string, value: string, days: number) {
-    const expires = new Date(Date.now() + days * 864e5).toUTCString();
-    document.cookie = `${name}=${value}; path=/; domain=.mudhammataan.com; SameSite=Lax; Secure`;
-  }
+  const expires = new Date(Date.now() + days * 864e5).toUTCString();
+  document.cookie = `${name}=${value}; path=/; domain=.mudhammataan.com; SameSite=None; Secure; Expires=${expires}`;
+}
+
 
   private getCookie(name: string): string | null {
     const matches = document.cookie.match(new RegExp(
