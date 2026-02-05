@@ -14,7 +14,7 @@ export const environment = {
     },
     cache: {
       cacheLocation: 'localStorage',
-      storeAuthStateInCookie: true,
+      // storeAuthStateInCookie: true,
     }
   },
   loginRequest: {

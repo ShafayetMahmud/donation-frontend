@@ -15,7 +15,7 @@ export const environmentOld = {
     },
     cache: {
       cacheLocation: 'localStorage',
-      storeAuthStateInCookie: true,
+      // storeAuthStateInCookie: true,
     }
   },
   
@@ -39,7 +39,7 @@ export const environment = {
     },
     cache: {
       cacheLocation: 'localStorage',
-      storeAuthStateInCookie: true,
+      // storeAuthStateInCookie: true,
     }
   },
   loginRequest: {
