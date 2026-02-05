@@ -95,6 +95,18 @@ export class AuthService {
     }
   }
 
+  async loginOnSubdomainIfNeeded(): Promise<void> {
+  const restored = await this.restoreUserOnSubdomain();
+  if (!restored) {
+    // fallback to redirect login
+    await this.msalService.loginRedirect({
+      scopes: environment.loginRequest.scopes,
+      redirectStartPage: window.location.href
+    });
+  }
+}
+
+
   /** ---------------- RESTORE USER FROM MSAL (MAIN DOMAIN) ---------------- */
   async restoreUserFromMsal(): Promise<void> {
     await this.msalService.instance.initialize();
