@@ -37,110 +37,126 @@ export class AuthService {
 
   /** ---------------- MSAL EVENT LISTENER ---------------- */
   private listenToMsalEvents() {
-  this.msalService.instance.addEventCallback((event) => {
-    if (
-      event.eventType === EventType.LOGIN_SUCCESS ||       // string
-      event.eventType === EventType.ACQUIRE_TOKEN_SUCCESS // string
-    ) {
+    this.msalService.instance.addEventCallback((event) => {
+      if (
+        event.eventType === EventType.LOGIN_SUCCESS ||
+        event.eventType === EventType.ACQUIRE_TOKEN_SUCCESS
+      ) {
+        const accounts = this.msalService.instance.getAllAccounts();
+        if (accounts.length > 0) {
+          const account = accounts[0];
+          this.ngZone.run(() => {
+            const user: AppUser = {
+              email: account.username ?? '',
+              name: account.name ?? account.username ?? '',
+              role: 'AppUser'
+            };
+            this._userSubject.next(user);
+
+            // Write cookie so subdomains can read
+            const idToken = this.getIdToken();
+            if (idToken) this.setCookie('msal_id_token', idToken, 7);
+          });
+        }
+      }
+    });
+  }
+
+  /** ---------------- ACCESS TOKEN ---------------- */
+  async getAccessToken(): Promise<string | null> {
+    const accounts = this.msalService.instance.getAllAccounts();
+    if (!accounts || accounts.length === 0) return null;
+
+    try {
+      const silentRequest = {
+        account: accounts[0],
+        scopes: ['api://99d94324-a3a8-4ace-b4b2-0ae093229b62/access_as_user']
+      };
+
+      const result = await this.msalService.instance.acquireTokenSilent(silentRequest)
+        .catch(() => this.msalService.instance.acquireTokenPopup(silentRequest));
+
+      localStorage.setItem('access_token', result.accessToken);
+      return result.accessToken;
+    } catch (err) {
+      console.error('Failed to get API token', err);
+      return null;
+    }
+  }
+
+  getAccessTokenSync(): string | null {
+    return localStorage.getItem('access_token');
+  }
+
+  /** ---------------- SUBDOMAIN LOGIN FLOW (SILENT) ---------------- */
+  async restoreUserOnSubdomain(): Promise<boolean> {
+    const idToken = this.getCookie('msal_id_token');
+    if (idToken) {
+      const payload = jwtDecode<JwtPayload>(idToken);
+      this._userSubject.next({
+        email: payload.preferred_username,
+        name: payload.name,
+        role: 'AppUser'
+      });
+      return true;
+    }
+
+    // Try silent login via MSAL iframe instead of redirect
+    try {
       const accounts = this.msalService.instance.getAllAccounts();
       if (accounts.length > 0) {
-        const account = accounts[0];
-        this.ngZone.run(() => {
-          const user: AppUser = {
-            email: account.username ?? '',
-            name: account.name ?? account.username ?? '',
+        const silentRequest = {
+          account: accounts[0],
+          scopes: environment.loginRequest.scopes,
+          redirectUri: window.location.origin + '/login'
+        };
+        const result = await this.msalService.instance.ssoSilent(silentRequest);
+        if (result?.account) {
+          this.msalService.instance.setActiveAccount(result.account);
+
+          const idTokenFromResult = (result.account.idTokenClaims as any)?.rawIdToken;
+          if (idTokenFromResult) this.setCookie('msal_id_token', idTokenFromResult, 7);
+
+          this._userSubject.next({
+            email: result.account.username ?? '',
+            name: result.account.name ?? result.account.username ?? '',
             role: 'AppUser'
-          };
-          this._userSubject.next(user);
-
-          const idToken = this.getIdToken();
-          if (idToken) {
-            this.setCookie('msal_id_token', idToken, 7);
-          }
-        });
+          });
+          return true;
+        }
       }
+    } catch {
+      // Silent login failed, but do NOT redirect → user stays on subdomain login page
+      console.warn('[Auth] Silent login failed on subdomain, user not logged in yet');
     }
-  });
-}
 
-/** ---------------- ACCESS TOKEN METHODS ---------------- */
-async getAccessToken(): Promise<string | null> {
-  const accounts = this.msalService.instance.getAllAccounts();
-  if (!accounts || accounts.length === 0) return null;
-
-  try {
-    const silentRequest = {
-      account: accounts[0],
-      scopes: ['api://99d94324-a3a8-4ace-b4b2-0ae093229b62/access_as_user'] // your API scope
-    };
-
-    const result = await this.msalService.instance.acquireTokenSilent(silentRequest)
-      .catch(() => this.msalService.instance.acquireTokenPopup(silentRequest));
-
-    localStorage.setItem('access_token', result.accessToken);
-    return result.accessToken;
-  } catch (err) {
-    console.error('Failed to get API token', err);
-    return null;
+    return false;
   }
-}
-
-getAccessTokenSync(): string | null {
-  return localStorage.getItem('access_token');
-}
-
-
-
-  /** ---------------- SUBDOMAIN LOGIN FLOW ---------------- */
-  async restoreUserOnSubdomain(): Promise<boolean> {
-  const idToken = this.getCookie('msal_id_token'); // now should return value
-  if (!idToken) return false;
-
-  const payload = jwtDecode<JwtPayload>(idToken);
-  this._userSubject.next({
-    email: payload.preferred_username,
-    name: payload.name,
-    role: 'AppUser'
-  });
-  return true;
-}
-
-
 
   async loginOnSubdomainIfNeeded() {
-  if (!await this.restoreUserOnSubdomain()) {
-    // Don't redirect if we are already on main domain login
-    if (!window.location.href.startsWith('https://mudhammataan.com/login')) {
-      const mainDomainLogin = `https://mudhammataan.com/login?returnUrl=${encodeURIComponent(window.location.href)}`;
-      window.location.href = mainDomainLogin;
-    }
+    // Only try to restore, do NOT redirect immediately
+    await this.restoreUserOnSubdomain();
   }
-}
-
 
   /** ---------------- MAIN DOMAIN LOGIN ---------------- */
   async restoreUserFromMsal(): Promise<void> {
-  await this.msalService.instance.initialize();
-  const result = await this.msalService.instance.handleRedirectPromise();
-  const accounts = this.msalService.instance.getAllAccounts();
-  if (accounts.length === 0) return;
+    await this.msalService.instance.initialize();
+    const result = await this.msalService.instance.handleRedirectPromise();
+    const accounts = this.msalService.instance.getAllAccounts();
+    if (accounts.length === 0) return;
 
-  const account = accounts[0];
-  this.msalService.instance.setActiveAccount(account);
+    const account = accounts[0];
+    this.msalService.instance.setActiveAccount(account);
 
-  // Set cookie here, guaranteed
-  const idToken = (account.idTokenClaims as any)?.rawIdToken;
-  if (idToken) {
-    this.setCookie('msal_id_token', idToken, 7);
+    const idToken = (account.idTokenClaims as any)?.rawIdToken;
+    if (idToken) this.setCookie('msal_id_token', idToken, 7);
+
+    this._userSubject.next({
+      email: account.username ?? '',
+      name: account.name ?? account.username ?? '',
+      role: 'AppUser'
+    });
   }
-
-  this._userSubject.next({
-    email: account.username ?? '',
-    name: account.name ?? account.username ?? '',
-    role: 'AppUser'
-  });
-}
-
 
   /** ---------------- RESTORE FROM COOKIE ---------------- */
   restoreUserFromCookie() {
@@ -171,9 +187,8 @@ getAccessTokenSync(): string | null {
   }
 
   public deleteCookie(name: string) {
-  document.cookie = `${name}=; Max-Age=0; path=/; domain=.mudhammataan.com; SameSite=Lax; Secure`;
-}
-
+    document.cookie = `${name}=; Max-Age=0; path=/; domain=.mudhammataan.com; SameSite=Lax; Secure`;
+  }
 
   private getIdToken(): string {
     const accounts = this.msalService.instance.getAllAccounts();
@@ -185,31 +200,27 @@ getAccessTokenSync(): string | null {
   get currentUser(): AppUser | null {
     return this._userSubject.value;
   }
-  /** ---------------- LOGOUT ---------------- */
-async logout() {
-  // Clear local state
-  this._userSubject.next(null);
-  localStorage.removeItem('access_token');
-  localStorage.removeItem('refresh_token');
-  this.deleteCookie('msal_id_token');
 
-  // Logout from MSAL
-  const accounts = this.msalService.instance.getAllAccounts();
-  if (accounts.length > 0) {
-    try {
-      await this.msalService.logoutRedirect({
-        account: accounts[0],
-        postLogoutRedirectUri: 'https://mudhammataan.com' // main domain landing after logout
-      });
-    } catch (err) {
-      console.error('MSAL logout failed', err);
-      // Fallback: redirect manually
+  /** ---------------- LOGOUT ---------------- */
+  async logout() {
+    this._userSubject.next(null);
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    this.deleteCookie('msal_id_token');
+
+    const accounts = this.msalService.instance.getAllAccounts();
+    if (accounts.length > 0) {
+      try {
+        await this.msalService.logoutRedirect({
+          account: accounts[0],
+          postLogoutRedirectUri: 'https://mudhammataan.com'
+        });
+      } catch (err) {
+        console.error('MSAL logout failed', err);
+        window.location.href = 'https://mudhammataan.com';
+      }
+    } else {
       window.location.href = 'https://mudhammataan.com';
     }
-  } else {
-    // No MSAL account → just redirect to main domain
-    window.location.href = 'https://mudhammataan.com';
   }
-}
-
 }
