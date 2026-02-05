@@ -93,21 +93,18 @@ getAccessTokenSync(): string | null {
 
   /** ---------------- SUBDOMAIN LOGIN FLOW ---------------- */
   async restoreUserOnSubdomain(): Promise<boolean> {
-  const idToken = this.getCookie('msal_id_token');
+  const idToken = this.getCookie('msal_id_token'); // now should return value
   if (!idToken) return false;
 
-  try {
-    const payload = jwtDecode<JwtPayload>(idToken);
-    this._userSubject.next({
-      email: payload.preferred_username,
-      name: payload.name,
-      role: 'AppUser'
-    });
-    return true; // success → no MSAL redirect
-  } catch {
-    return false;
-  }
+  const payload = jwtDecode<JwtPayload>(idToken);
+  this._userSubject.next({
+    email: payload.preferred_username,
+    name: payload.name,
+    role: 'AppUser'
+  });
+  return true;
 }
+
 
 
   async loginOnSubdomainIfNeeded() {
@@ -123,42 +120,27 @@ getAccessTokenSync(): string | null {
 
   /** ---------------- MAIN DOMAIN LOGIN ---------------- */
   async restoreUserFromMsal(): Promise<void> {
-    await this.msalService.instance.initialize();
-    await this.msalService.instance.handleRedirectPromise();
+  await this.msalService.instance.initialize();
+  const result = await this.msalService.instance.handleRedirectPromise();
+  const accounts = this.msalService.instance.getAllAccounts();
+  if (accounts.length === 0) return;
 
-    let accounts = this.msalService.instance.getAllAccounts();
+  const account = accounts[0];
+  this.msalService.instance.setActiveAccount(account);
 
-    if (accounts.length === 0) {
-      try {
-        const result = await this.msalService.instance.ssoSilent({
-          scopes: environment.loginRequest.scopes
-        });
-        accounts = [result.account!];
-      } catch {
-        console.log('SSO silent failed — user not logged in yet');
-        return;
-      }
-    }
-
-    const account = accounts[0];
-    this.msalService.instance.setActiveAccount(account);
-
-    try {
-      await this.msalService.instance.acquireTokenSilent({
-        account,
-        scopes: environment.loginRequest.scopes
-      });
-
-      this._userSubject.next({
-        email: account.username ?? '',
-        name: account.name ?? account.username ?? '',
-        role: 'AppUser'
-      });
-
-    } catch (e) {
-      console.warn('Silent token failed', e);
-    }
+  // Set cookie here, guaranteed
+  const idToken = (account.idTokenClaims as any)?.rawIdToken;
+  if (idToken) {
+    this.setCookie('msal_id_token', idToken, 7);
   }
+
+  this._userSubject.next({
+    email: account.username ?? '',
+    name: account.name ?? account.username ?? '',
+    role: 'AppUser'
+  });
+}
+
 
   /** ---------------- RESTORE FROM COOKIE ---------------- */
   restoreUserFromCookie() {
