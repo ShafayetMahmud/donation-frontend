@@ -137,8 +137,10 @@ export class LayoutComponent implements OnInit {
   async ngOnInit() {
   if (this.subdomainService.isSubdomain()) {
     await this.authService.restoreUserOnSubdomain();
+    console.log('[Auth] User restored on subdomain?', this.authService.currentUser);
   } else {
     await this.authService.restoreUserFromMsal(); // main domain login
+    console.log('[Auth] User restored on main domain', this.authService.currentUser);
   }
 }
 
