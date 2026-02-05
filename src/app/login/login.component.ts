@@ -1,8 +1,8 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MsalService } from '@azure/msal-angular';
-import { environment } from '../../environments/environment';
 import { ActivatedRoute, RouterModule } from '@angular/router';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-login',
@@ -20,20 +20,16 @@ export class LoginComponent implements OnInit {
   private route = inject(ActivatedRoute);
   returnUrl: string | null = null;
 
-  // constructor(private msalService: MsalService, private route: ActivatedRoute) {}
-
   async ngOnInit() {
     this.returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
 
-    // ✅ Initialize MSAL
     await this.msalService.instance.initialize();
 
-    // ✅ Handle redirect
     this.msalService.instance.handleRedirectPromise()
       .then(result => {
-        // After redirect, if logged in, go back to returnUrl or home
         const accounts = this.msalService.instance.getAllAccounts();
         if (result || accounts.length > 0) {
+          // ✅ User is logged in → redirect back to original subdomain
           window.location.href = this.returnUrl ?? '/';
         } else {
           // Not logged in yet → trigger MSAL redirect login
