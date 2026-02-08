@@ -210,25 +210,47 @@ export class AuthService {
   }
 
   /** ---------------- LOGOUT ---------------- */
-  async logout() {
-    this._userSubject.next(null);
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
-    this.deleteCookie('msal_id_token');
+  // async logout() {
+  //   this._userSubject.next(null);
+  //   localStorage.removeItem('access_token');
+  //   localStorage.removeItem('refresh_token');
+  //   this.deleteCookie('msal_id_token');
 
-    const accounts = this.msalService.instance.getAllAccounts();
-    if (accounts.length > 0) {
-      try {
-        await this.msalService.logoutRedirect({
-          account: accounts[0],
-          postLogoutRedirectUri: 'https://mudhammataan.com'
-        });
-      } catch (err) {
-        console.error('MSAL logout failed', err);
-        window.location.href = 'https://mudhammataan.com';
-      }
-    } else {
-      window.location.href = 'https://mudhammataan.com';
-    }
+  //   const accounts = this.msalService.instance.getAllAccounts();
+  //   if (accounts.length > 0) {
+  //     try {
+  //       await this.msalService.logoutRedirect({
+  //         account: accounts[0],
+  //         postLogoutRedirectUri: 'https://mudhammataan.com'
+  //       });
+  //     } catch (err) {
+  //       console.error('MSAL logout failed', err);
+  //       window.location.href = 'https://mudhammataan.com';
+  //     }
+  //   } else {
+  //     window.location.href = 'https://mudhammataan.com';
+  //   }
+  // }
+  async logout(): Promise<void> {
+
+  const currentUrl = window.location.href;
+  const isSubdomain = window.location.hostname !== 'mudhammataan.com';
+
+  // If logout initiated from subdomain → route through main domain
+  if (isSubdomain) {
+
+    const encodedReturn = encodeURIComponent(currentUrl);
+
+    window.location.href =
+      `https://mudhammataan.com/logout?returnUrl=${encodedReturn}`;
+
+    return;
   }
+
+  // MAIN DOMAIN LOGOUT FLOW
+  await this.msalService.logoutRedirect({
+    postLogoutRedirectUri: window.location.origin
+  });
+}
+
 }
