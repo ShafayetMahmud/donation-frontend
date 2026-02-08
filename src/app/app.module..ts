@@ -27,7 +27,8 @@ import { LoginComponent } from './login/login.component';
 
 const routes: Routes = [
   { path: '', component: DonateComponent },
-  { path: 'login', loadComponent: () => import('./login/login.component').then(m => m.LoginComponent) }
+  { path: 'login', loadComponent: () => import('./login/login.component').then(m => m.LoginComponent) },
+  { path: 'logout', loadComponent: () => import('./logout/logout.component').then(m => m.LogoutComponent) }
 ];
 
 @NgModule({
