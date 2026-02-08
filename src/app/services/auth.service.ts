@@ -98,6 +98,17 @@ export class AuthService {
         name: payload.name,
         role: 'AppUser'
       });
+      // ⭐ CRITICAL: Rebuild MSAL account session
+      const accounts = this.msalService.instance.getAllAccounts();
+
+      if (accounts.length > 0) {
+
+        this.msalService.instance.setActiveAccount(accounts[0]);
+
+        try {
+          await this.getAccessToken(); // warm cache
+        } catch { }
+      }
       return true;
     }
 
@@ -141,29 +152,29 @@ export class AuthService {
   /** ---------------- MAIN DOMAIN LOGIN ---------------- */
   async restoreUserFromMsal(): Promise<void> {
 
-  await this.msalService.instance.initialize();
+    await this.msalService.instance.initialize();
 
-  const result = await this.msalService.instance.handleRedirectPromise();
+    const result = await this.msalService.instance.handleRedirectPromise();
 
-  // ⭐ This contains the real ID token
-  if (result?.idToken) {
-    this.setCookie('msal_id_token', result.idToken, 7);
+    // ⭐ This contains the real ID token
+    if (result?.idToken) {
+      this.setCookie('msal_id_token', result.idToken, 7);
+    }
+
+    const accounts = this.msalService.instance.getAllAccounts();
+    if (accounts.length === 0) return;
+
+    const account = accounts[0];
+    this.msalService.instance.setActiveAccount(account);
+
+    this._userSubject.next({
+      email: account.username ?? '',
+      name: account.name ?? account.username ?? '',
+      role: 'AppUser'
+    });
+
+    console.log('[Auth] User restored on main domain');
   }
-
-  const accounts = this.msalService.instance.getAllAccounts();
-  if (accounts.length === 0) return;
-
-  const account = accounts[0];
-  this.msalService.instance.setActiveAccount(account);
-
-  this._userSubject.next({
-    email: account.username ?? '',
-    name: account.name ?? account.username ?? '',
-    role: 'AppUser'
-  });
-
-  console.log('[Auth] User restored on main domain');
-}
 
 
   /** ---------------- RESTORE FROM COOKIE ---------------- */
@@ -178,7 +189,7 @@ export class AuthService {
         name: payload.name,
         role: 'AppUser'
       });
-    } catch {}
+    } catch { }
   }
 
   /** ---------------- COOKIE HELPERS ---------------- */
@@ -234,28 +245,28 @@ export class AuthService {
   async logout(): Promise<void> {
 
     this._userSubject.next(null);
-  localStorage.removeItem('access_token');
-  localStorage.removeItem('refresh_token');
-  this.deleteCookie('msal_id_token');
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    this.deleteCookie('msal_id_token');
 
-  const currentUrl = window.location.href;
-  const isSubdomain = window.location.hostname !== 'mudhammataan.com';
+    const currentUrl = window.location.href;
+    const isSubdomain = window.location.hostname !== 'mudhammataan.com';
 
-  // If logout initiated from subdomain → route through main domain
-  if (isSubdomain) {
+    // If logout initiated from subdomain → route through main domain
+    if (isSubdomain) {
 
-    const encodedReturn = encodeURIComponent(currentUrl);
+      const encodedReturn = encodeURIComponent(currentUrl);
 
-    window.location.href =
-      `https://mudhammataan.com/logout?returnUrl=${encodedReturn}`;
+      window.location.href =
+        `https://mudhammataan.com/logout?returnUrl=${encodedReturn}`;
 
-    return;
+      return;
+    }
+
+    // MAIN DOMAIN LOGOUT FLOW
+    await this.msalService.logoutRedirect({
+      postLogoutRedirectUri: window.location.origin
+    });
   }
-
-  // MAIN DOMAIN LOGOUT FLOW
-  await this.msalService.logoutRedirect({
-    postLogoutRedirectUri: window.location.origin
-  });
-}
 
 }
