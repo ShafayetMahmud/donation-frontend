@@ -104,10 +104,11 @@ export class AuthService {
       if (accounts.length > 0) {
 
         this.msalService.instance.setActiveAccount(accounts[0]);
-
+        await this.getAccessToken();
         try {
-          await this.getAccessToken(); // warm cache
-        } catch { }
+        } catch (err) {
+          console.warn('[Auth] Failed warming MSAL cache on subdomain', err);
+        }
       }
       return true;
     }
