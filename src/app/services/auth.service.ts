@@ -99,17 +99,25 @@ export class AuthService {
         role: 'AppUser'
       });
       // ⭐ CRITICAL: Rebuild MSAL account session
-      const accounts = this.msalService.instance.getAllAccounts();
+      try {
 
-      if (accounts.length > 0) {
+        const result = await this.msalService.instance.ssoSilent({
+          scopes: ['api://99d94324-a3a8-4ace-b4b2-0ae093229b62/access_as_user'],
+          loginHint: payload.preferred_username
+        });
 
-        this.msalService.instance.setActiveAccount(accounts[0]);
-        await this.getAccessToken();
-        try {
-        } catch (err) {
-          console.warn('[Auth] Failed warming MSAL cache on subdomain', err);
+        if (result?.account) {
+          this.msalService.instance.setActiveAccount(result.account);
         }
+
+        console.log('Accounts after SSO:', this.msalService.instance.getAllAccounts());
+
+        await this.getAccessToken();
+
+      } catch (err) {
+        console.warn('[Auth] ssoSilent failed', err);
       }
+
       return true;
     }
 
