@@ -17,9 +17,24 @@ export class LogoutComponent implements OnInit {
 
     const safeReturnUrl = this.validateReturnUrl(returnUrl);
 
+    const alreadyLoggedOut =
+      !this.msalService.instance.getAllAccounts().length;
+
+      // ⭐ If Microsoft already logged user out → redirect manually
+    if (alreadyLoggedOut) {
+      window.location.href = safeReturnUrl;
+      return;
+    }
+
+    // ⭐ Otherwise perform logout
     await this.msalService.logoutRedirect({
-      postLogoutRedirectUri: safeReturnUrl
+      postLogoutRedirectUri:
+        `https://mudhammataan.com/logout?returnUrl=${encodeURIComponent(safeReturnUrl)}`
     });
+
+    // await this.msalService.logoutRedirect({
+    //   postLogoutRedirectUri: safeReturnUrl
+    // });
   }
 
   // ⭐ Prevent open redirect attacks
@@ -39,4 +54,6 @@ export class LogoutComponent implements OnInit {
 
     return window.location.origin;
   }
+
+
 }
