@@ -9,6 +9,7 @@ import { MissionComponent } from './mission/mission.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { CreateCampaignComponent } from './create-campaign/create-campaign.component';
 import { LoginComponent } from './login/login.component';
+import { LogoutComponent } from './logout/logout.component';
 
 export const routes: Routes = [
   {
@@ -30,6 +31,7 @@ export const routes: Routes = [
   //     import('./login/login.component').then((m) => m.LoginComponent)
   // },
   { path: 'login', component: LoginComponent },
+  { path: 'logout', component: LogoutComponent },
   { path: 'not-found', component: NotFoundComponent },
   { path: '**', redirectTo: 'not-found' }
 ];
