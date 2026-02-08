@@ -90,68 +90,89 @@ export class AuthService {
 
   /** ---------------- SUBDOMAIN LOGIN FLOW (SILENT) ---------------- */
   async restoreUserOnSubdomain(): Promise<boolean> {
-    const idToken = this.getCookie('msal_id_token');
-    if (idToken) {
-      const payload = jwtDecode<JwtPayload>(idToken);
-      this._userSubject.next({
-        email: payload.preferred_username,
-        name: payload.name,
-        role: 'AppUser'
-      });
-      // ⭐ CRITICAL: Rebuild MSAL account session
+
+  const idToken = this.getCookie('msal_id_token');
+  if (!idToken) return false;
+
+  try {
+
+    // -------------------------
+    // 1. Restore UI user instantly from cookie
+    // -------------------------
+    const payload = jwtDecode<JwtPayload>(idToken);
+
+    this._userSubject.next({
+      email: payload.preferred_username,
+      name: payload.name,
+      role: 'AppUser'
+    });
+
+    // Ensure MSAL is initialized
+    await this.msalService.instance.initialize();
+
+    // VERY IMPORTANT
+    await this.msalService.instance.handleRedirectPromise();
+
+    // -------------------------
+    // 2. If MSAL already has account → use it
+    // -------------------------
+    const accounts = this.msalService.instance.getAllAccounts();
+
+    if (accounts.length > 0) {
+
+      this.msalService.instance.setActiveAccount(accounts[0]);
+
       try {
+        await this.getAccessToken();
+        return true;
+      } catch (err) {
+        console.warn('[Auth] Access token acquisition failed', err);
+        return true; // user still restored
+      }
+    }
 
-        const result = await this.msalService.instance.ssoSilent({
-          scopes: ['api://99d94324-a3a8-4ace-b4b2-0ae093229b62/access_as_user'],
-          loginHint: payload.preferred_username
-        });
+    // -------------------------
+    // 3. No MSAL account → attempt silent SSO
+    // -------------------------
+    try {
 
-        if (result?.account) {
-          this.msalService.instance.setActiveAccount(result.account);
+      const result = await this.msalService.instance.ssoSilent({
+        scopes: ['api://99d94324-a3a8-4ace-b4b2-0ae093229b62/access_as_user'],
+        loginHint: payload.preferred_username
+      });
+
+      if (result?.account) {
+
+        this.msalService.instance.setActiveAccount(result.account);
+
+        // refresh cookie with fresh ID token
+        if (result.idToken) {
+          this.setCookie('msal_id_token', result.idToken, 7);
         }
-
-        console.log('Accounts after SSO:', this.msalService.instance.getAllAccounts());
 
         await this.getAccessToken();
 
-      } catch (err) {
-        console.warn('[Auth] ssoSilent failed', err);
+        console.log('[Auth] Silent SSO success on subdomain');
+
+        return true;
       }
 
-      return true;
+    } catch (err) {
+
+      console.warn('[Auth] Silent SSO failed — user must login interactively', err);
+
+      // This is NORMAL and expected sometimes
     }
 
-    // Try silent login via MSAL iframe instead of redirect
-    try {
-      const accounts = this.msalService.instance.getAllAccounts();
-      if (accounts.length > 0) {
-        const silentRequest = {
-          account: accounts[0],
-          scopes: environment.loginRequest.scopes,
-          redirectUri: window.location.origin + '/login'
-        };
-        const result = await this.msalService.instance.ssoSilent(silentRequest);
-        if (result?.account) {
-          this.msalService.instance.setActiveAccount(result.account);
+    return true; // UI still restored from cookie
 
-          const idTokenFromResult = (result.account.idTokenClaims as any)?.rawIdToken;
-          if (idTokenFromResult) this.setCookie('msal_id_token', idTokenFromResult, 7);
+  } catch (err) {
 
-          this._userSubject.next({
-            email: result.account.username ?? '',
-            name: result.account.name ?? result.account.username ?? '',
-            role: 'AppUser'
-          });
-          return true;
-        }
-      }
-    } catch {
-      // Silent login failed, but do NOT redirect → user stays on subdomain login page
-      console.warn('[Auth] Silent login failed on subdomain, user not logged in yet');
-    }
-
+    console.error('[Auth] Subdomain restore failed', err);
     return false;
   }
+}
+
 
   async loginOnSubdomainIfNeeded() {
     // Only try to restore, do NOT redirect immediately
