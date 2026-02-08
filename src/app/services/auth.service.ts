@@ -90,89 +90,48 @@ export class AuthService {
 
   /** ---------------- SUBDOMAIN LOGIN FLOW (SILENT) ---------------- */
   async restoreUserOnSubdomain(): Promise<boolean> {
-
-  const idToken = this.getCookie('msal_id_token');
-  if (!idToken) return false;
-
-  try {
-
-    // -------------------------
-    // 1. Restore UI user instantly from cookie
-    // -------------------------
-    const payload = jwtDecode<JwtPayload>(idToken);
-
-    this._userSubject.next({
-      email: payload.preferred_username,
-      name: payload.name,
-      role: 'AppUser'
-    });
-
-    // Ensure MSAL is initialized
-    await this.msalService.instance.initialize();
-
-    // VERY IMPORTANT
-    await this.msalService.instance.handleRedirectPromise();
-
-    // -------------------------
-    // 2. If MSAL already has account → use it
-    // -------------------------
-    const accounts = this.msalService.instance.getAllAccounts();
-
-    if (accounts.length > 0) {
-
-      this.msalService.instance.setActiveAccount(accounts[0]);
-
-      try {
-        await this.getAccessToken();
-        return true;
-      } catch (err) {
-        console.warn('[Auth] Access token acquisition failed', err);
-        return true; // user still restored
-      }
-    }
-
-    // -------------------------
-    // 3. No MSAL account → attempt silent SSO
-    // -------------------------
-    try {
-
-      const result = await this.msalService.instance.ssoSilent({
-        scopes: ['api://99d94324-a3a8-4ace-b4b2-0ae093229b62/access_as_user'],
-        loginHint: payload.preferred_username
+    const idToken = this.getCookie('msal_id_token');
+    if (idToken) {
+      const payload = jwtDecode<JwtPayload>(idToken);
+      this._userSubject.next({
+        email: payload.preferred_username,
+        name: payload.name,
+        role: 'AppUser'
       });
-
-      if (result?.account) {
-
-        this.msalService.instance.setActiveAccount(result.account);
-
-        // refresh cookie with fresh ID token
-        if (result.idToken) {
-          this.setCookie('msal_id_token', result.idToken, 7);
-        }
-
-        await this.getAccessToken();
-
-        console.log('[Auth] Silent SSO success on subdomain');
-
-        return true;
-      }
-
-    } catch (err) {
-
-      console.warn('[Auth] Silent SSO failed — user must login interactively', err);
-
-      // This is NORMAL and expected sometimes
+      return true;
     }
 
-    return true; // UI still restored from cookie
+    // Try silent login via MSAL iframe instead of redirect
+    try {
+      const accounts = this.msalService.instance.getAllAccounts();
+      if (accounts.length > 0) {
+        const silentRequest = {
+          account: accounts[0],
+          scopes: environment.loginRequest.scopes,
+          redirectUri: window.location.origin + '/login'
+        };
+        const result = await this.msalService.instance.ssoSilent(silentRequest);
+        if (result?.account) {
+          this.msalService.instance.setActiveAccount(result.account);
 
-  } catch (err) {
+          const idTokenFromResult = (result.account.idTokenClaims as any)?.rawIdToken;
+          if (idTokenFromResult) this.setCookie('msal_id_token', idTokenFromResult, 7);
 
-    console.error('[Auth] Subdomain restore failed', err);
+          this._userSubject.next({
+            email: result.account.username ?? '',
+            name: result.account.name ?? result.account.username ?? '',
+            role: 'AppUser'
+          });
+          return true;
+        }
+      }
+    } catch {
+      // Silent login failed, but do NOT redirect → user stays on subdomain login page
+      console.warn('[Auth] Silent login failed on subdomain, user not logged in yet');
+    }
+
     return false;
   }
-}
-
 
   async loginOnSubdomainIfNeeded() {
     // Only try to restore, do NOT redirect immediately
@@ -182,29 +141,29 @@ export class AuthService {
   /** ---------------- MAIN DOMAIN LOGIN ---------------- */
   async restoreUserFromMsal(): Promise<void> {
 
-    await this.msalService.instance.initialize();
+  await this.msalService.instance.initialize();
 
-    const result = await this.msalService.instance.handleRedirectPromise();
+  const result = await this.msalService.instance.handleRedirectPromise();
 
-    // ⭐ This contains the real ID token
-    if (result?.idToken) {
-      this.setCookie('msal_id_token', result.idToken, 7);
-    }
-
-    const accounts = this.msalService.instance.getAllAccounts();
-    if (accounts.length === 0) return;
-
-    const account = accounts[0];
-    this.msalService.instance.setActiveAccount(account);
-
-    this._userSubject.next({
-      email: account.username ?? '',
-      name: account.name ?? account.username ?? '',
-      role: 'AppUser'
-    });
-
-    console.log('[Auth] User restored on main domain');
+  // ⭐ This contains the real ID token
+  if (result?.idToken) {
+    this.setCookie('msal_id_token', result.idToken, 7);
   }
+
+  const accounts = this.msalService.instance.getAllAccounts();
+  if (accounts.length === 0) return;
+
+  const account = accounts[0];
+  this.msalService.instance.setActiveAccount(account);
+
+  this._userSubject.next({
+    email: account.username ?? '',
+    name: account.name ?? account.username ?? '',
+    role: 'AppUser'
+  });
+
+  console.log('[Auth] User restored on main domain');
+}
 
 
   /** ---------------- RESTORE FROM COOKIE ---------------- */
@@ -219,7 +178,7 @@ export class AuthService {
         name: payload.name,
         role: 'AppUser'
       });
-    } catch { }
+    } catch {}
   }
 
   /** ---------------- COOKIE HELPERS ---------------- */
@@ -275,28 +234,28 @@ export class AuthService {
   async logout(): Promise<void> {
 
     this._userSubject.next(null);
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
-    this.deleteCookie('msal_id_token');
+  localStorage.removeItem('access_token');
+  localStorage.removeItem('refresh_token');
+  this.deleteCookie('msal_id_token');
 
-    const currentUrl = window.location.href;
-    const isSubdomain = window.location.hostname !== 'mudhammataan.com';
+  const currentUrl = window.location.href;
+  const isSubdomain = window.location.hostname !== 'mudhammataan.com';
 
-    // If logout initiated from subdomain → route through main domain
-    if (isSubdomain) {
+  // If logout initiated from subdomain → route through main domain
+  if (isSubdomain) {
 
-      const encodedReturn = encodeURIComponent(currentUrl);
+    const encodedReturn = encodeURIComponent(currentUrl);
 
-      window.location.href =
-        `https://mudhammataan.com/logout?returnUrl=${encodedReturn}`;
+    window.location.href =
+      `https://mudhammataan.com/logout?returnUrl=${encodedReturn}`;
 
-      return;
-    }
-
-    // MAIN DOMAIN LOGOUT FLOW
-    await this.msalService.logoutRedirect({
-      postLogoutRedirectUri: window.location.origin
-    });
+    return;
   }
+
+  // MAIN DOMAIN LOGOUT FLOW
+  await this.msalService.logoutRedirect({
+    postLogoutRedirectUri: window.location.origin
+  });
+}
 
 }
