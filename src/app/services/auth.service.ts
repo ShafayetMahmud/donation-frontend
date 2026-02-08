@@ -141,33 +141,64 @@ export class AuthService {
   /** ---------------- MAIN DOMAIN LOGIN ---------------- */
   async restoreUserFromMsal(): Promise<void> {
 
-  await this.msalService.instance.initialize();
+    await this.msalService.instance.initialize();
 
-  const result = await this.msalService.instance.handleRedirectPromise();
+    const result = await this.msalService.instance.handleRedirectPromise();
 
-  // ⭐ This contains the real ID token
-  if (result?.idToken) {
-    this.setCookie('msal_id_token', result.idToken, 7);
+    // ⭐ This contains the real ID token
+    if (result?.idToken) {
+      this.setCookie('msal_id_token', result.idToken, 7);
+    }
+
+    const accounts = this.msalService.instance.getAllAccounts();
+    // if (accounts.length === 0) return;
+
+    if (accounts.length === 0) {
+      this._userSubject.next(null);
+      this.deleteCookie('msal_id_token');
+      return;
+    }
+
+
+    const account = accounts[0];
+    this.msalService.instance.setActiveAccount(account);
+
+    this._userSubject.next({
+      email: account.username ?? '',
+      name: account.name ?? account.username ?? '',
+      role: 'AppUser'
+    });
+
+    console.log('[Auth] User restored on main domain');
   }
-
-  const accounts = this.msalService.instance.getAllAccounts();
-  if (accounts.length === 0) return;
-
-  const account = accounts[0];
-  this.msalService.instance.setActiveAccount(account);
-
-  this._userSubject.next({
-    email: account.username ?? '',
-    name: account.name ?? account.username ?? '',
-    role: 'AppUser'
-  });
-
-  console.log('[Auth] User restored on main domain');
-}
 
 
   /** ---------------- RESTORE FROM COOKIE ---------------- */
+  // restoreUserFromCookie() {
+  //   const idToken = this.getCookie('msal_id_token');
+  //   if (!idToken) return;
+
+  //   try {
+  //     const payload = jwtDecode<JwtPayload>(idToken);
+  //     this._userSubject.next({
+  //       email: payload.preferred_username,
+  //       name: payload.name,
+  //       role: 'AppUser'
+  //     });
+  //   } catch {}
+  // }
+
   restoreUserFromCookie() {
+
+    const accounts = this.msalService.instance.getAllAccounts();
+
+    // If MSAL has no accounts → DO NOT trust cookie
+    if (!accounts || accounts.length === 0) {
+      this._userSubject.next(null);
+      this.deleteCookie('msal_id_token');
+      return;
+    }
+
     const idToken = this.getCookie('msal_id_token');
     if (!idToken) return;
 
@@ -178,8 +209,11 @@ export class AuthService {
         name: payload.name,
         role: 'AppUser'
       });
-    } catch {}
+    } catch {
+      this.deleteCookie('msal_id_token');
+    }
   }
+
 
   /** ---------------- COOKIE HELPERS ---------------- */
   private setCookie(name: string, value: string, days: number) {
@@ -195,7 +229,7 @@ export class AuthService {
   }
 
   public deleteCookie(name: string) {
-    document.cookie = `${name}=; Max-Age=0; path=/; domain=.mudhammataan.com; SameSite=Lax; Secure`;
+    document.cookie = `${name}=; Max-Age=0; path=/; domain=.mudhammataan.com; SameSite=None; Secure`;
   }
 
   private getIdToken(): string {
@@ -233,24 +267,31 @@ export class AuthService {
   // }
   async logout(): Promise<void> {
 
-  const currentUrl = window.location.href;
-  const isSubdomain = window.location.hostname !== 'mudhammataan.com';
 
-  // If logout initiated from subdomain → route through main domain
-  if (isSubdomain) {
+    // 🧹 Clear LOCAL state FIRST
+    this._userSubject.next(null);
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    this.deleteCookie('msal_id_token');
 
-    const encodedReturn = encodeURIComponent(currentUrl);
+    const currentUrl = window.location.href;
+    const isSubdomain = window.location.hostname !== 'mudhammataan.com';
 
-    window.location.href =
-      `https://mudhammataan.com/logout?returnUrl=${encodedReturn}`;
+    // If logout initiated from subdomain → route through main domain
+    if (isSubdomain) {
 
-    return;
+      const encodedReturn = encodeURIComponent(currentUrl);
+
+      window.location.href =
+        `https://mudhammataan.com/logout?returnUrl=${encodedReturn}`;
+
+      return;
+    }
+
+    // MAIN DOMAIN LOGOUT FLOW
+    await this.msalService.logoutRedirect({
+      postLogoutRedirectUri: window.location.origin
+    });
   }
-
-  // MAIN DOMAIN LOGOUT FLOW
-  await this.msalService.logoutRedirect({
-    postLogoutRedirectUri: window.location.origin
-  });
-}
 
 }
