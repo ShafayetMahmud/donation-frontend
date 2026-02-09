@@ -8,18 +8,35 @@ import { Campaign } from '../../models/campaign.model';
   providedIn: 'root'
 })
 export class CampaignService {
-  private baseUrl = `${environment.apiBaseUrl}/campaign`;
+  // private baseUrl = `${environment.apiBaseUrl}/campaign`; //old again
+  private baseUrl = environment.apiBaseUrl + '/campaign'; //new
 
   constructor(private http: HttpClient) {}
+//old again
+  // createCampaign(campaign: Campaign): Observable<Campaign> {
+  //   return this.http.post<Campaign>(`${this.baseUrl}/create`, campaign);
+  // }
 
-  createCampaign(campaign: Campaign): Observable<Campaign> {
-    // No need to manually attach token anymore
+  // updateCampaign(campaign: Campaign): Observable<Campaign> {
+  //   return this.http.put<Campaign>(`${this.baseUrl}/update`, campaign);
+  // }
+  //old again
+//new
+  createCampaign(campaign: Campaign) {
     return this.http.post<Campaign>(`${this.baseUrl}/create`, campaign);
   }
 
-  updateCampaign(campaign: Campaign): Observable<Campaign> {
+  updateCampaign(campaign: Campaign) {
+    console.log('API Base URL:', environment.apiBaseUrl);
     return this.http.put<Campaign>(`${this.baseUrl}/update`, campaign);
   }
+  //new
+
+  //new
+  getCampaignBySubdomain(subdomain: string) {
+    return this.http.get<Campaign>(`${this.baseUrl}/by-subdomain/${subdomain}`);
+  }
+  //new
 
  //old
 // getCampaignBySubdomain(subdomain: string) {
@@ -32,19 +49,20 @@ export class CampaignService {
 // }
 //old
 
-//new
 
-getCampaignBySubdomain(subdomain: string) {
-  return this.http.get<Campaign>(
-  `${environment.apiBaseUrl}/campaign/by-subdomain/${subdomain}`
-)
-    .toPromise()
-    .catch(err => {
-      console.warn('Failed to load campaign (anonymous or error)', err);
-      return null; // fallback to show "campaign not found" page
-    });
-}
 
-//new
+//old again
+// getCampaignBySubdomain(subdomain: string) {
+//   return this.http.get<Campaign>(
+//   `${environment.apiBaseUrl}/campaign/by-subdomain/${subdomain}`
+// )
+//     .toPromise()
+//     .catch(err => {
+//       console.warn('Failed to load campaign (anonymous or error)', err);
+//       return null;
+//     });
+// }
+
+//old again
 
 }
