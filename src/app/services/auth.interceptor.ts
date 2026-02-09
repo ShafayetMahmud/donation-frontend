@@ -7,7 +7,7 @@ import { environment } from '../../environments/environment';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  // constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService) { }
   // intercept(req: HttpRequest<any>, next: HttpHandler) {
 
   //   const isApiCall =
@@ -56,25 +56,39 @@ export class AuthInterceptor implements HttpInterceptor {
   //   return next.handle(req);
   // }
 
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-  const token = localStorage.getItem('access_token'); // correct storage key
+//   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+//   const token = localStorage.getItem('access_token'); 
 
+//   const isApiCall = req.url.startsWith(environment.apiBaseUrl);
+//   if (!isApiCall) return next.handle(req);
+
+//   if (token) {
+//     const cloned = req.clone({
+//       setHeaders: {
+//         Authorization: `Bearer ${token}`
+//       },
+//       withCredentials: true 
+//     });
+//     return next.handle(cloned);
+//   }
+
+//   return next.handle(req);
+// }
+
+intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
   const isApiCall = req.url.startsWith(environment.apiBaseUrl);
   if (!isApiCall) return next.handle(req);
 
-  if (token) {
-    const cloned = req.clone({
-      setHeaders: {
-        Authorization: `Bearer ${token}`
-      },
-      withCredentials: true // needed for subdomain cookies
-    });
-    return next.handle(cloned);
-  }
-
-  return next.handle(req);
+  return from(this.authService.getAccessToken()).pipe(
+    switchMap(token => {
+      if (!token) return next.handle(req);
+      const authReq = req.clone({
+        setHeaders: { Authorization: `Bearer ${token}` },
+        withCredentials: true
+      });
+      return next.handle(authReq);
+    })
+  );
 }
-
-
 }
 
