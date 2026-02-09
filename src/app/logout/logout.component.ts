@@ -17,27 +17,32 @@ export class LogoutComponent implements OnInit {
   async ngOnInit() {
 
     // ⭐ WAIT until MSAL is ready
-    await firstValueFrom(
-      this.msalBroadcastService.inProgress$.pipe(
-        filter(status => status === InteractionStatus.None)
-      )
-    );
+    // await firstValueFrom(
+    //   this.msalBroadcastService.inProgress$.pipe(
+    //     filter(status => status === InteractionStatus.None)
+    //   )
+    // );
 
     const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
     const safeReturnUrl = this.validateReturnUrl(returnUrl);
 
-    const alreadyLoggedOut =
-      !this.msalService.instance.getAllAccounts().length;
+    // const alreadyLoggedOut =
+    //   !this.msalService.instance.getAllAccounts().length;
 
-    if (alreadyLoggedOut) {
-      window.location.href = safeReturnUrl;
-      return;
-    }
+    // if (alreadyLoggedOut) {
+    //   window.location.href = safeReturnUrl;
+    //   return;
+    // }
+
+    // await this.msalService.logoutRedirect({
+    //   postLogoutRedirectUri:
+    //     `https://mudhammataan.com/logout?returnUrl=${encodeURIComponent(safeReturnUrl)}`
+    // });
 
     await this.msalService.logoutRedirect({
-      postLogoutRedirectUri:
-        `https://mudhammataan.com/logout?returnUrl=${encodeURIComponent(safeReturnUrl)}`
+      postLogoutRedirectUri: safeReturnUrl
     });
+
   }
 
   private validateReturnUrl(url: string | null): string {
@@ -54,7 +59,7 @@ export class LogoutComponent implements OnInit {
         return url;
       }
 
-    } catch {}
+    } catch { }
 
     return window.location.origin;
   }
