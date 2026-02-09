@@ -75,13 +75,36 @@ export class AuthInterceptor implements HttpInterceptor {
 //   return next.handle(req);
 // }
 
+// intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+//   const isApiCall = req.url.startsWith(environment.apiBaseUrl);
+//   if (!isApiCall) return next.handle(req);
+
+//   return from(this.authService.getAccessToken()).pipe(
+//     switchMap(token => {
+//       if (!token) return next.handle(req);
+//       const authReq = req.clone({
+//         setHeaders: { Authorization: `Bearer ${token}` },
+//         withCredentials: true
+//       });
+//       return next.handle(authReq);
+//     })
+//   );
+// }
+
 intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
   const isApiCall = req.url.startsWith(environment.apiBaseUrl);
   if (!isApiCall) return next.handle(req);
 
   return from(this.authService.getAccessToken()).pipe(
     switchMap(token => {
+      // fallback: read cookie if token is null
+      if (!token) {
+        const match = document.cookie.match(/access_token=([^;]+)/);
+        if (match) token = decodeURIComponent(match[1]);
+      }
+
       if (!token) return next.handle(req);
+
       const authReq = req.clone({
         setHeaders: { Authorization: `Bearer ${token}` },
         withCredentials: true
@@ -90,5 +113,6 @@ intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> 
     })
   );
 }
+
 }
 
