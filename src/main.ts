@@ -110,12 +110,12 @@ bootstrapApplication(AppComponent, {
     provideAnimations(),
     provideHttpClient(withInterceptorsFromDi()),
 
-    {
-      provide: APP_INITIALIZER,
-      useFactory: initializeAuth,
-      deps: [AuthService],
-      multi: true
-    },
+    // {
+    //   provide: APP_INITIALIZER,
+    //   useFactory: initializeAuth,
+    //   deps: [AuthService],
+    //   multi: true
+    // },
 
     {
       provide: HTTP_INTERCEPTORS,
@@ -137,12 +137,10 @@ bootstrapApplication(AppComponent, {
           auth: {
             clientId: environment.msalConfig.auth.clientId,
             authority: environment.msalConfig.auth.authority,
-            // redirectUri: window.location.origin + '/login' //
-            redirectUri: environment.msalConfig.auth.redirectUri //new
+            redirectUri: window.location.origin + '/login'
           },
           cache: {
-            cacheLocation: 'localStorage',
-            // storeAuthStateInCookie: true
+            cacheLocation: 'localStorage'
           }
         }),
         {
@@ -167,6 +165,18 @@ bootstrapApplication(AppComponent, {
     )
   ]
 })
+.then(async (appRef) => {
+
+  // ⭐ REQUIRED — process login redirect
+  const msalService = appRef.injector.get(MsalService);
+  await msalService.instance.handleRedirectPromise();
+
+  // ⭐ restore user AFTER redirect handled
+  const authService = appRef.injector.get(AuthService);
+  await authService.restoreUserFromMsal();
+
+})
+.catch(err => console.error(err));
   // .then(async (appRef) => {
 
   //   // ⭐ CRITICAL: Handle MSAL redirect result
@@ -178,4 +188,3 @@ bootstrapApplication(AppComponent, {
   //   await authService.restoreUserFromMsal();
 
   // })
-  .catch(err => console.error(err));
