@@ -137,7 +137,8 @@ bootstrapApplication(AppComponent, {
           auth: {
             clientId: environment.msalConfig.auth.clientId,
             authority: environment.msalConfig.auth.authority,
-            redirectUri: window.location.origin + '/login'
+            // redirectUri: window.location.origin + '/login' //
+            redirectUri: environment.msalConfig.auth.redirectUri //new
           },
           cache: {
             cacheLocation: 'localStorage',

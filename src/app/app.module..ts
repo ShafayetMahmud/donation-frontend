@@ -66,8 +66,10 @@ const routes: Routes = [
     auth: {
       clientId: environment.msalConfig.auth.clientId,
       authority: environment.msalConfig.auth.authority,
-      redirectUri: window.location.origin + '/login',  // must match Azure AD
-      postLogoutRedirectUri: window.location.origin
+      // redirectUri: window.location.origin + '/login', //old
+      // postLogoutRedirectUri: window.location.origin //old
+      redirectUri: environment.msalConfig.auth.redirectUri, //new
+      postLogoutRedirectUri: environment.msalConfig.auth.postLogoutRedirectUri //new
     },
     cache: { cacheLocation: 'localStorage' }  // storeAuthStateInCookie removed
   }),
