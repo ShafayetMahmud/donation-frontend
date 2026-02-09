@@ -30,65 +30,35 @@ import { environment } from '../../environments/environment';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-
-  constructor(private authService: AuthService) {}
-
-  //old
-
-  // intercept(req: HttpRequest<any>, next: HttpHandler) {
-
-  //   return from(this.authService.getAccessToken()).pipe(
-  //     switchMap(token => {
-
-  //       // If no token (anonymous), pass request through
-  //       if (!token) {
-  //         return next.handle(req);
-  //       }
-
-  //       const authReq = req.clone({
-  //         setHeaders: {
-  //           Authorization: `Bearer ${token}`
-  //         }
-  //       });
-
-  //       console.log('AuthInterceptor token:', token);
-
-  //       return next.handle(authReq);
-  //     })
-  //   );
-  // }
-
-  //old
-
-  //new
-
+  constructor(private authService: AuthService) { }
   intercept(req: HttpRequest<any>, next: HttpHandler) {
 
-  // Only attach token to backend API
-  if (!req.url.startsWith(environment.apiBaseUrl)) {
-    return next.handle(req);
+    const isApiCall =
+      req.url.startsWith(environment.apiBaseUrl) ||
+      req.url.startsWith('/api');
+
+    if (!isApiCall) {
+      return next.handle(req);
+    }
+
+    return from(this.authService.getAccessToken()).pipe(
+      switchMap(token => {
+
+        if (!token) {
+          return next.handle(req);
+        }
+
+        const authReq = req.clone({
+          setHeaders: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        console.log("Interceptor URL:", req.url);
+
+        return next.handle(authReq);
+      })
+    );
   }
 
-  return from(this.authService.getAccessToken()).pipe(
-    switchMap(token => {
-
-      if (!token) {
-        return next.handle(req);
-      }
-
-      const authReq = req.clone({
-        setHeaders: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-
-      return next.handle(authReq);
-    })
-  );
-}
-
-
-
-  //new
 }
 
