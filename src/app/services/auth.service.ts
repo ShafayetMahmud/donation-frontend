@@ -89,49 +89,110 @@ export class AuthService {
   }
 
   /** ---------------- SUBDOMAIN LOGIN FLOW (SILENT) ---------------- */
+  //working old
+  // async restoreUserOnSubdomain(): Promise<boolean> {
+  //   const idToken = this.getCookie('msal_id_token');
+  //   if (idToken) {
+  //     const payload = jwtDecode<JwtPayload>(idToken);
+  //     this._userSubject.next({
+  //       email: payload.preferred_username,
+  //       name: payload.name,
+  //       role: 'AppUser'
+  //     });
+  //     return true;
+  //   }
+
+  //   try {
+  //     const accounts = this.msalService.instance.getAllAccounts();
+  //     if (accounts.length > 0) {
+  //       const silentRequest = {
+  //         account: accounts[0],
+  //         scopes: environment.loginRequest.scopes,
+  //         redirectUri: window.location.origin + '/login'
+  //       };
+  //       const result = await this.msalService.instance.ssoSilent(silentRequest);
+  //       if (result?.account) {
+  //         this.msalService.instance.setActiveAccount(result.account);
+
+  //         const idTokenFromResult = (result.account.idTokenClaims as any)?.rawIdToken;
+  //         if (idTokenFromResult) this.setCookie('msal_id_token', idTokenFromResult, 7);
+
+  //         this._userSubject.next({
+  //           email: result.account.username ?? '',
+  //           name: result.account.name ?? result.account.username ?? '',
+  //           role: 'AppUser'
+  //         });
+  //         return true;
+  //       }
+  //     }
+  //   } catch {
+  //     console.warn('[Auth] Silent login failed on subdomain, user not logged in yet');
+  //   }
+
+  //   return false;
+  // }
+  //working old
+
+  //new
+
   async restoreUserOnSubdomain(): Promise<boolean> {
-    const idToken = this.getCookie('msal_id_token');
-    if (idToken) {
-      const payload = jwtDecode<JwtPayload>(idToken);
-      this._userSubject.next({
-        email: payload.preferred_username,
-        name: payload.name,
-        role: 'AppUser'
-      });
-      return true;
-    }
+  const idToken = this.getCookie('msal_id_token');
+  if (idToken) {
+    const payload = jwtDecode<JwtPayload>(idToken);
 
-    // Try silent login via MSAL iframe instead of redirect
-    try {
-      const accounts = this.msalService.instance.getAllAccounts();
-      if (accounts.length > 0) {
-        const silentRequest = {
-          account: accounts[0],
-          scopes: environment.loginRequest.scopes,
-          redirectUri: window.location.origin + '/login'
-        };
-        const result = await this.msalService.instance.ssoSilent(silentRequest);
-        if (result?.account) {
-          this.msalService.instance.setActiveAccount(result.account);
+    this._userSubject.next({
+      email: payload.preferred_username,
+      name: payload.name,
+      role: 'AppUser'
+    });
 
-          const idTokenFromResult = (result.account.idTokenClaims as any)?.rawIdToken;
-          if (idTokenFromResult) this.setCookie('msal_id_token', idTokenFromResult, 7);
+    // ⭐ ENSURE API TOKEN EXISTS
+    await this.getAccessToken();
 
-          this._userSubject.next({
-            email: result.account.username ?? '',
-            name: result.account.name ?? result.account.username ?? '',
-            role: 'AppUser'
-          });
-          return true;
-        }
-      }
-    } catch {
-      // Silent login failed, but do NOT redirect → user stays on subdomain login page
-      console.warn('[Auth] Silent login failed on subdomain, user not logged in yet');
-    }
-
-    return false;
+    return true;
   }
+
+  try {
+    const accounts = this.msalService.instance.getAllAccounts();
+    if (accounts.length > 0) {
+
+      const silentRequest = {
+        account: accounts[0],
+        scopes: environment.loginRequest.scopes,
+        redirectUri: window.location.origin + '/login'
+      };
+
+      const result = await this.msalService.instance.ssoSilent(silentRequest);
+
+      if (result?.account) {
+        this.msalService.instance.setActiveAccount(result.account);
+
+        const idTokenFromResult = (result.account.idTokenClaims as any)?.rawIdToken;
+        if (idTokenFromResult) this.setCookie('msal_id_token', idTokenFromResult, 7);
+
+        this._userSubject.next({
+          email: result.account.username ?? '',
+          name: result.account.name ?? result.account.username ?? '',
+          role: 'AppUser'
+        });
+
+        // ⭐ ADD THIS
+        await this.getAccessToken();
+
+        return true;
+      }
+    }
+  } catch {
+    console.warn('[Auth] Silent login failed on subdomain');
+  }
+
+  return false;
+}
+
+
+  //new
+
+
 
   async loginOnSubdomainIfNeeded() {
     // Only try to restore, do NOT redirect immediately

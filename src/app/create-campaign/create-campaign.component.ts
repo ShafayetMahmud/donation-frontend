@@ -26,9 +26,11 @@ import { Campaign } from '../../models/campaign.model';
     MatButtonModule,
     TranslateModule
   ],
-  providers: [
-    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
-  ],
+  //old
+  // providers: [
+  //   { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
+  // ],
+  //old
   templateUrl: './create-campaign.component.html',
   styleUrls: ['./create-campaign.component.css']
 })
@@ -73,49 +75,6 @@ export class CreateCampaignComponent implements OnInit {
     }
   }
 
-  // async onSubmit() {
-  //   const payload: Campaign = { ...this.campaignForm.value } as Campaign;
-  //   const currentCampaign = this.subdomainService.getCurrentCampaign();
-  //   const isFallback = currentCampaign && currentCampaign.id === currentCampaign.subdomain;
-
-  //   if (!payload.name) {
-  //     alert('Campaign Name is required!');
-  //     return;
-  //   }
-
-  //   if (this.isEditMode && this.existingId) {
-  //     payload.id = this.existingId;
-  //     payload.subdomain = currentCampaign?.subdomain ?? payload.name.toLowerCase().replace(/\s+/g, '-');
-
-  //     if (isFallback) {
-  //       this.subdomainService.refreshCampaign(payload);
-  //       localStorage.setItem(`campaign_${payload.subdomain}`, JSON.stringify(payload));
-  //       alert('Updated local fallback campaign (not saved to backend).');
-  //       this.router.navigate(['/']);
-  //       return;
-  //     }
-
-  //     this.campaignService.updateCampaign(payload).subscribe({
-  //       next: updatedCampaign => {
-  //         this.subdomainService.refreshCampaign(updatedCampaign);
-  //         this.router.navigate(['/']);
-  //       },
-  //       error: err => console.error('Update failed', err)
-  //     });
-
-  //   } else {
-  //     payload.subdomain = payload.name.toLowerCase().replace(/\s+/g, '-');
-
-  //     this.campaignService.createCampaign(payload).subscribe({
-  //       next: newCampaign => {
-  //         alert(`Campaign created! Subdomain: ${newCampaign.subdomain}`);
-  //         this.subdomainService.refreshCampaign(newCampaign);
-  //         window.location.href = `https://${newCampaign.subdomain}.mudhammataan.com`;
-  //       },
-  //       error: err => console.error('Creation failed', err)
-  //     });
-  //   }
-  // }
 
   async onSubmit() {
   const payload: Campaign = { ...this.campaignForm.value } as Campaign;
@@ -127,7 +86,6 @@ export class CreateCampaignComponent implements OnInit {
     return;
   }
 
-  // Editing existing campaign
   if (this.isEditMode && this.existingId) {
     payload.id = this.existingId;
     payload.subdomain = currentCampaign?.subdomain ?? payload.name.toLowerCase().replace(/\s+/g, '-');
