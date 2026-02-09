@@ -23,9 +23,11 @@ export class AppComponent implements OnInit {
   async ngOnInit() {
     if (this.subdomainService.isSubdomain()) {
       await this.authService.loginOnSubdomainIfNeeded();
+      await this.authService.getAccessToken();
       console.log('[Auth] User restored on subdomain?', this.authService.currentUser);
     } else {
       await this.authService.restoreUserFromMsal();
+      await this.authService.getAccessToken();
       console.log('[Auth] User restored on main domain', this.authService.currentUser);
     }
   }
