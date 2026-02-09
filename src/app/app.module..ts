@@ -66,10 +66,10 @@ const routes: Routes = [
     auth: {
       clientId: environment.msalConfig.auth.clientId,
       authority: environment.msalConfig.auth.authority,
-      // redirectUri: window.location.origin + '/login', //old
-      // postLogoutRedirectUri: window.location.origin //old
-      redirectUri: environment.msalConfig.auth.redirectUri, //new
-      postLogoutRedirectUri: environment.msalConfig.auth.postLogoutRedirectUri //new
+      redirectUri: window.location.origin + '/login', 
+      postLogoutRedirectUri: window.location.origin 
+      // redirectUri: environment.msalConfig.auth.redirectUri,
+      // postLogoutRedirectUri: environment.msalConfig.auth.postLogoutRedirectUri
     },
     cache: { cacheLocation: 'localStorage' }  // storeAuthStateInCookie removed
   }),
