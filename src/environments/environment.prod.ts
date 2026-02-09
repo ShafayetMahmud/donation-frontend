@@ -1,7 +1,8 @@
 export const environmentOld = {
   production: true,
   // apiBaseUrl: window.location.protocol + '//' + window.location.host + '/api',  // Dynamic based on current domain
-  apiBaseUrl: window.location.protocol + '//' + window.location.host + '/api',
+  // apiBaseUrl: window.location.protocol + '//' + window.location.host + '/api',
+  apiBaseUrl: 'https://mudhammataan.com/api',
   allowedFrontendDomains: ['*'],
   msalConfig: {
     auth: {
@@ -28,7 +29,8 @@ export const environmentOld = {
 export const environment = {
   production: true,
   // apiBaseUrl: window.location.protocol + '//' + window.location.host + '/api',
-  apiBaseUrl: window.location.protocol + '//' + window.location.host + '/api',
+  // apiBaseUrl: window.location.protocol + '//' + window.location.host + '/api',
+  apiBaseUrl: 'https://mudhammataan.com/api',
   msalConfig: {
     auth: {
       // clientId: '99d94324-a3a8-4ace-b4b2-0ae093229b62',
