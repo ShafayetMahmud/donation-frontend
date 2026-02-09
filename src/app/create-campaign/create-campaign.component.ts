@@ -86,55 +86,98 @@ export class CreateCampaignComponent implements OnInit {
     return;
   }
 
+  // if (this.isEditMode && this.existingId) {
+  //   payload.id = this.existingId;
+  //   payload.subdomain = currentCampaign?.subdomain ?? payload.name.toLowerCase().replace(/\s+/g, '-');
+
+  //   if (isFallback) {
+      
+  //     this.subdomainService.refreshCampaign(payload);
+  //     localStorage.setItem(`campaign_${payload.subdomain}`, JSON.stringify(payload));
+  //     alert('Updated local fallback campaign (not saved to backend).');
+  //     this.router.navigate(['/']);
+  //     return;
+  //   }
+
+    
+  //   this.campaignService.updateCampaign(payload).subscribe({
+  //     next: (updated) => {
+  //       this.subdomainService.refreshCampaign(updated);
+  //       alert('Campaign updated successfully!');
+  //       this.router.navigate(['/']);
+  //     },
+  //     error: (err) => {
+  //       console.error('Update failed', err);
+  //       alert('Campaign update failed. Check console.');
+  //     }
+  //   });
+
+  // } else {
+    
+  //   payload.subdomain = payload.name.toLowerCase().replace(/\s+/g, '-');
+
+  //   this.campaignService.createCampaign(payload).subscribe({
+  //     next: (newCampaign) => {
+  //       this.subdomainService.refreshCampaign(newCampaign);
+  //       alert(`Campaign created! Subdomain: ${newCampaign.subdomain}`);
+  //       // Redirect to new campaign subdomain
+  //       if (newCampaign.subdomain) {
+  //     window.location.href = `https://${newCampaign.subdomain}.mudhammataan.com`;
+  //   }
+  //     },
+  //     error: (err) => {
+  //   if (err.status === 401) {
+  //     alert('Please login to create a campaign');
+      
+  //   } else {
+  //     console.error('Creation failed', err);
+  //   }
+  // }
+  //   });
+  // }
+
   if (this.isEditMode && this.existingId) {
-    payload.id = this.existingId;
-    payload.subdomain = currentCampaign?.subdomain ?? payload.name.toLowerCase().replace(/\s+/g, '-');
+  payload.id = this.existingId;
+  payload.subdomain = currentCampaign?.subdomain ?? payload.name.toLowerCase().replace(/\s+/g, '-');
 
-    if (isFallback) {
-      // Local fallback edit (no backend)
-      this.subdomainService.refreshCampaign(payload);
-      localStorage.setItem(`campaign_${payload.subdomain}`, JSON.stringify(payload));
-      alert('Updated local fallback campaign (not saved to backend).');
-      this.router.navigate(['/']);
-      return;
-    }
+  if (isFallback) {
+    this.subdomainService.refreshCampaign(payload);
+    localStorage.setItem(`campaign_${payload.subdomain}`, JSON.stringify(payload));
+    alert('Updated local fallback campaign (not saved to backend).');
+    this.router.navigate(['/']);
+    return;
+  }
 
-    // Call API via service
-    this.campaignService.updateCampaign(payload).subscribe({
-      next: (updated) => {
-        this.subdomainService.refreshCampaign(updated);
-        alert('Campaign updated successfully!');
-        this.router.navigate(['/']);
-      },
-      error: (err) => {
-        console.error('Update failed', err);
-        alert('Campaign update failed. Check console.');
-      }
-    });
+  try {
+    const updated = await this.campaignService.updateCampaign(payload);
+    this.subdomainService.refreshCampaign(updated);
+    alert('Campaign updated successfully!');
+    this.router.navigate(['/']);
+  } catch (err: any) {
+    console.error('Update failed', err);
+    alert('Campaign update failed. Check console.');
+  }
 
-  } else {
-    // Creating new campaign
-    payload.subdomain = payload.name.toLowerCase().replace(/\s+/g, '-');
+} else {
+  // Creating new campaign
+  payload.subdomain = payload.name.toLowerCase().replace(/\s+/g, '-');
 
-    this.campaignService.createCampaign(payload).subscribe({
-      next: (newCampaign) => {
-        this.subdomainService.refreshCampaign(newCampaign);
-        alert(`Campaign created! Subdomain: ${newCampaign.subdomain}`);
-        // Redirect to new campaign subdomain
-        if (newCampaign.subdomain) {
+  try {
+    const newCampaign = await this.campaignService.createCampaign(payload);
+    this.subdomainService.refreshCampaign(newCampaign);
+    alert(`Campaign created! Subdomain: ${newCampaign.subdomain}`);
+    if (newCampaign.subdomain) {
       window.location.href = `https://${newCampaign.subdomain}.mudhammataan.com`;
     }
-      },
-      error: (err) => {
+  } catch (err: any) {
     if (err.status === 401) {
       alert('Please login to create a campaign');
-      // this.authService.loginPopup(); // trigger login
     } else {
       console.error('Creation failed', err);
     }
   }
-    });
-  }
+}
+
 }
 
   logout() {
