@@ -37,26 +37,44 @@ export class AuthInterceptor implements HttpInterceptor {
   //   );
   // }
 
-  intercept(req: HttpRequest<any>, next: HttpHandler) {
-    let token = localStorage.getItem('msal.idtoken'); // your existing method
+  // intercept(req: HttpRequest<any>, next: HttpHandler) {
+  //   let token = localStorage.getItem('msal.idtoken');
+  //   if (!token) {
+  //     const match = document.cookie.match(/msal_id_token=([^;]+)/);
+  //     if (match) token = decodeURIComponent(match[1]);
+  //   }
 
-    // fallback: read token from cookie if local storage is empty
-    if (!token) {
-      const match = document.cookie.match(/msal_id_token=([^;]+)/);
-      if (match) token = decodeURIComponent(match[1]);
-    }
+  //   if (token) {
+  //     const cloned = req.clone({
+  //       setHeaders: {
+  //         Authorization: `Bearer ${token}`
+  //       }
+  //     });
+  //     return next.handle(cloned);
+  //   }
 
-    if (token) {
-      const cloned = req.clone({
-        setHeaders: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      return next.handle(cloned);
-    }
+  //   return next.handle(req);
+  // }
 
-    return next.handle(req);
+  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+  const token = localStorage.getItem('access_token'); // correct storage key
+
+  const isApiCall = req.url.startsWith(environment.apiBaseUrl);
+  if (!isApiCall) return next.handle(req);
+
+  if (token) {
+    const cloned = req.clone({
+      setHeaders: {
+        Authorization: `Bearer ${token}`
+      },
+      withCredentials: true // needed for subdomain cookies
+    });
+    return next.handle(cloned);
   }
+
+  return next.handle(req);
+}
+
 
 }
 
