@@ -64,15 +64,17 @@ export class AuthInterceptor implements HttpInterceptor {
 
   intercept(req: HttpRequest<any>, next: HttpHandler) {
 
-  // ⭐ ONLY attach token to your backend API
-  if (!req.url.includes(environment.apiBaseUrl)) {
+  // Only attach token to backend API
+  if (!req.url.startsWith(environment.apiBaseUrl)) {
     return next.handle(req);
   }
 
   return from(this.authService.getAccessToken()).pipe(
     switchMap(token => {
 
-      if (!token) return next.handle(req);
+      if (!token) {
+        return next.handle(req);
+      }
 
       const authReq = req.clone({
         setHeaders: {
@@ -84,6 +86,7 @@ export class AuthInterceptor implements HttpInterceptor {
     })
   );
 }
+
 
 
   //new
