@@ -256,7 +256,7 @@ export class AuthService {
   }
 
   public deleteCookie(name: string) {
-    document.cookie = `${name}=; Max-Age=0; path=/; domain=.mudhammataan.com; SameSite=Lax; Secure`;
+    document.cookie = `${name}=; Max-Age=0; path=/; domain=.mudhammataan.com; SameSite=None; Secure`;
   }
 
   private getIdToken(): string {

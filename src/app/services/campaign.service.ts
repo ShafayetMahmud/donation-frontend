@@ -23,18 +23,18 @@ export class CampaignService {
   //old again
 //new
   createCampaign(campaign: Campaign) {
-    return this.http.post<Campaign>(`${this.baseUrl}/create`, campaign);
+    return this.http.post<Campaign>(`${this.baseUrl}/create`, campaign, { withCredentials: true } );
   }
 
   updateCampaign(campaign: Campaign) {
     console.log('API Base URL:', environment.apiBaseUrl);
-    return this.http.put<Campaign>(`${this.baseUrl}/update`, campaign);
+    return this.http.put<Campaign>(`${this.baseUrl}/update`, campaign, { withCredentials: true } );
   }
   //new
 
   //new
   getCampaignBySubdomain(subdomain: string) {
-    return this.http.get<Campaign>(`${this.baseUrl}/by-subdomain/${subdomain}`);
+    return this.http.get<Campaign>(`${this.baseUrl}/by-subdomain/${subdomain}`, { withCredentials: true } );
   }
   //new
 
