@@ -63,26 +63,55 @@ export class AuthService {
   }
 
   /** ---------------- ACCESS TOKEN ---------------- */
+  // async getAccessToken(): Promise<string | null> {
+  //   const accounts = this.msalService.instance.getAllAccounts();
+  //   if (!accounts || accounts.length === 0) return null;
+
+  //   try {
+  //     const silentRequest = {
+  //       account: accounts[0],
+  //       scopes: ['api://99d94324-a3a8-4ace-b4b2-0ae093229b62/access_as_user']
+  //     };
+
+  //     const result = await this.msalService.instance.acquireTokenSilent(silentRequest)
+  //       .catch(() => this.msalService.instance.acquireTokenPopup(silentRequest));
+
+  //     localStorage.setItem('access_token', result.accessToken);
+  //     return result.accessToken;
+  //   } catch (err) {
+  //     console.error('Failed to get API token', err);
+  //     return null;
+  //   }
+  // }
+
   async getAccessToken(): Promise<string | null> {
-    const accounts = this.msalService.instance.getAllAccounts();
-    if (!accounts || accounts.length === 0) return null;
+  const accounts = this.msalService.instance.getAllAccounts();
+  if (!accounts || accounts.length === 0) return null;
 
-    try {
-      const silentRequest = {
-        account: accounts[0],
-        scopes: ['api://99d94324-a3a8-4ace-b4b2-0ae093229b62/access_as_user']
-      };
+  try {
+    const silentRequest = {
+      account: accounts[0],
+      scopes: ['api://99d94324-a3a8-4ace-b4b2-0ae093229b62/access_as_user']
+    };
 
-      const result = await this.msalService.instance.acquireTokenSilent(silentRequest)
-        .catch(() => this.msalService.instance.acquireTokenPopup(silentRequest));
+    const result = await this.msalService.instance.acquireTokenSilent(silentRequest)
+      .catch(() => this.msalService.instance.acquireTokenPopup(silentRequest));
 
-      localStorage.setItem('access_token', result.accessToken);
-      return result.accessToken;
-    } catch (err) {
-      console.error('Failed to get API token', err);
-      return null;
-    }
+    const token = result.accessToken;
+
+    // Store in localStorage (main domain)
+    localStorage.setItem('access_token', token);
+
+    // Also store in a cookie shared across all subdomains
+    document.cookie = `access_token=${token}; domain=.mudhammataan.com; path=/; secure; SameSite=None`;
+
+    return token;
+  } catch (err) {
+    console.error('Failed to get API token', err);
+    return null;
   }
+}
+
 
   getAccessTokenSync(): string | null {
     return localStorage.getItem('access_token');
