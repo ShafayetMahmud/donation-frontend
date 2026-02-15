@@ -22,7 +22,7 @@ export class LogoutComponent implements OnInit {
     //     filter(status => status === InteractionStatus.None)
     //   )
     // );
-
+    await this.msalService.instance.initialize();
     const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
     const safeReturnUrl = this.validateReturnUrl(returnUrl);
 
@@ -39,9 +39,16 @@ export class LogoutComponent implements OnInit {
     //     `https://mudhammataan.com/logout?returnUrl=${encodeURIComponent(safeReturnUrl)}`
     // });
 
+    // await this.msalService.logoutRedirect({
+    //   postLogoutRedirectUri: safeReturnUrl
+    // });
+    const accounts = this.msalService.instance.getAllAccounts();
+
     await this.msalService.logoutRedirect({
+      account: accounts.length ? accounts[0] : undefined,
       postLogoutRedirectUri: safeReturnUrl
     });
+
 
   }
 
