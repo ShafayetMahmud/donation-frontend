@@ -22,12 +22,10 @@ import {
 })
 export class CashDonationEditComponent implements OnInit {
     donation!: CashDonationResponse;
-
     isLoading = true;
-
     approvalStatusEnum = ApprovalStatus;
 
-    form = null as any; // temporary placeholder
+    form: any;
 
     constructor(
         private fb: FormBuilder,
@@ -48,7 +46,6 @@ export class CashDonationEditComponent implements OnInit {
         });
     }
 
-
     async ngOnInit() {
         const id = this.route.snapshot.paramMap.get('id');
         if (!id) return;
@@ -61,7 +58,7 @@ export class CashDonationEditComponent implements OnInit {
             fullName: this.donation.donor.fullName ?? '',
             phone: this.donation.donor.phone ?? '',
             email: this.donation.donor.email ?? '',
-            address: '', // optional
+            address: '',
             isAnonymous: this.donation.donor.isAnonymous ?? false,
             amount: this.donation.amount ?? 0,
             currency: this.donation.currency ?? 'BDT',
@@ -76,11 +73,14 @@ export class CashDonationEditComponent implements OnInit {
         if (this.form.invalid) return;
 
         const dto: UpdateCashDonationDto = {
-            ...this.form.value,
-            approvalStatus: this.form.value.approvalStatus ?? undefined
+            amount: this.form.value.amount,
+            currency: this.form.value.currency,
+            notes: this.form.value.notes,
+            approvalStatus: Number(this.form.value.approvalStatus)
         };
 
         await this.donationService.update(this.donation.id, dto);
         this.router.navigate(['/cash-donation']);
     }
 }
+
