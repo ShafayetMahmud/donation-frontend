@@ -8,6 +8,11 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatButtonModule } from '@angular/material/button';
+import { MatSelectModule } from '@angular/material/select'; // ✅ Add this
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'; // for spinner
+import { MatCardModule } from '@angular/material/card';
+
+
 import {
     CashDonationResponse,
     CreateCashDonationDto,
@@ -17,7 +22,7 @@ import {
 @Component({
     selector: 'app-cash-donation-edit',
     standalone: true,
-    imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSlideToggleModule, MatButtonModule],
+    imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSlideToggleModule, MatButtonModule, MatSelectModule, MatProgressSpinnerModule, MatCardModule],
     templateUrl: './cash-donation-edit.component.html',
 })
 export class CashDonationEditComponent implements OnInit {
@@ -30,7 +35,7 @@ export class CashDonationEditComponent implements OnInit {
     constructor(
         private fb: FormBuilder,
         private route: ActivatedRoute,
-        private router: Router,
+        public router: Router,
         private donationService: CashDonationService
     ) {
         this.form = this.fb.group({

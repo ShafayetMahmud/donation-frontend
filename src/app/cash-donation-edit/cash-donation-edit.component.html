@@ -1,66 +1,69 @@
-<div *ngIf="isLoading" class="loading">
-  Loading donation...
-</div>
+<mat-card class="donation-card" *ngIf="!isLoading">
+  <mat-card-title>Edit Cash Donation</mat-card-title>
+  <mat-card-content>
+    <form [formGroup]="form" (ngSubmit)="submit()" class="donation-form">
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Full Name</mat-label>
+          <input matInput formControlName="fullName" />
+        </mat-form-field>
 
-<div *ngIf="!isLoading">
-  <form [formGroup]="form" (ngSubmit)="submit()">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Phone</mat-label>
+          <input matInput formControlName="phone" />
+        </mat-form-field>
+      </div>
 
-    <!-- Donor Info -->
-    <mat-form-field appearance="fill">
-      <mat-label>Full Name</mat-label>
-      <input matInput formControlName="fullName" />
-    </mat-form-field>
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Email</mat-label>
+          <input matInput formControlName="email" />
+        </mat-form-field>
 
-    <mat-form-field appearance="fill">
-      <mat-label>Phone</mat-label>
-      <input matInput formControlName="phone" />
-    </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Address</mat-label>
+          <input matInput formControlName="address" />
+        </mat-form-field>
+      </div>
 
-    <mat-form-field appearance="fill">
-      <mat-label>Email</mat-label>
-      <input matInput formControlName="email" />
-    </mat-form-field>
+      <mat-slide-toggle formControlName="isAnonymous">Donate Anonymously</mat-slide-toggle>
 
-    <mat-form-field appearance="fill">
-      <mat-label>Address</mat-label>
-      <input matInput formControlName="address" />
-    </mat-form-field>
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Amount</mat-label>
+          <input matInput type="number" formControlName="amount" />
+        </mat-form-field>
 
-    <mat-slide-toggle formControlName="isAnonymous">
-      Anonymous Donation
-    </mat-slide-toggle>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Currency</mat-label>
+          <mat-select formControlName="currency">
+            <mat-option value="BDT">BDT</mat-option>
+            <mat-option value="USD">USD</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
 
-    <!-- Donation Info -->
-    <mat-form-field appearance="fill">
-      <mat-label>Amount</mat-label>
-      <input matInput type="number" formControlName="amount" />
-    </mat-form-field>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Notes</mat-label>
+        <textarea matInput formControlName="notes" rows="3"></textarea>
+      </mat-form-field>
 
-    <mat-form-field appearance="fill">
-      <mat-label>Currency</mat-label>
-      <input matInput formControlName="currency" />
-    </mat-form-field>
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Approval Status</mat-label>
+          <mat-select formControlName="approvalStatus">
+            <mat-option [value]="approvalStatusEnum.Pending">Pending</mat-option>
+            <mat-option [value]="approvalStatusEnum.Approved">Approved</mat-option>
+            <mat-option [value]="approvalStatusEnum.Rejected">Rejected</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
 
-    <mat-form-field appearance="fill">
-      <mat-label>Notes</mat-label>
-      <textarea matInput formControlName="notes"></textarea>
-    </mat-form-field>
-
-    <!-- Approval Status -->
-    <mat-form-field appearance="fill">
-      <mat-label>Approval Status</mat-label>
-      <select matNativeControl formControlName="approvalStatus">
-        <option *ngFor="let status of [approvalStatusEnum.Pending, approvalStatusEnum.Approved, approvalStatusEnum.Rejected]" 
-                [value]="status">
-          {{ approvalStatusEnum[status] }}
-        </option>
-      </select>
-    </mat-form-field>
-
-    <!-- Submit Button -->
-    <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
-      Update Donation
-    </button>
-
-  </form>
-</div>
+      <div class="button-row">
+        <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
+          Update Donation
+        </button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>

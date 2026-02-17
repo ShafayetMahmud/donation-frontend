@@ -9,6 +9,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatCardModule } from '@angular/material/card';
+import { MatSelectModule } from '@angular/material/select';
 
 @Component({
   selector: 'app-cash-donation-create',
@@ -20,7 +22,10 @@ import { MatDividerModule } from '@angular/material/divider';
   MatInputModule,
   MatSlideToggleModule,
   MatButtonModule,
-  MatDividerModule
+  MatDividerModule,
+  MatButtonModule,
+  MatCardModule,
+  MatSelectModule
 ],
   templateUrl: './cash-donation-create.component.html'
 })
