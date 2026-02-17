@@ -40,9 +40,9 @@ export class DonateComponent {
     if (['bkash', 'nagad', 'rocket'].includes(this.selectedMethod!)) {
       this.showForm = true;
     } else if (this.selectedMethod === 'cod') {
-      alert('Cash on Delivery selected. Implement flow later.');
+  this.router.navigate(['/cash-donation/create']);
     } else if (this.selectedMethod === 'card') {
-      alert('Card payment selected. Implement flow later.');
+      this.router.navigate(['/cash-donation/create']);
     }
   }
 
