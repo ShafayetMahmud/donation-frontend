@@ -1,0 +1,32 @@
+.donation-card {
+  max-width: 700px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+}
+
+.donation-form .form-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.full-width {
+  flex: 1;
+}
+
+/* Button row */
+.button-row {
+  margin-top: 1.5rem;
+  text-align: right;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .donation-form .form-row {
+    flex-direction: column; /* stack fields vertically */
+  }
+
+  .button-row {
+    text-align: center; /* center the button on mobile */
+  }
+}
