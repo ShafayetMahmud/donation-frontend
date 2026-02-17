@@ -22,7 +22,14 @@ export const routes: Routes = [
       { path: 'gallery', component: GalleryComponent },
       { path: 'contact', component: ContactComponent },
       { path: 'donate', component: DonateComponent },
-      { path: 'create-campaign', component: CreateCampaignComponent }
+      { path: 'create-campaign', component: CreateCampaignComponent },
+      {
+  path: 'cash-donation/create',
+  loadComponent: () =>
+    import('./cash-donation-create/cash-donation-create.component')
+      .then(m => m.CashDonationCreateComponent)
+}
+
     ]
   },
   // {
