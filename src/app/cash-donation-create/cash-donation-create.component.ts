@@ -46,19 +46,19 @@ export class CashDonationCreateComponent {
     });
   }
 
-  submit() {
-    if (this.form.invalid) return;
+  async submit() {
+  if (this.form.invalid) return;
 
-    const campaign = this.subdomainService.getCurrentCampaign();
+  const campaign = this.subdomainService.getCurrentCampaign();
+  if (!campaign) return;
 
-    if (!campaign) return;
+  await this.donationService.create({
+    ...this.form.value,
+    campaignId: campaign.id
+  } as any);
 
-    this.donationService.create({
-      ...this.form.value,
-      campaignId: campaign.id
-    } as any).subscribe(() => {
-      this.router.navigate(['/overview']);
-    });
-  }
+  this.router.navigate(['/overview']);
+}
+
 }
 

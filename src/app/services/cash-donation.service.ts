@@ -1,6 +1,7 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { environment } from '../../environments/environment';
+import { AuthService } from './auth.service';
 import {
   CashDonationResponse,
   CreateCashDonationDto,
@@ -12,23 +13,59 @@ import {
 })
 export class CashDonationService {
 
-  private baseUrl = '/api/cash-donations';
+  private baseUrl = environment.apiBaseUrl + '/cash-donations';
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService
+  ) {}
 
-  create(dto: CreateCashDonationDto): Observable<CashDonationResponse> {
-    return this.http.post<CashDonationResponse>(this.baseUrl, dto);
+  private async getHeaders() {
+    const token = await this.authService.getAccessToken();
+
+    return {
+      headers: new HttpHeaders({
+        Authorization: `Bearer ${token}`
+      }),
+      withCredentials: true
+    };
   }
 
-  getByCampaign(campaignId: string): Observable<CashDonationResponse[]> {
-    return this.http.get<CashDonationResponse[]>(`${this.baseUrl}/campaign/${campaignId}`);
+  async create(dto: CreateCashDonationDto): Promise<CashDonationResponse> {
+    const options = await this.getHeaders();
+
+    const response = await this.http
+      .post<CashDonationResponse>(this.baseUrl, dto, options)
+      .toPromise();
+
+    if (!response) throw new Error('No response from API');
+    return response;
   }
 
-  update(id: string, dto: UpdateCashDonationDto): Observable<any> {
-    return this.http.put(`${this.baseUrl}/${id}`, dto);
+  async getByCampaign(campaignId: string): Promise<CashDonationResponse[]> {
+    const options = await this.getHeaders();
+
+    const response = await this.http
+      .get<CashDonationResponse[]>(`${this.baseUrl}/campaign/${campaignId}`, options)
+      .toPromise();
+
+    if (!response) throw new Error('No response from API');
+    return response;
   }
 
-  delete(id: string): Observable<any> {
-    return this.http.delete(`${this.baseUrl}/${id}`);
+  async update(id: string, dto: UpdateCashDonationDto): Promise<void> {
+    const options = await this.getHeaders();
+
+    await this.http
+      .put(`${this.baseUrl}/${id}`, dto, options)
+      .toPromise();
+  }
+
+  async delete(id: string): Promise<void> {
+    const options = await this.getHeaders();
+
+    await this.http
+      .delete(`${this.baseUrl}/${id}`, options)
+      .toPromise();
   }
 }
