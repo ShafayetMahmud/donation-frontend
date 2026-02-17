@@ -1,0 +1,89 @@
+<div *ngIf="isLoading" class="spinner-container">
+  <mat-spinner></mat-spinner>
+</div>
+
+<div *ngIf="!isLoading" class="container">
+
+  <!-- Progress Card -->
+  <div class="progress-card">
+    <div class="progress-info">
+      <div>
+        <label>Target</label>
+        <h3>{{ targetAmount | number }} BDT</h3>
+      </div>
+
+      <div>
+        <label>Collected</label>
+        <h3>{{ totalCollected | number }} BDT</h3>
+      </div>
+
+      <div>
+        <label>Donations</label>
+        <h3>{{ donations.length }}</h3>
+      </div>
+    </div>
+
+    <div class="progress-bar">
+      <div class="progress-fill" [style.width.%]="progressPercent"></div>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="actions">
+    <button mat-raised-button color="primary" routerLink="/cash-donation/create">
+      Add Donation
+    </button>
+  </div>
+
+  <!-- Donation Table -->
+  <div class="table-card" *ngIf="donations.length > 0; else emptyState">
+    <table mat-table [dataSource]="donations" class="mat-elevation-z8">
+
+      <!-- Donor -->
+      <ng-container matColumnDef="donor">
+        <th mat-header-cell *matHeaderCellDef>Donor</th>
+        <td mat-cell *matCellDef="let donation">
+          {{ donation.donor.isAnonymous ? 'Anonymous' : donation.donor.fullName }}
+        </td>
+      </ng-container>
+
+      <!-- Amount -->
+      <ng-container matColumnDef="amount">
+        <th mat-header-cell *matHeaderCellDef>Amount</th>
+        <td mat-cell *matCellDef="let donation">{{ donation.amount | number }} {{ donation.currency }}</td>
+      </ng-container>
+
+      <!-- Date -->
+      <ng-container matColumnDef="date">
+        <th mat-header-cell *matHeaderCellDef>Date</th>
+        <td mat-cell *matCellDef="let donation">{{ donation.donationDate | date:'short' }}</td>
+      </ng-container>
+
+      <!-- Approval -->
+      <ng-container matColumnDef="approval">
+        <th mat-header-cell *matHeaderCellDef>Approval</th>
+        <td mat-cell *matCellDef="let donation">{{ approvalStatusEnum[donation.approvalStatus] }}</td>
+      </ng-container>
+
+      <!-- Actions -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let donation">
+          <button mat-button color="primary" (click)="editDonation(donation)">Edit</button>
+          <button mat-button color="warn" (click)="deleteDonation(donation)">Delete</button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="['donor','amount','date','approval','actions']"></tr>
+      <tr mat-row *matRowDef="let row; columns: ['donor','amount','date','approval','actions'];"></tr>
+    </table>
+  </div>
+
+  <ng-template #emptyState>
+    <div class="empty-state">
+      <h3>No donations yet</h3>
+      <p>Be the first supporter of this campaign ❤️</p>
+    </div>
+  </ng-template>
+
+</div>

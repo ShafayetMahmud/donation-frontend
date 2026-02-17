@@ -18,7 +18,7 @@ export class CashDonationService {
   constructor(
     private http: HttpClient,
     private authService: AuthService
-  ) {}
+  ) { }
 
   private async getHeaders() {
     const token = await this.authService.getAccessToken();
@@ -68,4 +68,24 @@ export class CashDonationService {
       .delete(`${this.baseUrl}/${id}`, options)
       .toPromise();
   }
+
+  async getById(id: string): Promise<CashDonationResponse> {
+  const token = await this.authService.getAccessToken(); // if needed
+  const options = { 
+    headers: { Authorization: `Bearer ${token}` },
+    withCredentials: true
+  };
+
+  const response = await this.http
+    .get<CashDonationResponse>(`${this.baseUrl}/${id}`, options)
+    .toPromise();
+
+  if (!response) {
+    throw new Error(`Cash donation with id ${id} not found`);
+  }
+
+  return response;
+}
+
+
 }

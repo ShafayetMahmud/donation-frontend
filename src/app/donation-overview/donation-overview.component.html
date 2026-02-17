@@ -1,0 +1,87 @@
+<div *ngIf="isLoading" class="loading">
+  Loading donations...
+</div>
+
+<div class="container">
+
+  <h2 class="title">Campaign Donation Overview</h2>
+
+  <!-- Progress Card -->
+  <div class="progress-card">
+
+    <div class="progress-info">
+      <div>
+        <label>Target</label>
+        <h3>{{ targetAmount | number }} BDT</h3>
+      </div>
+
+      <div>
+        <label>Collected</label>
+        <h3>{{ totalCollected | number }} BDT</h3>
+      </div>
+
+      <div>
+        <label>Donations</label>
+        <h3>{{ donations.length }}</h3>
+      </div>
+    </div>
+
+    <div class="progress-bar">
+      <div class="progress-fill" [style.width.%]="progressPercent">
+      </div>
+    </div>
+
+  </div>
+
+  <div class="actions">
+    <button routerLink="/cash-donation/create">
+      Add Donation
+    </button>
+  </div>
+
+
+  <!-- Donation Table -->
+  <div class="table-card">
+
+    <ng-container *ngIf="donations.length > 0; else emptyState">
+
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let d of donations">
+            <td>
+              {{ d.donor?.isAnonymous ? 'Anonymous' : (d.donor?.fullName || 'Unnamed Donor') }}
+            </td>
+            <td>{{ d.amount | number }} {{ d.currency }}</td>
+            <td>
+              <span class="status" [class]="getStatusText(d.approvalStatus)">
+                {{ getStatusText(d.approvalStatus) }}
+              </span>
+            </td>
+
+            <td>{{ d.createdAt | date:'medium' }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+    </ng-container>
+
+    <ng-template #emptyState>
+      <div class="empty-state">
+        <h3>No donations yet</h3>
+        <p>Be the first supporter of this campaign ❤️</p>
+      </div>
+    </ng-template>
+
+  </div>
+
+
+</div>

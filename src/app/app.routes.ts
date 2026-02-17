@@ -10,6 +10,9 @@ import { NotFoundComponent } from './not-found/not-found.component';
 import { CreateCampaignComponent } from './create-campaign/create-campaign.component';
 import { LoginComponent } from './login/login.component';
 import { LogoutComponent } from './logout/logout.component';
+import { CashDonationEditComponent } from './cash-donation-edit/cash-donation-edit.component';
+import { CashDonationCreateComponent } from './cash-donation-create/cash-donation-create.component';
+import { CashDonationOverviewComponent } from './cash-donation-overview/cash-donation-overview.component';
 
 export const routes: Routes = [
   {
@@ -23,22 +26,16 @@ export const routes: Routes = [
       { path: 'contact', component: ContactComponent },
       { path: 'donate', component: DonateComponent },
       { path: 'create-campaign', component: CreateCampaignComponent },
-      {
-  path: 'cash-donation/create',
-  loadComponent: () =>
-    import('./cash-donation-create/cash-donation-create.component')
-      .then(m => m.CashDonationCreateComponent)
-}
 
+      // Cash donation routes
+      { path: 'cash-donation', component: CashDonationOverviewComponent },
+      { path: 'cash-donation/create', component: CashDonationCreateComponent },
+      { path: 'cash-donation/edit/:id', component: CashDonationEditComponent }
     ]
   },
-  // {
-  //   path: 'login',
-  //   loadComponent: () =>
-  //     import('./login/login.component').then((m) => m.LoginComponent)
-  // },
   { path: 'login', component: LoginComponent },
   { path: 'logout', component: LogoutComponent },
   { path: 'not-found', component: NotFoundComponent },
   { path: '**', redirectTo: 'not-found' }
 ];
+
