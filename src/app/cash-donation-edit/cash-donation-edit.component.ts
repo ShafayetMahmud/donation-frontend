@@ -81,6 +81,6 @@ export class CashDonationEditComponent implements OnInit {
         };
 
         await this.donationService.update(this.donation.id, dto);
-        this.router.navigate(['/overview']);
+        this.router.navigate(['/cash-donation']);
     }
 }
