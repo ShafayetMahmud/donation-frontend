@@ -57,7 +57,7 @@ export class CashDonationCreateComponent {
     campaignId: campaign.id
   } as any);
 
-  this.router.navigate(['/overview']);
+  this.router.navigate(['/cash-donation']);
 }
 
 }
