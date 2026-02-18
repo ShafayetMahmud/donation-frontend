@@ -1,3 +1,4 @@
+/* Shell to center the card */
 .campaign-shell {
   display: flex;
   justify-content: center;
@@ -8,6 +9,7 @@
   box-sizing: border-box;
 }
 
+/* Card container */
 .campaign-card {
   background: #ffffff;
   padding: clamp(1rem, 4vw, 2rem);
@@ -20,25 +22,63 @@
   margin: 0 auto;
 }
 
-.title {
+/* Heading */
+.campaign-card .title {
   font-size: clamp(1.5rem, 5vw, 2rem);
   font-weight: 600;
   margin-bottom: 0.25rem;
+  color: #1a1a1a;
+  line-height: 1.2;
+  word-wrap: break-word;
 }
 
-.subtitle {
+.campaign-card .subtitle {
+  font-size: clamp(0.875rem, 3vw, 1rem);
   color: #555;
-  margin-bottom: 2rem;
+  margin-bottom: clamp(1rem, 4vw, 2rem);
+  line-height: 1.4;
+  word-wrap: break-word;
 }
 
-.full-width {
+/* Form spacing */
+.campaign-form .full-width {
   width: 100%;
-  margin-bottom: 1.5rem;
+  margin-bottom: clamp(1rem, 3vw, 1.5rem);
 }
 
-.cta {
+/* Button styling */
+.campaign-form .cta {
   width: 100%;
+  padding: clamp(0.5rem, 2vw, 0.75rem);
+  font-size: clamp(1rem, 3vw, 1.1rem);
   font-weight: 600;
   border-radius: 0.5rem;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .campaign-shell {
+    padding: 0.5rem;
+  }
+  
+  .campaign-card {
+    padding: 1rem;
+    border-radius: 0.5rem;
+  }
+  
+  mat-form-field {
+    font-size: 14px;
+  }
+  
+  textarea {
+    min-height: 80px;
+  }
 }
