@@ -14,6 +14,7 @@ import { CampaignService } from '../services/campaign.service';
 import { AuthService } from '../services/auth.service';
 import { LanguageService } from '../services/language.service';
 import { Campaign } from '../../models/campaign.model';
+import { MatSelectModule } from '@angular/material/select';
 @Component({
   selector: 'app-create-campaign',
   standalone: true,
@@ -24,7 +25,8 @@ import { Campaign } from '../../models/campaign.model';
     MatInputModule,
     MatFormFieldModule,
     MatButtonModule,
-    TranslateModule
+    TranslateModule,
+    MatSelectModule
   ],
   //old
   // providers: [
