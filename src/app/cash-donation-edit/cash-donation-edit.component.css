@@ -1,32 +1,44 @@
-.donation-card {
-  max-width: 700px;
-  margin: 2rem auto;
-  padding: 1.5rem;
+.campaign-shell {
+  display: flex;
+  justify-content: center;
+  padding: clamp(1rem, 5vw, 2rem);
+  background: #f5f7fa;
+  min-height: calc(100vh - 80px);
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.donation-form .form-row {
+.campaign-card {
+  background: #ffffff;
+  padding: clamp(1rem, 4vw, 2rem);
+  border-radius: clamp(0.5rem, 2vw, 1rem);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  width: 100%;
   display: flex;
-  gap: 1rem;
-  margin-bottom: 1rem;
+  flex-direction: column;
+  margin: 0 auto;
+}
+
+.title {
+  font-size: clamp(1.5rem, 5vw, 2rem);
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.subtitle {
+  color: #555;
+  margin-bottom: 2rem;
 }
 
 .full-width {
-  flex: 1;
+  width: 100%;
+  margin-bottom: 1.5rem;
 }
 
-/* Button row */
-.button-row {
-  margin-top: 1.5rem;
-  text-align: right;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .donation-form .form-row {
-    flex-direction: column; /* stack fields vertically */
-  }
-
-  .button-row {
-    text-align: center; /* center the button on mobile */
-  }
+.cta {
+  width: 100%;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  min-height: 48px;
 }
