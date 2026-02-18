@@ -24,6 +24,7 @@ import {
     standalone: true,
     imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatSlideToggleModule, MatButtonModule, MatSelectModule, MatProgressSpinnerModule, MatCardModule],
     templateUrl: './cash-donation-edit.component.html',
+    styleUrls: ['./cash-donation-edit.component.css']
 })
 export class CashDonationEditComponent implements OnInit {
     donation!: CashDonationResponse;

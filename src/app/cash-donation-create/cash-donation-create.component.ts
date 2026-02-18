@@ -27,7 +27,8 @@ import { MatSelectModule } from '@angular/material/select';
   MatCardModule,
   MatSelectModule
 ],
-  templateUrl: './cash-donation-create.component.html'
+  templateUrl: './cash-donation-create.component.html',
+  styleUrls: ['./cash-donation-create.component.css']
 })
 export class CashDonationCreateComponent {
 
