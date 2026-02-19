@@ -1,25 +1,23 @@
 <div class="campaign-shell" *ngIf="!isLoading; else loading">
   <div class="campaign-card">
-
     <h1 class="title">Edit Cash Donation</h1>
     <p class="subtitle">Update donation details</p>
 
     <form [formGroup]="form" (ngSubmit)="submit()" class="campaign-form">
-
       <!-- Donor info (readonly) -->
       <mat-form-field appearance="fill" class="full-width">
         <mat-label>Full Name</mat-label>
-        <input matInput formControlName="fullName">
+        <input matInput formControlName="fullName" readonly>
       </mat-form-field>
 
       <mat-form-field appearance="fill" class="full-width">
         <mat-label>Phone</mat-label>
-        <input matInput formControlName="phone">
+        <input matInput formControlName="phone" readonly>
       </mat-form-field>
 
       <mat-form-field appearance="fill" class="full-width">
         <mat-label>Email</mat-label>
-        <input matInput formControlName="email">
+        <input matInput formControlName="email" readonly>
       </mat-form-field>
 
       <mat-slide-toggle formControlName="isAnonymous">
@@ -51,22 +49,34 @@
         <textarea matInput formControlName="notes"></textarea>
       </mat-form-field>
 
-      <!-- Receipt upload -->
-      <div class="receipt-upload">
-        <label class="upload-label">Receipt</label>
-        <div class="upload-box" (click)="receiptInput.click()">
-          <ng-container *ngIf="!receiptPreview">
-            <p>Click to upload receipt</p>
-          </ng-container>
-          <img *ngIf="receiptPreview" [src]="receiptPreview" />
+      <!-- Receipt Section -->
+      <div class="receipt-section">
+        <p><strong>Receipt:</strong></p>
+
+        <div *ngIf="receiptPreview; else noReceipt">
+          <p>Uploaded Receipt:</p>
+          <img [src]="receiptPreview" alt="Receipt" width="200" class="receipt-img">
+          <p *ngIf="donation.receiptNumber">Receipt Number: {{ donation.receiptNumber }}</p>
+          <p *ngIf="!donation.receiptNumber">Receipt Number not assigned yet</p>
+          <button type="button" mat-stroked-button color="warn" (click)="removeReceipt()">Remove Receipt</button>
         </div>
-        <input #receiptInput type="file" accept="image/*" (change)="onReceiptSelected($event)" hidden />
+
+        <ng-template #noReceipt>
+          <p>No receipt uploaded yet</p>
+        </ng-template>
+
+        <div class="receipt-upload">
+          <label class="upload-label">Upload / Replace Receipt</label>
+          <div class="upload-box" (click)="triggerReceiptUpload()">
+            <p *ngIf="!receiptPreview">Click to upload receipt</p>
+          </div>
+          <input #receiptInput type="file" accept="image/*" (change)="onReceiptSelected($event)" hidden />
+        </div>
       </div>
 
       <button mat-raised-button color="primary" type="submit" class="cta" [disabled]="isSubmitting">
         Update Donation
       </button>
-
     </form>
   </div>
 </div>
