@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { CashDonationService } from '../services/cash-donation.service';
 import { ReceiptService } from '../services/receipt.service';
-import { ApprovalStatus } from '../../models/cash-donation.model';
+import { ApprovalStatus, CashDonationResponse, UpdateCashDonationDto } from '../../models/cash-donation.model';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -12,8 +12,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCardModule } from '@angular/material/card';
-
-import { CashDonationResponse, UpdateCashDonationDto } from '../../models/cash-donation.model';
 
 @Component({
   selector: 'app-cash-donation-edit',
@@ -42,6 +40,8 @@ export class CashDonationEditComponent implements OnInit {
   selectedReceipt?: File;
   receiptPreview?: string;
 
+  @ViewChild('receiptInput') receiptInput!: ElementRef<HTMLInputElement>;
+
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
@@ -55,7 +55,7 @@ export class CashDonationEditComponent implements OnInit {
       email: [{ value: '', disabled: true }],
       address: [{ value: '', disabled: true }],
       isAnonymous: [{ value: false, disabled: true }],
-      amount: [null, Validators.required],
+      amount: [0, Validators.required],
       currency: ['BDT', Validators.required],
       notes: [''],
       approvalStatus: [ApprovalStatus.Pending, Validators.required]
@@ -67,7 +67,6 @@ export class CashDonationEditComponent implements OnInit {
     if (!id) return;
 
     this.isLoading = true;
-
     this.donation = await this.donationService.getById(id);
 
     this.form.patchValue({
@@ -82,31 +81,46 @@ export class CashDonationEditComponent implements OnInit {
       approvalStatus: this.donation.approvalStatus ?? ApprovalStatus.Pending
     });
 
-    // Preload existing receipt
+    // preload existing receipt
     this.receiptPreview = this.donation.receiptImageUrl ?? undefined;
-
     this.isLoading = false;
   }
 
-  async onReceiptSelected(event: any) {
-    const file: File = event.target.files[0];
-    if (!file) return;
+  triggerReceiptUpload() {
+    this.receiptInput.nativeElement.click();
+  }
+
+  async onReceiptSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file || !this.donation) return;
 
     this.selectedReceipt = file;
 
-    // preview
+    // preview locally
     const reader = new FileReader();
     reader.onload = () => {
       this.receiptPreview = reader.result as string;
     };
     reader.readAsDataURL(file);
+
+    // immediately upload
+    const campaignId = this.donation.campaignId;
+    const result: any = await this.receiptService.uploadReceipt(campaignId, this.donation.id, file).toPromise();
+    this.donation.receiptImageUrl = result.url;
+  }
+
+  async removeReceipt() {
+    this.receiptPreview = undefined;
+    this.selectedReceipt = undefined;
+    if (this.donation) this.donation.receiptImageUrl = undefined;
+    // optionally, call backend to delete the receipt file if needed
   }
 
   async submit() {
     if (this.form.invalid || this.isSubmitting) return;
 
     this.isSubmitting = true;
-
     try {
       const dto: UpdateCashDonationDto = {
         amount: this.form.value.amount,
@@ -115,16 +129,7 @@ export class CashDonationEditComponent implements OnInit {
         approvalStatus: Number(this.form.value.approvalStatus)
       };
 
-      // update donation
       await this.donationService.update(this.donation.id, dto);
-
-      // upload receipt if selected
-      if (this.selectedReceipt) {
-        await this.receiptService
-          .uploadReceipt(this.donation.campaignId, this.donation.id, this.selectedReceipt)
-          .toPromise();
-      }
-
       this.router.navigate(['/cash-donation']);
     } finally {
       this.isSubmitting = false;

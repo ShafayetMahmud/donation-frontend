@@ -103,9 +103,9 @@ export class CashDonationOverviewComponent implements OnInit {
     return (this.totalCollected / this.targetAmount) * 100;
   }
 
-  goToCreate() {
-    this.router.navigate(['/cash-donation/create']);
-  }
+  // goToCreate() {
+  //   this.router.navigate(['/cash-donation/create']);
+  // }
 
   editDonation(donation: CashDonationResponse) {
     this.router.navigate(['/cash-donation/edit', donation.id]);
