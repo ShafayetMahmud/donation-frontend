@@ -1,4 +1,4 @@
-<div class="campaign-shell">
+<div class="campaign-shell" *ngIf="!isLoading; else loading">
   <div class="campaign-card">
 
     <h1 class="title">Edit Cash Donation</h1>
@@ -6,6 +6,27 @@
 
     <form [formGroup]="form" (ngSubmit)="submit()" class="campaign-form">
 
+      <!-- Donor info (readonly) -->
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Full Name</mat-label>
+        <input matInput formControlName="fullName">
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Phone</mat-label>
+        <input matInput formControlName="phone">
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="email">
+      </mat-form-field>
+
+      <mat-slide-toggle formControlName="isAnonymous">
+        Anonymous Donation
+      </mat-slide-toggle>
+
+      <!-- Donation details -->
       <mat-form-field appearance="fill" class="full-width">
         <mat-label>Amount</mat-label>
         <input matInput type="number" formControlName="amount" required>
@@ -13,25 +34,15 @@
 
       <mat-form-field appearance="fill" class="full-width">
         <mat-label>Currency</mat-label>
-        <input matInput formControlName="currency">
+        <input matInput formControlName="currency" required>
       </mat-form-field>
 
       <mat-form-field appearance="fill" class="full-width">
         <mat-label>Approval Status</mat-label>
         <mat-select formControlName="approvalStatus">
-
-          <mat-option [value]="approvalStatusEnum.Pending">
-            Pending
-          </mat-option>
-
-          <mat-option [value]="approvalStatusEnum.Approved">
-            Approved
-          </mat-option>
-
-          <mat-option [value]="approvalStatusEnum.Rejected">
-            Rejected
-          </mat-option>
-
+          <mat-option [value]="approvalStatusEnum.Pending">Pending</mat-option>
+          <mat-option [value]="approvalStatusEnum.Approved">Approved</mat-option>
+          <mat-option [value]="approvalStatusEnum.Rejected">Rejected</mat-option>
         </mat-select>
       </mat-form-field>
 
@@ -40,11 +51,28 @@
         <textarea matInput formControlName="notes"></textarea>
       </mat-form-field>
 
-      <button mat-raised-button color="primary" type="submit" class="cta">
+      <!-- Receipt upload -->
+      <div class="receipt-upload">
+        <label class="upload-label">Receipt</label>
+        <div class="upload-box" (click)="receiptInput.click()">
+          <ng-container *ngIf="!receiptPreview">
+            <p>Click to upload receipt</p>
+          </ng-container>
+          <img *ngIf="receiptPreview" [src]="receiptPreview" />
+        </div>
+        <input #receiptInput type="file" accept="image/*" (change)="onReceiptSelected($event)" hidden />
+      </div>
+
+      <button mat-raised-button color="primary" type="submit" class="cta" [disabled]="isSubmitting">
         Update Donation
       </button>
 
     </form>
-
   </div>
 </div>
+
+<ng-template #loading>
+  <div class="campaign-shell">
+    <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+  </div>
+</ng-template>

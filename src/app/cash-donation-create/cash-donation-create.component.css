@@ -63,21 +63,50 @@
   justify-content: center;
 }
 
+.receipt-upload {
+  margin-top: 20px;
+}
+
+.upload-label {
+  font-weight: 600;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.upload-box {
+  border: 2px dashed #dcdcdc;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.upload-box:hover {
+  border-color: #3f51b5;
+}
+
+.upload-box img {
+  max-width: 100%;
+  border-radius: 8px;
+}
+
+
 /* Responsive adjustments */
 @media (max-width: 480px) {
   .campaign-shell {
     padding: 0.5rem;
   }
-  
+
   .campaign-card {
     padding: 1rem;
     border-radius: 0.5rem;
   }
-  
+
   mat-form-field {
     font-size: 14px;
   }
-  
+
   textarea {
     min-height: 80px;
   }
