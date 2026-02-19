@@ -27,6 +27,8 @@ export interface CashDonationResponse {
   approvalStatusUpdatedAt?: string;
 
   receiptNumber?: string;
+  receiptImageUrl?: string;
+
 
   donor: DonorDto;
 }

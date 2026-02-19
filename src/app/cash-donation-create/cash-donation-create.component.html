@@ -40,9 +40,28 @@
         Anonymous Donation
       </mat-slide-toggle>
 
-      <button mat-raised-button color="primary" type="submit" class="cta">
-        Save Donation
+      <button mat-raised-button color="primary" type="submit" [disabled]="isSubmitting" class="cta">
+        Submit Donation
       </button>
+
+      <div class="receipt-upload">
+
+        <label class="upload-label">Upload Receipt</label>
+
+        <div class="upload-box" (click)="receiptInput.click()">
+
+          <ng-container *ngIf="!receiptPreview">
+            <p>Click to upload receipt image</p>
+          </ng-container>
+
+          <img *ngIf="receiptPreview" [src]="receiptPreview" />
+
+        </div>
+
+        <input #receiptInput type="file" accept="image/*" (change)="onReceiptSelected($event)" hidden />
+
+      </div>
+
 
     </form>
 
