@@ -45,6 +45,8 @@ export interface CreateCashDonationDto {
   amount: number;
   currency: string;
   notes?: string;
+  receiptNumber?: string;
+  receiptImageUrl?: string;
 }
 
 export interface UpdateCashDonationDto {
@@ -53,4 +55,5 @@ export interface UpdateCashDonationDto {
   notes?: string;
   approvalStatus?: ApprovalStatus;
   receiptNumber?: string;
+  receiptImageUrl?: string;
 }
