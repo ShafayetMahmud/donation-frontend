@@ -45,7 +45,7 @@ export class AuthService {
         const accounts = this.msalService.instance.getAllAccounts();
         if (accounts.length > 0) {
           const account = accounts[0];
-          this.ngZone.run(async() => {
+          this.ngZone.run(async () => {
             // const user: AppUser = {
             //   email: account.username ?? '',
             //   name: account.name ?? account.username ?? '',
@@ -65,31 +65,31 @@ export class AuthService {
     });
   }
 
-async getAccessToken(): Promise<string | null> {
-  const accounts = this.msalService.instance.getAllAccounts();
-  if (!accounts || accounts.length === 0) return null;
+  async getAccessToken(): Promise<string | null> {
+    const accounts = this.msalService.instance.getAllAccounts();
+    if (!accounts || accounts.length === 0) return null;
 
-  try {
-    const silentRequest = {
-      account: accounts[0],
-      scopes: ['api://99d94324-a3a8-4ace-b4b2-0ae093229b62/access_as_user']
-    };
+    try {
+      const silentRequest = {
+        account: accounts[0],
+        scopes: ['api://99d94324-a3a8-4ace-b4b2-0ae093229b62/access_as_user']
+      };
 
-    const result = await this.msalService.instance.acquireTokenSilent(silentRequest)
-      .catch(() => this.msalService.instance.acquireTokenPopup(silentRequest));
-    const token = result.accessToken;
-    localStorage.setItem('access_token', token);
-    document.cookie = `access_token=${token}; domain=.mudhammataan.com; path=/; secure; samesite=None`;
+      const result = await this.msalService.instance.acquireTokenSilent(silentRequest)
+        .catch(() => this.msalService.instance.acquireTokenPopup(silentRequest));
+      const token = result.accessToken;
+      localStorage.setItem('access_token', token);
+      document.cookie = `access_token=${token}; domain=.mudhammataan.com; path=/; secure; samesite=None`;
 
-    return token;
+      return token;
+    }
+    catch (err) {
+      console.error('Failed to get API token', err);
+      return null;
+    }
   }
-  catch (err) {
-    console.error('Failed to get API token', err);
-    return null;
-  }
-}
 
-async fetchCurrentUserFromApi() {
+  async fetchCurrentUserFromApi() {
     const token = await this.getAccessToken();
     if (!token) return;
 
@@ -105,54 +105,107 @@ async fetchCurrentUserFromApi() {
     return localStorage.getItem('access_token');
   }
 
+  //   async restoreUserOnSubdomain(): Promise<boolean> {
+  //   const idToken = this.getCookie('msal_id_token');
+  //   if (idToken) {
+  //     const payload = jwtDecode<JwtPayload>(idToken);
+
+  //     this._userSubject.next({
+  //       email: payload.preferred_username,
+  //       name: payload.name,
+  //       role: 'AppUser'
+  //     });
+  //     await this.fetchCurrentUserFromApi();
+  //     await this.getAccessToken();
+  //     return true;
+  //   }
+
+  //   try {
+  //     const accounts = this.msalService.instance.getAllAccounts();
+  //     if (accounts.length > 0) {
+
+  //       const silentRequest = {
+  //         account: accounts[0],
+  //         scopes: environment.loginRequest.scopes,
+  //         redirectUri: window.location.origin + '/login'
+  //       };
+
+  //       const result = await this.msalService.instance.ssoSilent(silentRequest);
+
+  //       if (result?.account) {
+  //         this.msalService.instance.setActiveAccount(result.account);
+
+  //         const idTokenFromResult = (result.account.idTokenClaims as any)?.rawIdToken;
+  //         if (idTokenFromResult) this.setCookie('msal_id_token', idTokenFromResult, 7);
+
+  //         this._userSubject.next({
+  //           email: result.account.username ?? '',
+  //           name: result.account.name ?? result.account.username ?? '',
+  //           role: 'AppUser'
+  //         });
+  //         await this.getAccessToken();
+  //         return true;
+  //       }
+  //     }
+  //   } catch {
+  //     console.warn('[Auth] Silent login failed on subdomain');
+  //   }
+
+  //   return false;
+  // }
+
   async restoreUserOnSubdomain(): Promise<boolean> {
-  const idToken = this.getCookie('msal_id_token');
-  if (idToken) {
-    const payload = jwtDecode<JwtPayload>(idToken);
-
-    this._userSubject.next({
-      email: payload.preferred_username,
-      name: payload.name,
-      role: 'AppUser'
-    });
-    await this.fetchCurrentUserFromApi();
-    await this.getAccessToken();
-    return true;
-  }
-
-  try {
-    const accounts = this.msalService.instance.getAllAccounts();
-    if (accounts.length > 0) {
-
-      const silentRequest = {
-        account: accounts[0],
-        scopes: environment.loginRequest.scopes,
-        redirectUri: window.location.origin + '/login'
-      };
-
-      const result = await this.msalService.instance.ssoSilent(silentRequest);
-
-      if (result?.account) {
-        this.msalService.instance.setActiveAccount(result.account);
-
-        const idTokenFromResult = (result.account.idTokenClaims as any)?.rawIdToken;
-        if (idTokenFromResult) this.setCookie('msal_id_token', idTokenFromResult, 7);
-
-        this._userSubject.next({
-          email: result.account.username ?? '',
-          name: result.account.name ?? result.account.username ?? '',
-          role: 'AppUser'
-        });
-        await this.getAccessToken();
-        return true;
+    const idToken = this.getCookie('msal_id_token');
+    if (idToken) {
+      try {
+        // Fetch the real user info from the backend
+        const user = await this.http.get<AppUser>(`${environment.apiBaseUrl}/auth/me`).toPromise();
+        this._userSubject.next(user ?? null); // ⚡ now includes real role: Admin or AppUser
+      } catch (err) {
+        console.error('[Auth] Failed to fetch user from backend', err);
+        return false;
       }
-    }
-  } catch {
-    console.warn('[Auth] Silent login failed on subdomain');
-  }
 
-  return false;
-}
+      await this.getAccessToken();
+      return true;
+    }
+
+    try {
+      const accounts = this.msalService.instance.getAllAccounts();
+      if (accounts.length > 0) {
+        const silentRequest = {
+          account: accounts[0],
+          scopes: environment.loginRequest.scopes,
+          redirectUri: window.location.origin + '/login'
+        };
+
+        const result = await this.msalService.instance.ssoSilent(silentRequest);
+
+        if (result?.account) {
+          this.msalService.instance.setActiveAccount(result.account);
+
+          const idTokenFromResult = (result.account.idTokenClaims as any)?.rawIdToken;
+          if (idTokenFromResult) this.setCookie('msal_id_token', idTokenFromResult, 7);
+
+          // ⚡ fetch backend user instead of hardcoding role
+          try {
+            const user = await this.http.get<AppUser>(`${environment.apiBaseUrl}/auth/me`).toPromise();
+            this._userSubject.next(user ?? null);
+          } catch (err) {
+            console.error('[Auth] Failed to fetch user from backend', err);
+            return false;
+          }
+
+          await this.getAccessToken();
+          return true;
+        }
+      }
+    } catch {
+      console.warn('[Auth] Silent login failed on subdomain');
+    }
+
+    return false;
+  }
 
   async loginOnSubdomainIfNeeded() {
     await this.restoreUserOnSubdomain();
@@ -161,27 +214,27 @@ async fetchCurrentUserFromApi() {
   /** ---------------- MAIN DOMAIN LOGIN ---------------- */
   async restoreUserFromMsal(): Promise<void> {
 
-  await this.msalService.instance.initialize();
+    await this.msalService.instance.initialize();
 
-  const result = await this.msalService.instance.handleRedirectPromise();
-  if (result?.idToken) {
-    this.setCookie('msal_id_token', result.idToken, 7);
+    const result = await this.msalService.instance.handleRedirectPromise();
+    if (result?.idToken) {
+      this.setCookie('msal_id_token', result.idToken, 7);
+    }
+
+    const accounts = this.msalService.instance.getAllAccounts();
+    if (accounts.length === 0) return;
+
+    const account = accounts[0];
+    this.msalService.instance.setActiveAccount(account);
+
+    this._userSubject.next({
+      email: account.username ?? '',
+      name: account.name ?? account.username ?? '',
+      role: 'AppUser'
+    });
+
+    console.log('[Auth] User restored on main domain');
   }
-
-  const accounts = this.msalService.instance.getAllAccounts();
-  if (accounts.length === 0) return;
-
-  const account = accounts[0];
-  this.msalService.instance.setActiveAccount(account);
-
-  this._userSubject.next({
-    email: account.username ?? '',
-    name: account.name ?? account.username ?? '',
-    role: 'AppUser'
-  });
-
-  console.log('[Auth] User restored on main domain');
-}
 
 
   /** ---------------- RESTORE FROM COOKIE ---------------- */
@@ -196,7 +249,7 @@ async fetchCurrentUserFromApi() {
         name: payload.name,
         role: 'AppUser'
       });
-    } catch {}
+    } catch { }
   }
 
   /** ---------------- COOKIE HELPERS ---------------- */
@@ -226,32 +279,32 @@ async fetchCurrentUserFromApi() {
   get currentUser(): AppUser | null {
     return this._userSubject.value;
   }
-  
+
   async logout(): Promise<void> {
 
     this._userSubject.next(null);
-  localStorage.removeItem('access_token');
-  localStorage.removeItem('refresh_token');
-  this.deleteCookie('msal_id_token');
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    this.deleteCookie('msal_id_token');
 
-  const currentUrl = window.location.href;
-  const isSubdomain = window.location.hostname !== 'mudhammataan.com';
+    const currentUrl = window.location.href;
+    const isSubdomain = window.location.hostname !== 'mudhammataan.com';
 
-  // If logout initiated from subdomain → route through main domain
-  if (isSubdomain) {
+    // If logout initiated from subdomain → route through main domain
+    if (isSubdomain) {
 
-    const encodedReturn = encodeURIComponent(currentUrl);
+      const encodedReturn = encodeURIComponent(currentUrl);
 
-    window.location.href =
-      `https://mudhammataan.com/logout?returnUrl=${encodedReturn}`;
+      window.location.href =
+        `https://mudhammataan.com/logout?returnUrl=${encodedReturn}`;
 
-    return;
+      return;
+    }
+
+    // MAIN DOMAIN LOGOUT FLOW
+    await this.msalService.logoutRedirect({
+      postLogoutRedirectUri: window.location.origin
+    });
   }
-
-  // MAIN DOMAIN LOGOUT FLOW
-  await this.msalService.logoutRedirect({
-    postLogoutRedirectUri: window.location.origin
-  });
-}
 
 }
