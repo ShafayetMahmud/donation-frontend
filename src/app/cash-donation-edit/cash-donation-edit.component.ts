@@ -12,6 +12,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCardModule } from '@angular/material/card';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-cash-donation-edit',
@@ -47,7 +48,8 @@ export class CashDonationEditComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private donationService: CashDonationService,
-    private receiptService: ReceiptService
+    private receiptService: ReceiptService,
+    public authService: AuthService,
   ) {
     this.form = this.fb.group({
       fullName: [{ value: '', disabled: true }],
@@ -68,6 +70,13 @@ export class CashDonationEditComponent implements OnInit {
 
     this.isLoading = true;
     this.donation = await this.donationService.getById(id);
+
+    const user = this.authService.currentUser;
+
+  // donors cannot change approvalStatus
+  if (user?.role === 'Donor') {
+    this.form.get('approvalStatus')?.disable();
+  }
 
     this.form.patchValue({
       fullName: this.donation.donor.fullName ?? '',

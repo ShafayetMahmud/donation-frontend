@@ -13,6 +13,8 @@ import { LogoutComponent } from './logout/logout.component';
 import { CashDonationEditComponent } from './cash-donation-edit/cash-donation-edit.component';
 import { CashDonationCreateComponent } from './cash-donation-create/cash-donation-create.component';
 import { CashDonationOverviewComponent } from './cash-donation-overview/cash-donation-overview.component';
+import { AdminGuard } from './utils/admin.guard';
+import { UserManagementComponent } from './user-management/user-management.component';
 
 export const routes: Routes = [
   {
@@ -30,7 +32,13 @@ export const routes: Routes = [
       // Cash donation routes
       { path: 'cash-donation', component: CashDonationOverviewComponent },
       { path: 'cash-donation/create', component: CashDonationCreateComponent },
-      { path: 'cash-donation/edit/:id', component: CashDonationEditComponent }
+      { path: 'cash-donation/edit/:id', component: CashDonationEditComponent },
+
+      { 
+        path: 'user-management', 
+        component: UserManagementComponent,
+        canActivate: [AdminGuard] 
+      }
     ]
   },
   { path: 'login', component: LoginComponent },

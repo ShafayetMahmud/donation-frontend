@@ -35,7 +35,7 @@
         <input matInput formControlName="currency" required>
       </mat-form-field>
 
-      <mat-form-field appearance="fill" class="full-width">
+      <mat-form-field *ngIf="authService.currentUser?.role === 'Admin'" appearance="fill" class="full-width">
         <mat-label>Approval Status</mat-label>
         <mat-select formControlName="approvalStatus">
           <mat-option [value]="approvalStatusEnum.Pending">Pending</mat-option>
