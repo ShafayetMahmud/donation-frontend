@@ -45,13 +45,16 @@ export class AuthService {
         const accounts = this.msalService.instance.getAllAccounts();
         if (accounts.length > 0) {
           const account = accounts[0];
-          this.ngZone.run(() => {
-            const user: AppUser = {
-              email: account.username ?? '',
-              name: account.name ?? account.username ?? '',
-              role: 'AppUser'
-            };
-            this._userSubject.next(user);
+          this.ngZone.run(async() => {
+            // const user: AppUser = {
+            //   email: account.username ?? '',
+            //   name: account.name ?? account.username ?? '',
+            //   role: 'AppUser'
+            // };
+            // this._userSubject.next(user);
+
+            this.msalService.instance.setActiveAccount(account);
+            await this.fetchCurrentUserFromApi();
 
             // Write cookie so subdomains can read
             const idToken = this.getIdToken();
@@ -86,6 +89,18 @@ async getAccessToken(): Promise<string | null> {
   }
 }
 
+async fetchCurrentUserFromApi() {
+    const token = await this.getAccessToken();
+    if (!token) return;
+
+    this.http.get<AppUser>('/api/auth/me', {
+      headers: { Authorization: `Bearer ${token}` }
+    }).subscribe({
+      next: (user) => this._userSubject.next(user),
+      error: () => console.warn('[Auth] Failed to fetch user from backend')
+    });
+  }
+
   getAccessTokenSync(): string | null {
     return localStorage.getItem('access_token');
   }
@@ -100,6 +115,7 @@ async getAccessToken(): Promise<string | null> {
       name: payload.name,
       role: 'AppUser'
     });
+    await this.fetchCurrentUserFromApi();
     await this.getAccessToken();
     return true;
   }
