@@ -22,7 +22,7 @@ interface Campaign {
   selector: 'app-user-management',
   standalone: true,
   templateUrl: './user-management.component.html',
-  styleUrls: ['./user-management.component.scss'],
+  styleUrls: ['./user-management.component.css'],
   imports: [
     CommonModule,
     FormsModule
