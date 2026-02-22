@@ -12,6 +12,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatCardModule } from '@angular/material/card';
 import { MatSelectModule } from '@angular/material/select';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-cash-donation-create',
@@ -44,7 +45,8 @@ export class CashDonationCreateComponent {
     private donationService: CashDonationService,
     private subdomainService: SubdomainService,
     private router: Router,
-    private receiptService: ReceiptService
+    private receiptService: ReceiptService,
+    public authService: AuthService,
   ) {
     this.form = this.fb.group({
       fullName: [''],
@@ -57,6 +59,15 @@ export class CashDonationCreateComponent {
       notes: ['']
     });
   }
+
+  ngOnInit() {
+  const user = this.authService.currentUser;
+  if (!user || (user.role !== 'Donor' && user.role !== 'Admin')) {
+    alert('You are not authorized to add donations.');
+    this.router.navigate(['/cash-donation']);
+    return;
+  }
+}
 
   triggerReceiptUpload() {
     this.receiptInput.nativeElement.click();
@@ -106,12 +117,6 @@ export class CashDonationCreateComponent {
         const result: any = await this.receiptService
           .uploadReceipt(campaign.id, donation.id, this.selectedReceipt)
           .toPromise();
-
-        // update donation with uploaded receipt
-        // donation = await this.donationService.update(donation.id, {
-        //   receiptImageUrl: result.url,
-        //   receiptNumber: result.receiptNumber ?? undefined
-        // });
         const updatedDonation = await this.donationService.update(donation.id, {
           receiptImageUrl: result.url,
           receiptNumber: result.receiptNumber ?? undefined

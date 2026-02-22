@@ -9,6 +9,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Chart } from 'chart.js/auto';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-cash-donation-overview',
@@ -40,11 +41,14 @@ export class CashDonationOverviewComponent implements OnInit {
   constructor(
     private donationService: CashDonationService,
     private subdomainService: SubdomainService,
-    private router: Router
+    private router: Router,
+    private authService: AuthService,
   ) { }
 
   async ngOnInit() {
     this.isLoading = true;
+
+    const user = this.authService.currentUser;
 
     const campaign = this.subdomainService.getCurrentCampaign();
     if (!campaign) {
@@ -54,6 +58,11 @@ export class CashDonationOverviewComponent implements OnInit {
 
     try {
       this.donations = await this.donationService.getByCampaign(campaign.id);
+      if (user?.role === 'Donor') {
+        this.donations = this.donations.filter(d => d.donor.email === user.email);
+      } else {
+        this.donations = this.donations;
+      }
       this.totalCollected = this.donations.reduce((sum, d) => sum + (d.amount || 0), 0);
     } catch (err) {
       console.error('Failed to load donations', err);
@@ -71,7 +80,6 @@ export class CashDonationOverviewComponent implements OnInit {
   }
 
   buildChart() {
-
     // Destroy previous chart if exists
     if (this.chart) {
       this.chart.destroy();
@@ -96,16 +104,10 @@ export class CashDonationOverviewComponent implements OnInit {
     });
   }
 
-
-
   get progressPercent() {
     if (!this.targetAmount) return 0;
     return (this.totalCollected / this.targetAmount) * 100;
   }
-
-  // goToCreate() {
-  //   this.router.navigate(['/cash-donation/create']);
-  // }
 
   editDonation(donation: CashDonationResponse) {
     this.router.navigate(['/cash-donation/edit', donation.id]);

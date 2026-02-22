@@ -57,9 +57,13 @@
         <input #receiptInput type="file" accept="image/*" (change)="onReceiptSelected($event)" hidden />
       </div>
 
-      <button mat-raised-button color="primary" type="submit" [disabled]="isSubmitting" class="cta">
+      <!-- <button mat-raised-button color="primary" type="submit" [disabled]="isSubmitting" class="cta">
         Submit Donation
-      </button>
+      </button> -->
+      <button *ngIf="authService.currentUser?.role === 'Donor' || authService.currentUser?.role === 'Admin'"
+        mat-raised-button color="primary" type="submit" [disabled]="isSubmitting" class="cta">
+  Submit Donation
+</button>
 
     </form>
 

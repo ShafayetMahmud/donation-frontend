@@ -3,7 +3,7 @@
 
     <h1 id="campaignHeading" class="title">{{ 'CAMPAIGN.CREATE' | translate }} </h1>
     <p class="subtitle">
-      {{ 'CAMPAIGN.FORM' | translate }} 
+      {{ 'CAMPAIGN.FORM' | translate }}
     </p>
 
     <form [formGroup]="campaignForm" (ngSubmit)="onSubmit()" class="campaign-form">
@@ -127,7 +127,11 @@
           Contact number is required
         </mat-error>
       </mat-form-field>
-      <button mat-raised-button color="primary" type="submit" class="cta">
+      <!-- <button mat-raised-button color="primary" type="submit" class="cta">
+        {{ 'CAMPAIGN.GENERATE' | translate }}
+      </button> -->
+      <button *ngIf="authService.currentUser?.role === 'AppUser' || authService.currentUser?.role === 'Admin'"
+        mat-raised-button color="primary" type="submit" class="cta">
         {{ 'CAMPAIGN.GENERATE' | translate }}
       </button>
     </form>
