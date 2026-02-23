@@ -43,4 +43,18 @@ export class CampaignService {
     if (!response) throw new Error('No campaign returned from API');
     return response;
   }
+
+  async getAll(): Promise<any[]> {
+    const options = await this.getHeaders();
+    const response = await this.http.get<any[]>(this.baseUrl, options).toPromise();
+    if (!response) throw new Error('No campaigns found');
+    return response;
+  }
+
+  async getById(id: string): Promise<any> {
+    const options = await this.getHeaders();
+    const response = await this.http.get<any>(`${this.baseUrl}/${id}`, options).toPromise();
+    if (!response) throw new Error(`Campaign ${id} not found`);
+    return response;
+  }
 }
