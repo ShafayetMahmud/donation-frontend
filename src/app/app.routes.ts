@@ -34,10 +34,14 @@ export const routes: Routes = [
       { path: 'cash-donation/create', component: CashDonationCreateComponent },
       { path: 'cash-donation/edit/:id', component: CashDonationEditComponent },
 
+      // { 
+      //   path: 'user-management', 
+      //   component: UserManagementComponent,
+      //   canActivate: [AdminGuard] 
+      // }
       { 
         path: 'user-management', 
-        component: UserManagementComponent,
-        canActivate: [AdminGuard] 
+        component: UserManagementComponent 
       }
     ]
   },
