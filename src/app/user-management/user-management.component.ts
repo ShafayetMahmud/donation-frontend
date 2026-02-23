@@ -32,10 +32,10 @@ export class UserManagementComponent implements OnInit {
 
   users: User[] = [];
   campaigns: Campaign[] = [];
-  roles = ['Admin', 'Donor', 'Manager']; // Extend as needed
+  roles = ['CampaignOwner', 'CampaignManager', 'Donor']; // Extend as needed
   loading = false;
 
-  constructor(private http: HttpClient, private authService: AuthService) {}
+  constructor(private http: HttpClient, private authService: AuthService) { }
 
   ngOnInit() {
     this.loadUsers();
@@ -44,7 +44,7 @@ export class UserManagementComponent implements OnInit {
 
   loadUsers() {
     this.loading = true;
-    this.http.get<User[]>('/api/users') // Assume a GET API to list users
+    this.http.get<User[]>('/api/users')
       .subscribe(users => {
         this.users = users;
         this.loading = false;
@@ -52,7 +52,7 @@ export class UserManagementComponent implements OnInit {
   }
 
   loadCampaigns() {
-    this.http.get<Campaign[]>('/api/campaigns') // GET all campaigns
+    this.http.get<Campaign[]>('/api/campaign')
       .subscribe(campaigns => this.campaigns = campaigns);
   }
 
