@@ -1,48 +1,59 @@
-<div class="user-management">
+<div class="user-management container">
   <h2>Assign Roles</h2>
 
-  <div *ngIf="loading">Loading users...</div>
-<div class="table-card" *ngIf="roles.length > 0; else emptyState">
-  <table mat-table class="mat-elevation-z8" *ngIf="!loading">
-    <thead>
-      <tr>
-        <th mat-header-cell>Name</th>
-        <th mat-header-cell>Email</th>
-        <th mat-header-cell>Current Roles</th>
-        <th mat-header-cell>Assign New Role</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let user of users">
-        <td mat-cell>{{ user.name }}</td>
-        <td mat-cell>{{ user.email }}</td>
-        <td mat-cell>
-          <ul>
-            <li *ngFor="let role of user.campaignRoles">
-              {{ role.campaignName }} : {{ role.role }}
-            </li>
-          </ul>
-        </td>
-        <td mat-cell>
-          <select [(ngModel)]="user.selectedRole">
-            <option value="" disabled>Select Role</option>
-            <option *ngFor="let role of roles" [value]="role">{{ role }}</option>
-          </select>
-          <select [(ngModel)]="user.selectedCampaign">
-            <option value="" disabled>Select Campaign</option>
-            <option *ngFor="let campaign of campaigns" [value]="campaign.id">
-              {{ campaign.name }}
-            </option>
-          </select>
-          <button mat-button color="primary" (click)="assignRole(user)">Assign</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <div *ngIf="loading" class="spinner-container">
+    <p>Loading users...</p>
   </div>
-  <ng-template #emptyState>
+
+  <div *ngIf="!loading && users.length > 0; else emptyUsers">
+    <div class="table-card">
+      <table class="donation-table mat-elevation-z8">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Current Roles</th>
+            <th>Assign New Role</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of users">
+            <td>{{ user.name }}</td>
+            <td>{{ user.email }}</td>
+            <td>
+              <ul *ngIf="user.campaignRoles.length > 0; else noRoles">
+                <li *ngFor="let role of user.campaignRoles">
+                  {{ role.campaignName }} : {{ role.role }}
+                </li>
+              </ul>
+              <ng-template #noRoles>—</ng-template>
+            </td>
+            <td>
+              <select [(ngModel)]="user.selectedRole">
+                <option value="" disabled>Select Role</option>
+                <option *ngFor="let role of roles" [value]="role">{{ role }}</option>
+              </select>
+              <select [(ngModel)]="user.selectedCampaign">
+                <option value="" disabled>Select Campaign</option>
+                <option *ngFor="let campaign of campaigns" [value]="campaign.id">{{ campaign.name }}</option>
+              </select>
+              <button 
+                mat-button 
+                color="primary" 
+                (click)="assignRole(user)"
+                [disabled]="!user.selectedRole || !user.selectedCampaign">
+                Assign
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <ng-template #emptyUsers>
     <div class="empty-state">
-      <h3>No roles yet</h3>
+      <h3>No users available</h3>
     </div>
   </ng-template>
 </div>
