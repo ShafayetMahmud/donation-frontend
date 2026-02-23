@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthService } from './auth.service';
 import { environment } from '../../environments/environment';
 import { firstValueFrom } from 'rxjs';
+import { CampaignService } from './campaign.service';
 
 export interface UserDto {
   userId: string;
@@ -23,13 +24,14 @@ export interface AssignRoleDto {
 export class UserManagementService {
   private baseUrl = `${environment.apiBaseUrl}/users`;
 
-  constructor(private http: HttpClient, private auth: AuthService) {}
+  constructor(private http: HttpClient, private auth: AuthService) { }
 
   private async getHeaders() {
     const token = await this.auth.getAccessToken();
     return { headers: new HttpHeaders({ Authorization: `Bearer ${token}` }), withCredentials: true };
   }
 
+  // Keep original signature: campaignId + DTO
   async assignRole(campaignId: string, dto: AssignRoleDto): Promise<UserDto> {
     const options = await this.getHeaders();
     const response = await firstValueFrom(
@@ -38,10 +40,9 @@ export class UserManagementService {
     return response;
   }
 
-  // Optional: Fetch all users (if you implement a GET API)
   async getAllUsers(): Promise<UserDto[]> {
     const options = await this.getHeaders();
-    const response = await firstValueFrom(this.http.get<UserDto[]>(`${this.baseUrl}`, options));
-    return response;
+    return await firstValueFrom(this.http.get<UserDto[]>(`${this.baseUrl}`, options));
   }
+
 }
