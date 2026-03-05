@@ -5,9 +5,9 @@
 
     <!-- EMPTY STATE -->
     <div *ngIf="images.length === 0" class="empty-state">
-      <mat-icon>photo_library</mat-icon>
-      <p>No photos yet</p>
-      <p class="subtitle">Upload the first photo to get started</p>
+      <mat-icon>{{ 'GALLERY.LIBRARY' | translate }}</mat-icon>
+      <p>{{ 'GALLERY.NO_PHOTOS' | translate }}</p>
+      <p class="subtitle">{{ 'GALLERY.UPLOAD' | translate }}</p>
     </div>
 
     <!-- GRID -->
@@ -24,7 +24,7 @@
     <!-- UPLOAD BUTTON (ALWAYS VISIBLE) -->
     <div class="upload-section">
       <button mat-raised-button color="primary" (click)="fileInput.click()">
-        <mat-icon>add_photo_alternate</mat-icon>
+        <mat-icon>{{ 'GALLERY.ALTERNATE' | translate }}</mat-icon>
         <span>{{ 'GALLERY.ADD_PHOTOS' | translate }}</span>
       </button>
     </div>

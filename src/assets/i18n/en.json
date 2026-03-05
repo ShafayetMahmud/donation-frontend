@@ -51,10 +51,18 @@
     "RESULTS": "Students sit for exams and most often they end up with good results."
   },
   "GALLERY": {
-    "ADD_PHOTOS": "Add Photos"
+    "NO_PHOTOS": "No photos yet",
+    "LIBRARY": "photo_library",
+    "ALTERNATE": "add_photo_alternate",
+    "ADD_PHOTOS": "Add Photos",
+    "UPLOAD": "Upload the first photo to get started"
   },
   "CONTACT": {
-    "MEET_OUR_TEAM": "Meet Our Team"
+    "MEET_OUR_TEAM": "Meet Our Team",
+    "INFO_ONE": "information",
+    "INFO_TWO":"information",
+    "INFO_THREE":"information",
+    "INFO_FOUR":"information"
   },
   "CAMPAIGN":{
     "CREATE": "Create Campaign",
@@ -75,4 +83,5 @@
     "GENERATE": "Generate Campaign"
 
   }
+
 }
