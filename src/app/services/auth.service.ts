@@ -236,6 +236,10 @@ export class AuthService {
     console.log('[Auth] User restored on main domain');
   }
 
+  async initialize() {
+  await this.msalService.instance.initialize();
+}
+
 
   /** ---------------- RESTORE FROM COOKIE ---------------- */
   restoreUserFromCookie() {

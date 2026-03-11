@@ -39,10 +39,15 @@ export class UserManagementComponent implements OnInit {
     private campaignService: CampaignService
   ) {}
 
-  ngOnInit() {
-    this.loadUsers();
-    this.loadCampaigns();
+  async ngOnInit() {
+  try {
+    await this.authService.initialize(); // ensure MSAL ready
+    await this.loadUsers();
+    await this.loadCampaigns();
+  } catch (err) {
+    console.error('Auth initialization failed', err);
   }
+}
 
   /** Transform UserDto -> User */
   private mapDtoToUser(dto: UserDto): User {
