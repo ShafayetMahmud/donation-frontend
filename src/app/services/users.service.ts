@@ -9,10 +9,21 @@ import { AuthService } from './auth.service';
 export class UsersService {
   private baseUrl = environment.apiBaseUrl + '/users';
 
-  constructor(private http: HttpClient, private authService: AuthService) {}
+  constructor(private http: HttpClient, private authService: AuthService) { }
+
+  // private async getHeaders() {
+  //   const token = await this.authService.getAccessToken();
+  //   return {
+  //     headers: new HttpHeaders({ Authorization: `Bearer ${token}` }),
+  //     withCredentials: true
+  //   };
+  // }
 
   private async getHeaders() {
     const token = await this.authService.getAccessToken();
+
+    console.log('Access token acquired:', token ? 'YES' : 'NO');
+
     return {
       headers: new HttpHeaders({ Authorization: `Bearer ${token}` }),
       withCredentials: true
