@@ -31,9 +31,13 @@
               <ng-template #noRoles>-</ng-template>
             </td>
             <td>
-              <select [(ngModel)]="user.selectedRole">
+              <!-- <select [(ngModel)]="user.selectedRole">
                 <option value="" disabled>Select Role</option>
                 <option *ngFor="let role of roles" [value]="role">{{ role }}</option>
+              </select> -->
+              <select [(ngModel)]="user.selectedRole">
+                <option value="" disabled>Select Role</option>
+                <option *ngFor="let role of getAvailableRoles(user)" [value]="role">{{ role }}</option>
               </select>
               <select [(ngModel)]="user.selectedCampaign">
                 <option value="" disabled>Select Campaign</option>
@@ -43,6 +47,16 @@
                 [disabled]="!user.selectedRole || !user.selectedCampaign">
                 Assign
               </button>
+            </td>
+            <td>
+              <ul>
+                <li *ngFor="let role of user.campaignRoles">
+                  {{ role.campaignName }} : {{ role.role }}
+                  <button mat-icon-button color="warn" (click)="removeRole(user, role)">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </li>
+              </ul>
             </td>
           </tr>
         </tbody>

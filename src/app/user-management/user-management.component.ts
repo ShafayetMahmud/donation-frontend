@@ -4,6 +4,7 @@ import { UserManagementService, UserDto, AssignRoleDto } from '../services/user-
 import { CampaignService } from '../services/campaign.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { MatIconModule } from '@angular/material/icon';
 
 interface User {
   id: string;
@@ -25,7 +26,7 @@ interface Campaign {
   standalone: true,
   templateUrl: './user-management.component.html',
   styleUrls: ['./user-management.component.css'],
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MatIconModule],
 })
 export class UserManagementComponent implements OnInit {
   users: User[] = [];
@@ -37,17 +38,17 @@ export class UserManagementComponent implements OnInit {
     private authService: AuthService,
     private userService: UserManagementService,
     private campaignService: CampaignService
-  ) {}
+  ) { }
 
   async ngOnInit() {
-  try {
-    await this.authService.initialize(); // ensure MSAL ready
-    await this.loadUsers();
-    await this.loadCampaigns();
-  } catch (err) {
-    console.error('Auth initialization failed', err);
+    try {
+      await this.authService.initialize(); // ensure MSAL ready
+      await this.loadUsers();
+      await this.loadCampaigns();
+    } catch (err) {
+      console.error('Auth initialization failed', err);
+    }
   }
-}
 
   /** Transform UserDto -> User */
   private mapDtoToUser(dto: UserDto): User {
@@ -110,6 +111,43 @@ export class UserManagementComponent implements OnInit {
     } catch (err: any) {
       console.error('Error assigning role:', err);
       alert(err.error?.message || 'Error assigning role');
+    }
+  }
+
+  // Add a helper to get available roles per user and selected campaign
+  getAvailableRoles(user: User): string[] {
+    if (!user.selectedCampaign) return this.roles; // no campaign selected, show all
+
+    // roles already assigned to this campaign
+    const assignedRoles = user.campaignRoles
+      .filter(r => r.campaignId === user.selectedCampaign)
+      .map(r => r.role);
+
+    // return only roles not yet assigned
+    return this.roles.filter(role => !assignedRoles.includes(role));
+  }
+
+  async removeRole(user: User, roleToRemove: { campaignId: string; role: string }) {
+    if (!confirm(`Are you sure you want to remove ${roleToRemove.role} from ${user.name} for this campaign?`)) {
+      return;
+    }
+
+    try {
+      // Call the service to remove role
+      await this.userService.removeRole(roleToRemove.campaignId, {
+        userId: user.id,
+        roleName: roleToRemove.role
+      });
+
+      // Update local user data
+      user.campaignRoles = user.campaignRoles.filter(
+        r => !(r.campaignId === roleToRemove.campaignId && r.role === roleToRemove.role)
+      );
+
+      alert('Role removed successfully');
+    } catch (err: any) {
+      console.error('Error removing role:', err);
+      alert(err.error?.message || 'Error removing role');
     }
   }
 }
