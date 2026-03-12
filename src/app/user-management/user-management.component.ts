@@ -53,7 +53,7 @@ export class UserManagementComponent implements OnInit {
   private mapDtoToUser(dto: UserDto): User {
     return {
       id: dto.userId,
-      name: dto.name,
+      name: (dto as any).displayName || dto.name,
       email: dto.email,
       globalRole: dto.globalRole,
       campaignRoles: dto.campaignRoles?.map(r => ({
