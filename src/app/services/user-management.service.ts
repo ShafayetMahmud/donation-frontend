@@ -18,6 +18,11 @@ export interface AssignRoleDto {
   roleName: string;
 }
 
+export interface RemoveRoleDto {
+  userId: string;
+  roleName: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -36,6 +41,14 @@ export class UserManagementService {
     const options = await this.getHeaders();
     const response = await firstValueFrom(
       this.http.post<UserDto>(`${this.baseUrl}/${campaignId}/assign-role`, dto, options)
+    );
+    return response;
+  }
+
+  async removeRole(campaignId: string, dto: RemoveRoleDto): Promise<UserDto> {
+    const options = await this.getHeaders();
+    const response = await firstValueFrom(
+      this.http.post<UserDto>(`${this.baseUrl}/${campaignId}/remove-role`, dto, options)
     );
     return response;
   }
