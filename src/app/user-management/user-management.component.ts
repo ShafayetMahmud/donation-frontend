@@ -53,7 +53,7 @@ export class UserManagementComponent implements OnInit {
   /** Transform UserDto -> User */
   private mapDtoToUser(dto: UserDto): User {
     return {
-      id: dto.userId,
+      id: dto.userId.toString(),  // string for frontend UI (dropdowns etc.)
       name: (dto as any).displayName || dto.name,
       email: dto.email,
       globalRole: dto.globalRole,
@@ -99,13 +99,13 @@ export class UserManagementComponent implements OnInit {
     }
 
     const dto: AssignRoleDto = {
-      userId: user.id,
+      userId: parseInt(user.id, 10),  // <-- ensure integer
       roleName: user.selectedRole
     };
 
     try {
       const updatedDto = await this.userService.assignRole(user.selectedCampaign!, dto);
-      const index = this.users.findIndex(u => u.id === updatedDto.userId);
+      const index = this.users.findIndex(u => u.id === updatedDto.userId.toString());
       if (index !== -1) this.users[index] = this.mapDtoToUser(updatedDto);
       alert('Role assigned successfully');
     } catch (err: any) {
@@ -135,7 +135,7 @@ export class UserManagementComponent implements OnInit {
     try {
       // Call the service to remove role
       await this.userService.removeRole(roleToRemove.campaignId, {
-        userId: user.id,
+        userId: parseInt(user.id, 10),
         roleName: roleToRemove.role
       });
 
