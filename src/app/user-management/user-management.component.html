@@ -12,7 +12,8 @@
           <tr>
             <th>Name</th>
             <th>Email</th>
-            <th>Current Roles</th>
+            <th>Global Role</th>
+            <th>Campaign Roles</th>
             <th>Assign New Role</th>
           </tr>
         </thead>
@@ -20,13 +21,14 @@
           <tr *ngFor="let user of users">
             <td>{{ user.name }}</td>
             <td>{{ user.email }}</td>
+            <td>{{ user.globalRole }}</td>
             <td>
-              <ul *ngIf="user.campaignRoles.length > 0; else noRoles">
+              <ul *ngIf="user.campaignRoles?.length; else noRoles">
                 <li *ngFor="let role of user.campaignRoles">
                   {{ role.campaignName }} : {{ role.role }}
                 </li>
               </ul>
-              <ng-template #noRoles>—</ng-template>
+              <ng-template #noRoles>-</ng-template>
             </td>
             <td>
               <select [(ngModel)]="user.selectedRole">
@@ -37,10 +39,7 @@
                 <option value="" disabled>Select Campaign</option>
                 <option *ngFor="let campaign of campaigns" [value]="campaign.id">{{ campaign.name }}</option>
               </select>
-              <button 
-                mat-button 
-                color="primary" 
-                (click)="assignRole(user)"
+              <button mat-button color="primary" (click)="assignRole(user)"
                 [disabled]="!user.selectedRole || !user.selectedCampaign">
                 Assign
               </button>
