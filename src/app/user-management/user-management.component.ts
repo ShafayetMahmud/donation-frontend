@@ -51,19 +51,33 @@ export class UserManagementComponent implements OnInit {
   }
 
   /** Transform UserDto -> User */
+  // private mapDtoToUser(dto: UserDto): User {
+  //   return {
+  //     id: dto.userId != null ? dto.userId.toString() : '', // safe conversion
+  //     name: (dto as any).displayName || dto.name,
+  //     email: dto.email,
+  //     globalRole: dto.globalRole,
+  //     campaignRoles: dto.campaignRoles?.map(r => ({
+  //       campaignId: r.campaignId,
+  //       campaignName: r.campaignName,
+  //       role: r.role
+  //     })) || []
+  //   };
+  // }
+
   private mapDtoToUser(dto: UserDto): User {
-    return {
-      id: dto.userId.toString(),  // string for frontend UI (dropdowns etc.)
-      name: (dto as any).displayName || dto.name,
-      email: dto.email,
-      globalRole: dto.globalRole,
-      campaignRoles: dto.campaignRoles?.map(r => ({
-        campaignId: r.campaignId,
-        campaignName: r.campaignName,
-        role: r.role
-      })) || []
-    };
-  }
+  return {
+    id: dto.userId != null ? dto.userId.toString() : '', // safe conversion
+    name: (dto as any).displayName || dto.name || 'Unknown',
+    email: dto.email || '',
+    globalRole: dto.globalRole,
+    campaignRoles: (dto.campaignRoles || []).map(r => ({
+      campaignId: r.campaignId?.toString() || '',
+      campaignName: r.campaignName || '',
+      role: r.role || ''
+    }))
+  };
+}
 
   /** Load all users */
   async loadUsers() {
