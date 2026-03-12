@@ -27,7 +27,7 @@ export interface RemoveRoleDto {
   providedIn: 'root'
 })
 export class UserManagementService {
-  private baseUrl = `${environment.apiBaseUrl}/users`;
+  private baseUrl = `${environment.apiBaseUrl}/campaign`; // ← use /campaign
 
   constructor(private http: HttpClient, private auth: AuthService) { }
 
@@ -36,7 +36,7 @@ export class UserManagementService {
     return { headers: new HttpHeaders({ Authorization: `Bearer ${token}` }), withCredentials: true };
   }
 
-  // Keep original signature: campaignId + DTO
+  /** Assign role */
   async assignRole(campaignId: string, dto: AssignRoleDto): Promise<UserDto> {
     const options = await this.getHeaders();
     const response = await firstValueFrom(
@@ -45,6 +45,7 @@ export class UserManagementService {
     return response;
   }
 
+  /** Remove role */
   async removeRole(campaignId: string, dto: RemoveRoleDto): Promise<UserDto> {
     const options = await this.getHeaders();
     const response = await firstValueFrom(
@@ -53,9 +54,9 @@ export class UserManagementService {
     return response;
   }
 
+  /** Get all users */
   async getAllUsers(): Promise<UserDto[]> {
     const options = await this.getHeaders();
-    return await firstValueFrom(this.http.get<UserDto[]>(`${this.baseUrl}`, options));
+    return await firstValueFrom(this.http.get<UserDto[]>(`${environment.apiBaseUrl}/users`, options));
   }
-
 }
