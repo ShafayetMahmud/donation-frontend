@@ -115,13 +115,12 @@ export class UserManagementComponent implements OnInit {
     }
 
     const dto: AssignRoleDto = {
-      id: parseInt(user.id, 10),  // <-- ensure integer
+      userId: parseInt(user.id, 10),  // <-- ensure integer
       roleName: user.selectedRole
     };
 
     try {
       const updatedDto = await this.userService.assignRole(user.selectedCampaign!, dto);
-      // const index = this.users.findIndex(u => u.id === updatedDto.id.toString());
       const index = this.users.findIndex(u => u.id === updatedDto.id.toString());
       if (index !== -1) this.users[index] = this.mapDtoToUser(updatedDto);
       alert('Role assigned successfully');
@@ -152,7 +151,7 @@ export class UserManagementComponent implements OnInit {
     try {
       // Call the service to remove role
       await this.userService.removeRole(roleToRemove.campaignId, {
-        id: parseInt(user.id, 10),
+        userId: parseInt(user.id, 10),
         roleName: roleToRemove.role
       });
 
