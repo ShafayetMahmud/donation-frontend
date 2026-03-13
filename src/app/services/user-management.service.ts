@@ -6,9 +6,10 @@ import { firstValueFrom } from 'rxjs';
 import { CampaignService } from './campaign.service';
 
 export interface UserDto {
-  userId: number;
+  // userId: number;
+  id: number;
   email: string;
-  name: string;
+  displayName: string;
   globalRole: string;
   campaignRoles: { campaignId: string; campaignName: string; role: string }[];
 }
