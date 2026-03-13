@@ -7,7 +7,7 @@ import { CampaignService } from './campaign.service';
 
 export interface UserDto {
   // userId: number;
-  id: number;
+  id: string;
   email: string;
   displayName: string;
   globalRole: string;
@@ -15,12 +15,12 @@ export interface UserDto {
 }
 
 export interface AssignRoleDto {
-  id: number;
+  userId: string;
   roleName: string;
 }
 
 export interface RemoveRoleDto {
-  id: number;
+  userId: string;
   roleName: string;
 }
 
