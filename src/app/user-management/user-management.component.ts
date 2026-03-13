@@ -115,7 +115,7 @@ export class UserManagementComponent implements OnInit {
     }
 
     const dto: AssignRoleDto = {
-      userId: user.id,  // <-- ensure integer
+      id: parseInt(user.id, 10),  // <-- ensure integer
       roleName: user.selectedRole
     };
 
@@ -152,7 +152,7 @@ export class UserManagementComponent implements OnInit {
     try {
       // Call the service to remove role
       await this.userService.removeRole(roleToRemove.campaignId, {
-        userId: user.id,
+        id: parseInt(user.id, 10),
         roleName: roleToRemove.role
       });
 
