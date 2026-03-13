@@ -127,6 +127,7 @@ export class UserManagementComponent implements OnInit {
       alert(err.error?.message || 'Error assigning role');
     }
   }
+  //important build test
 
   // Add a helper to get available roles per user and selected campaign
   getAvailableRoles(user: User): string[] {
