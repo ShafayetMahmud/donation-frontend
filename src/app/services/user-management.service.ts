@@ -15,12 +15,12 @@ export interface UserDto {
 }
 
 export interface AssignRoleDto {
-  userId: number;
+  id: number;
   roleName: string;
 }
 
 export interface RemoveRoleDto {
-  userId: number;
+  id: number;
   roleName: string;
 }
 
