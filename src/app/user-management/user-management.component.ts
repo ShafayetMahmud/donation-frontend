@@ -66,18 +66,18 @@ export class UserManagementComponent implements OnInit {
   // }
 
   private mapDtoToUser(dto: UserDto): User {
-  return {
-    id: dto.userId != null ? dto.userId.toString() : '', // safe conversion
-    name: (dto as any).displayName || dto.name || 'Unknown',
-    email: dto.email || '',
-    globalRole: dto.globalRole,
-    campaignRoles: (dto.campaignRoles || []).map(r => ({
-      campaignId: r.campaignId?.toString() || '',
-      campaignName: r.campaignName || '',
-      role: r.role || ''
-    }))
-  };
-}
+    return {
+      id: dto.userId != null ? dto.userId.toString() : '', // safe conversion
+      name: (dto as any).displayName || dto.name || 'Unknown',
+      email: dto.email || '',
+      globalRole: dto.globalRole,
+      campaignRoles: (dto.campaignRoles || []).map(r => ({
+        campaignId: r.campaignId?.toString() || '',
+        campaignName: r.campaignName || '',
+        role: r.role || ''
+      }))
+    };
+  }
 
   /** Load all users */
   async loadUsers() {
@@ -112,8 +112,17 @@ export class UserManagementComponent implements OnInit {
       return;
     }
 
+    const userId = parseInt(user.id, 10);
+
+    if (!userId) {
+      alert('Invalid user ID');
+      console.error('Invalid user.id:', user.id);
+      return;
+    }
+
     const dto: AssignRoleDto = {
-      userId: parseInt(user.id, 10),  // <-- ensure integer
+      // userId: parseInt(user.id, 10),
+      userId: userId,
       roleName: user.selectedRole
     };
 
@@ -121,6 +130,8 @@ export class UserManagementComponent implements OnInit {
       const updatedDto = await this.userService.assignRole(user.selectedCampaign!, dto);
       const index = this.users.findIndex(u => u.id === updatedDto.userId.toString());
       if (index !== -1) this.users[index] = this.mapDtoToUser(updatedDto);
+      console.log('Assign DTO:', dto);
+      console.log('Updated DTO:', updatedDto);
       alert('Role assigned successfully');
     } catch (err: any) {
       console.error('Error assigning role:', err);
@@ -148,9 +159,17 @@ export class UserManagementComponent implements OnInit {
     }
 
     try {
+      const userId = parseInt(user.id, 10);
+
+      if (!userId) {
+        alert('Invalid user ID');
+        console.error('Invalid user.id:', user.id);
+        return;
+      }
       // Call the service to remove role
       await this.userService.removeRole(roleToRemove.campaignId, {
-        userId: parseInt(user.id, 10),
+        // userId: parseInt(user.id, 10),
+        userId: userId,
         roleName: roleToRemove.role
       });
 
