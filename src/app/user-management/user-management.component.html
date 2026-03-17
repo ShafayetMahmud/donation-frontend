@@ -1,66 +1,71 @@
 <div class="user-management container">
-  <h2>Assign Roles</h2>
+  <div class="header-section">
+    <div>
+      <h2 class="page-title">Assign Roles</h2>
+      <p class="page-subtitle">Manage user permissions and campaign roles</p>
+    </div>
+  </div>
 
   <div *ngIf="loading" class="spinner-container">
-    <p>Loading users...</p>
+    <div class="spinner">
+      <p>Loading users...</p>
+    </div>
   </div>
 
   <div *ngIf="!loading && users.length > 0; else emptyUsers">
     <div class="table-card">
-      <table class="donation-table mat-elevation-z8">
+      <table class="donation-table">
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Global Role</th>
-            <th>Campaign Roles</th>
-            <th>Assign New Role</th>
+            <th class="col-name">Name</th>
+            <th class="col-email">Email</th>
+            <th class="col-role">Global Role</th>
+            <th class="col-campaigns">Campaign Roles</th>
+            <th class="col-assign">Assign New Role</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let user of users">
-            <td>{{ user.name }}</td>
-            <td>{{ user.email }}</td>
-            <td>{{ user.globalRole }}</td>
-            <td>
-              <ul *ngIf="user.campaignRoles?.length; else noRoles">
-                <li *ngFor="let role of user.campaignRoles">
-                  {{ role.campaignName }} : {{ role.role }}
-                  <button mat-icon-button color="warn" (click)="removeRole(user, role)">
-                    <mat-icon>delete</mat-icon>
+          <tr *ngFor="let user of users; let last = last" [class.last-row]="last">
+            <td class="col-name">
+              <div class="user-name">{{ user.name }}</div>
+            </td>
+            <td class="col-email">
+              <div class="user-email">{{ user.email }}</div>
+            </td>
+            <td class="col-role">
+              <span class="role-badge global-role">{{ user.globalRole }}</span>
+            </td>
+            <td class="col-campaigns">
+              <ul *ngIf="user.campaignRoles?.length; else noRoles" class="roles-list">
+                <li *ngFor="let role of user.campaignRoles" class="role-item">
+                  <span class="campaign-name">{{ role.campaignName }}</span>
+                  <span class="role-badge">{{ role.role }}</span>
+                  <button mat-icon-button class="delete-btn" color="warn" (click)="removeRole(user, role)" matTooltip="Remove role">
+                    <mat-icon>close</mat-icon>
                   </button>
                 </li>
               </ul>
-              <ng-template #noRoles>-</ng-template>
+              <ng-template #noRoles>
+                <span class="empty-text">-</span>
+              </ng-template>
             </td>
-            <td>
-              <!-- <select [(ngModel)]="user.selectedRole">
-                <option value="" disabled>Select Role</option>
-                <option *ngFor="let role of roles" [value]="role">{{ role }}</option>
-              </select> -->
-              <select [(ngModel)]="user.selectedRole">
-                <option value="" disabled>Select Role</option>
-                <option *ngFor="let role of getAvailableRoles(user)" [value]="role">{{ role }}</option>
-              </select>
-              <select [(ngModel)]="user.selectedCampaign">
-                <option value="" disabled>Select Campaign</option>
-                <option *ngFor="let campaign of campaigns" [value]="campaign.id">{{ campaign.name }}</option>
-              </select>
-              <button mat-button color="primary" (click)="assignRole(user)"
-                [disabled]="!user.selectedRole || !user.selectedCampaign">
-                Assign
-              </button>
+            <td class="col-assign">
+              <div class="assign-controls">
+                <select [(ngModel)]="user.selectedRole" class="control-select" aria-label="Select role">
+                  <option value="" disabled>Role</option>
+                  <option *ngFor="let role of getAvailableRoles(user)" [value]="role">{{ role }}</option>
+                </select>
+                <select [(ngModel)]="user.selectedCampaign" class="control-select" aria-label="Select campaign">
+                  <option value="" disabled>Campaign</option>
+                  <option *ngFor="let campaign of campaigns" [value]="campaign.id">{{ campaign.name }}</option>
+                </select>
+                <button mat-raised-button color="primary" class="assign-btn" (click)="assignRole(user)"
+                  [disabled]="!user.selectedRole || !user.selectedCampaign"
+                  matTooltip="Assign the selected role to this user">
+                  Assign
+                </button>
+              </div>
             </td>
-            <!-- <td>
-              <ul>
-                <li *ngFor="let role of user.campaignRoles">
-                  {{ role.campaignName }} : {{ role.role }}
-                  <button mat-icon-button color="warn" (click)="removeRole(user, role)">
-                    <mat-icon>delete</mat-icon>
-                  </button>
-                </li>
-              </ul>
-            </td> -->
           </tr>
         </tbody>
       </table>
@@ -69,7 +74,9 @@
 
   <ng-template #emptyUsers>
     <div class="empty-state">
+      <mat-icon class="empty-icon">person_off</mat-icon>
       <h3>No users available</h3>
+      <p>There are no users to manage at this time.</p>
     </div>
   </ng-template>
 </div>

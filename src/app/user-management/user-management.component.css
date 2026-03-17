@@ -1,103 +1,366 @@
+.user-management {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: 100vh;
+  padding-bottom: 40px;
+}
+
 .container {
-  max-width: 1100px;
-  margin: auto;
-  padding: 24px;
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 32px 24px;
 }
 
-/* Header */
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
+/* Header Section */
+.header-section {
+  margin-bottom: 32px;
+  animation: slideInDown 0.5s ease-out;
 }
 
-.subtitle {
-  color: #777;
-  font-size: 0.9rem;
+.page-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #1a202c;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.5px;
 }
 
-/* Cards */
-.progress-card,
-.table-card,
-.chart-card {
-  background: white;
-  border-radius: 14px;
-  padding: 24px;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.06);
-  margin-bottom: 24px;
+.page-subtitle {
+  font-size: 0.95rem;
+  color: #718096;
+  margin: 0;
+  font-weight: 500;
 }
 
-/* Stats */
-.progress-info {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 16px;
-  margin-bottom: 16px;
-}
-
-.stat label {
-  font-size: 0.8rem;
-  color: #777;
-}
-
-.stat h3 {
-  margin-top: 4px;
-}
-
-/* Progress bar */
-.progress-bar {
-  height: 10px;
-  background: #eee;
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #4caf50, #81c784);
-}
-
-/* Chart */
-.chart-card canvas {
-  max-height: 260px;
-}
-
-/* Table */
-.donation-table {
-  width: 100%;
-}
-
-.status-badge {
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-size: 0.8rem;
-  font-weight: 600;
-}
-
-.status-approved {
-  background: #e6f7ee;
-  color: #1f9254;
-}
-
-.status-pending {
-  background: #fff4e5;
-  color: #b26a00;
-}
-
-.status-rejected {
-  background: #fdecea;
-  color: #c92c2c;
-}
-
-.empty-state {
-  text-align: center;
-  padding: 40px;
-  color: #777;
-}
-
+/* Loading Spinner */
 .spinner-container {
   display: flex;
   justify-content: center;
-  padding: 40px;
+  align-items: center;
+  padding: 80px 24px;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.spinner {
+  text-align: center;
+}
+
+.spinner p {
+  font-size: 1rem;
+  color: #4a5568;
+  margin-top: 16px;
+  font-weight: 500;
+}
+
+/* Table Card */
+.table-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  animation: slideInUp 0.5s ease-out;
+}
+
+/* Table Styles */
+.donation-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.donation-table thead {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.donation-table thead th {
+  padding: 18px 16px;
+  font-weight: 600;
+  text-align: left;
+  letter-spacing: 0.3px;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+}
+
+.donation-table tbody tr {
+  border-bottom: 1px solid #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+.donation-table tbody tr:hover {
+  background-color: #f7fafc;
+  box-shadow: inset 0 0 0 1px rgba(102, 126, 234, 0.1);
+}
+
+.donation-table tbody tr.last-row {
+  border-bottom: none;
+}
+
+.donation-table td {
+  padding: 16px;
+  vertical-align: middle;
+}
+
+/* Table Columns */
+.col-name,
+.col-email,
+.col-role,
+.col-campaigns,
+.col-assign {
+  word-wrap: break-word;
+}
+
+.col-name {
+  min-width: 150px;
+}
+
+.col-email {
+  min-width: 200px;
+}
+
+.col-role {
+  min-width: 120px;
+}
+
+.col-campaigns {
+  min-width: 220px;
+}
+
+.col-assign {
+  min-width: 280px;
+}
+
+/* User Info */
+.user-name {
+  font-weight: 600;
+  color: #1a202c;
+}
+
+.user-email {
+  color: #718096;
+  font-size: 0.9rem;
+}
+
+/* Role Badges */
+.role-badge {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  white-space: nowrap;
+}
+
+.global-role {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+/* Roles List */
+.roles-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.role-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  background: #f7fafc;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.role-item:hover {
+  background: #edf2f7;
+}
+
+.campaign-name {
+  color: #4a5568;
+  font-weight: 500;
+  font-size: 0.9rem;
+  flex: 1;
+}
+
+.role-badge {
+  flex-shrink: 0;
+}
+
+.delete-btn {
+  margin-left: auto;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+
+.delete-btn:hover {
+  opacity: 1;
+}
+
+.empty-text {
+  color: #cbd5e0;
+  font-style: italic;
+}
+
+/* Assign Controls */
+.assign-controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.control-select {
+  flex: 1;
+  min-width: 140px;
+  padding: 10px 12px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: #2d3748;
+  background: white;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.control-select:hover {
+  border-color: #cbd5e0;
+}
+
+.control-select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.assign-btn {
+  min-width: 100px;
+  padding: 10px 20px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+  border-radius: 8px;
+}
+
+.assign-btn:not(:disabled) {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.assign-btn:not(:disabled):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+}
+
+.assign-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 80px 24px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.empty-icon {
+  font-size: 64px;
+  height: 64px;
+  width: 64px;
+  color: #cbd5e0;
+  margin: 0 auto 16px;
+}
+
+.empty-state h3 {
+  font-size: 1.5rem;
+  color: #1a202c;
+  margin: 16px 0 8px;
+  font-weight: 600;
+}
+
+.empty-state p {
+  color: #718096;
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+/* Animations */
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .col-name,
+  .col-email,
+  .col-role,
+  .col-campaigns,
+  .col-assign {
+    min-width: auto;
+  }
+
+  .assign-controls {
+    flex-direction: column;
+  }
+
+  .control-select {
+    width: 100%;
+  }
+
+  .assign-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .page-title {
+    font-size: 1.8rem;
+  }
+
+  .donation-table {
+    font-size: 0.85rem;
+  }
+
+  .donation-table thead th {
+    padding: 12px 8px;
+  }
+
+  .donation-table td {
+    padding: 12px 8px;
+  }
 }
